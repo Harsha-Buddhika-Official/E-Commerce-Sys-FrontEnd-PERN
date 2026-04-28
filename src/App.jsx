@@ -1,7 +1,6 @@
-import UserNavbar from "./components/UserNavbar"
-import ProductCard from "./components/ProductCard"
-import Lap from "./Assets/Lap.png"
-import ImageSlider from "./components/ImageSlider"
+import UserNavbar from "./Shared/Components/navbar/UserNavbar.jsx"
+import ProductCard from "./components/ProductCard.jsx"
+import ImageSlider from "./Shared/Components/slider/ImageSlider.jsx"
 
 function App() {
   return (
@@ -12,7 +11,7 @@ function App() {
         <h1 className="text-2xl font-bold mb-6">Featured Products</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <ProductCard
-            image={Lap}
+            image="https://storage-asset.msi.com/global/picture/image/feature/nb/Cyborg15-A13V/images/cyborg-gpu-laptop.png"
             title="MSI Cyborg 15 A13VF"
             specs={["Intel® Core™ i7-13620H", "GeForce RTX™ 4060", "15.6-inch Full HD IPS 144Hz", "16GB DDR5", "1TB NVMeF"]}
             price="Rs. 199,000.00"
