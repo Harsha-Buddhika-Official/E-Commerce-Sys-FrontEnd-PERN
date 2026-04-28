@@ -1,4 +1,3 @@
-import { IconButton, Chip } from '@mui/material';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import ProductBadge from './ProductBadge';
 
@@ -16,16 +15,20 @@ const ProductImage = ({ src, alt }) => {
 // Sub-component: Stock Badge
 const StockBadge = ({ inStock }) => {
   return (
-    <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-white rounded-xl px-3 py-1 shadow-sm">
+    <div 
+      className="absolute bottom-[9px] right-[10px] flex items-center gap-[5px] bg-white border border-[#CCCCCC] rounded-[10px] px-[17px] py-[2px]"
+      style={{ width: '90px', height: '20px' }}
+    >
       <span
-        className={`w-2 h-2 rounded-full ${
-          inStock ? 'bg-green-500' : 'bg-red-500'
+        className={`w-[7px] h-[7px] rounded-full flex-none ${
+          inStock ? 'bg-[#008000]' : 'bg-red-500'
         }`}
       />
       <span
-        className={`text-xs font-medium ${
-          inStock ? 'text-green-500' : 'text-red-500'
+        className={`text-[11px] font-semibold leading-4 flex-none ${
+          inStock ? 'text-[#008000]' : 'text-red-500'
         }`}
+        style={{ fontFamily: 'Inter, sans-serif' }}
       >
         {inStock ? 'In Stock' : 'Out of Stock'}
       </span>
@@ -36,11 +39,15 @@ const StockBadge = ({ inStock }) => {
 // Sub-component: Product Specs
 const ProductSpecs = ({ specs }) => {
   return (
-    <div className="mb-1">
+    <div 
+      className="text-[11px] font-semibold leading-4 text-[#252525]"
+      style={{ fontFamily: 'Inter, sans-serif' }}
+    >
       {specs.map((spec, index) => (
-        <p key={index} className="text-xs text-gray-500 leading-relaxed">
+        <span key={index}>
           {spec}
-        </p>
+          {index < specs.length - 1 && <br />}
+        </span>
       ))}
     </div>
   );
@@ -58,47 +65,81 @@ const ProductCard = ({
   onAddToCart,
 }) => {
   return (
-    <div className="w-[280px] h-[428px] bg-white rounded-2xl shadow-md overflow-hidden flex flex-col relative">
+    <div 
+      className="relative bg-white border border-[#E6E6E6] rounded-[10px] overflow-visible"
+      style={{ width: '280px', height: '428px', boxSizing: 'border-box' }}
+    >
       {/* Badge */}
       {badge && <ProductBadge label={badge} />}
 
       {/* Image Container */}
-      <div className="relative mx-4 mt-4 h-[200px] bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
+      <div 
+        className="absolute left-5 top-5 border border-[#CCCCCC] rounded-[10px] flex items-center justify-center overflow-hidden"
+        style={{ width: '241px', height: '241px' }}
+      >
         <ProductImage src={image} alt={title} />
         <StockBadge inStock={inStock} />
       </div>
 
-      {/* Content */}
-      <div className="px-4 pt-3 pb-4 flex-1 flex flex-col">
-        {/* Title */}
-        <h3 className="font-bold text-base text-gray-900 mb-2 leading-tight">
-          {title}
-        </h3>
+      {/* Title */}
+      <h3 
+        className="absolute left-5 top-[276px] font-bold text-[14px] leading-4 uppercase text-[#252525]"
+        style={{ width: '240px', fontFamily: 'Inter, sans-serif' }}
+      >
+        {title}
+      </h3>
 
-        {/* Specs */}
+      {/* Specs */}
+      <div 
+        className="absolute left-5 top-[302px]"
+        style={{ width: '240px' }}
+      >
         <ProductSpecs specs={specs} />
+      </div>
 
-        {/* Price and Actions */}
-        <div className="flex items-center justify-between mt-auto pt-3">
-          <span className="font-bold text-base text-gray-900">{price}</span>
+      {/* Price and Actions */}
+      <div 
+        className="absolute left-5 right-5 top-[392px] flex flex-row items-center justify-between"
+        style={{ height: '20px' }}
+      >
+        {/* Price */}
+        <span 
+          className="font-medium text-[13px] leading-4 text-black"
+          style={{ fontFamily: 'Inter, sans-serif' }}
+        >
+          {price}
+        </span>
 
-          <div className="flex items-center gap-2">
-            {category && (
-              <Chip
-                label={category}
-                size="small"
-                variant="outlined"
-                className="!rounded-2xl !border-gray-300 !text-gray-500 !text-xs !h-7"
-              />
-            )}
-            <IconButton
-              onClick={onAddToCart}
-              className="!text-gray-500 hover:!text-gray-900 hover:!bg-gray-100"
-              size="small"
+        {/* Category Tag and Cart Icon Container */}
+        <div className="flex flex-row items-center gap-3">
+          {/* Category Tag */}
+          {category && (
+            <div 
+              className="flex flex-row justify-center items-center px-4 py-1 rounded-full"
+              style={{ 
+                border: '0.5px solid #252525',
+                height: '22px', 
+                boxSizing: 'border-box' 
+              }}
             >
-              <ShoppingCartOutlinedIcon className="!text-[22px]" />
-            </IconButton>
-          </div>
+              <span 
+                className="font-normal text-[11px] text-[#252525]"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                {category}
+              </span>
+            </div>
+          )}
+
+          {/* Cart Icon */}
+          <button
+            onClick={onAddToCart}
+            className="p-0 bg-transparent border-none cursor-pointer hover:opacity-70 transition-opacity flex items-center justify-center"
+          >
+            <ShoppingCartOutlinedIcon 
+              style={{ width: '22px', height: '22px', color: '#252525' }} 
+            />
+          </button>
         </div>
       </div>
     </div>
