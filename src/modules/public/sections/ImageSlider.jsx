@@ -21,7 +21,7 @@ export default function ImageSlider() {
   return (
     <div
       className="relative w-full max-w-[1920px] mx-auto overflow-hidden"
-      style={{ height: 'min(calc(100vh - 60px), 1020px)' }}
+      style={{ aspectRatio: '16 / 9', maxHeight: 'calc(100vh - 60px)' }}
     >
       {/* Slides */}
       <div
@@ -41,15 +41,15 @@ export default function ImageSlider() {
       </div>
 
       {/* Dots Navigation */}
-      <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 sm:gap-3">
+      <div className="absolute bottom-2 sm:bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 flex gap-1.5 sm:gap-2 md:gap-3">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrent(index)}
-            className={`h-3 sm:h-4 rounded-full transition-all duration-300 ${
+            className={`rounded-full transition-all duration-300 ${
               current === index
-                ? "bg-red-600 w-8 sm:w-12"
-                : "w-3 sm:w-4 bg-red-600 hover:bg-white"
+                ? "bg-red-600 h-2 sm:h-3 md:h-4 w-6 sm:w-8 md:w-10 lg:w-12"
+                : "h-2 sm:h-3 md:h-4 w-2 sm:w-3 md:w-4 bg-red-600 hover:bg-white"
             }`}
           />
         ))}

@@ -2,7 +2,7 @@ import Cyborg from "../../../assets/video/Cyborg.mp4"
 
 export default function VideoSection() {
   return (
-    <div className="relative w-full bg-black overflow-hidden" style={{ height: '1080px' }}>
+    <div className="relative w-full bg-black overflow-hidden" style={{ aspectRatio: '16 / 9', maxHeight: 'calc(100vh - 60px)' }}>
       <div className="absolute inset-0 w-full h-full">
         <video
           className="w-full h-full object-cover"
