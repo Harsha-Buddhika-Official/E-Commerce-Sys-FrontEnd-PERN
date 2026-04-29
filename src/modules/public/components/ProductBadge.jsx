@@ -1,21 +1,35 @@
-import React from 'react';
 
 const ProductBadge = ({ label }) => {
+  // Calculate font size based on text length
+  const fontSize = 10;
+
+  const words = label.split(' ');
+  const hasSpace = label.includes(' ');
+
   return (
     <div 
       className="absolute top-[10px] left-[10px] rounded-full bg-[#FE1801] flex items-center justify-center z-10"
-      style={{ width: '55px', height: '55px' }}
+      style={{ width: '60px', height: '60px' }}
     >
       <span 
-        className="font-bold text-[11px] leading-[12px] text-center uppercase text-white"
-        style={{ fontFamily: 'Inter, sans-serif', width: '40.62px' }}
+        className="font-bold text-center uppercase text-white px-2"
+        style={{ 
+          fontFamily: 'Inter, sans-serif', 
+          fontSize: `${fontSize}px`,
+          lineHeight: '1.1',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
       >
-        {label.split(' ').map((word, index) => (
-          <React.Fragment key={index}>
-            {word}
-            {index < label.split(' ').length - 1 && <br />}
-          </React.Fragment>
-        ))}
+        {hasSpace ? (
+          words.map((word, index) => (
+            <div key={index}>{word}</div>
+          ))
+        ) : (
+          label
+        )}
       </span>
     </div>
   );

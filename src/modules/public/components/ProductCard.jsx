@@ -16,8 +16,8 @@ const ProductImage = ({ src, alt }) => {
 const StockBadge = ({ inStock }) => {
   return (
     <div 
-      className="absolute bottom-[9px] right-[10px] flex items-center gap-[5px] bg-white border border-[#CCCCCC] rounded-[10px] px-[17px] py-[2px]"
-      style={{ width: '90px', height: '20px' }}
+      className="absolute bottom-[9px] right-[10px] flex items-center gap-[5px] bg-white border border-[#CCCCCC] rounded-[10px] px-[12px] py-[2px]"
+      style={{ height: '20px' }}
     >
       <span
         className={`w-[7px] h-[7px] rounded-full flex-none ${
