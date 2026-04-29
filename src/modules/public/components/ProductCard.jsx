@@ -38,15 +38,16 @@ const StockBadge = ({ inStock }) => {
 
 // Sub-component: Product Specs
 const ProductSpecs = ({ specs }) => {
+  const displaySpecs = specs.slice(0, 5);
   return (
     <div 
       className="text-[11px] font-semibold leading-4 text-[#252525]"
       style={{ fontFamily: 'Inter, sans-serif' }}
     >
-      {specs.map((spec, index) => (
+      {displaySpecs.map((spec, index) => (
         <span key={index}>
           {spec}
-          {index < specs.length - 1 && <br />}
+          {index < displaySpecs.length - 1 && <br />}
         </span>
       ))}
     </div>
@@ -66,7 +67,7 @@ const ProductCard = ({
 }) => {
   return (
     <div 
-      className="relative bg-white border border-[#E6E6E6] rounded-[10px] overflow-visible"
+      className="relative bg-white border border-[#E6E6E6] rounded-[10px] overflow-hidden"
       style={{ width: '280px', height: '428px', boxSizing: 'border-box' }}
     >
       {/* Badge */}
@@ -126,7 +127,7 @@ const ProductCard = ({
                 className="font-normal text-[11px] text-[#252525]"
                 style={{ fontFamily: 'Inter, sans-serif' }}
               >
-                {category}
+                {category.split(' ')[0]}
               </span>
             </div>
           )}
