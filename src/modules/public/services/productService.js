@@ -85,7 +85,7 @@ const mockBestSellersProducts = [
 const mockLatestProducts = [
   {
     id: 9,
-    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop",
+    image: "https://snapshoppers.shophere.lk/wp-content/uploads/2024/10/img-MacBook-Pro-Retina-14-Inch-92084.jpg",
     title: "APPLE MACBOOK PRO M3 PRO",
     specs: ["Apple M3 Pro Chip", "12-Core CPU", "18-Core GPU", "14-inch Liquid Retina XDR", "18GB Unified Memory", "1TB SSD"],
     price: "Rs. 899,000.00",
@@ -95,7 +95,7 @@ const mockLatestProducts = [
   },
   {
     id: 10,
-    image: "https://images.unsplash.com/photo-1588872657840-18491fbaf572?w=400&h=300&fit=crop",
+    image: "https://dlcdnwebimgs.asus.com/gain/E0275281-F18B-42C3-A025-3331C35A888F",
     title: "ASUS ROG ZEPHYRUS G16",
     specs: ["Intel Core Ultra 9", "NVIDIA RTX 4090", "16-inch OLED 240Hz", "32GB DDR5", "1TB NVMe SSD"],
     price: "Rs. 749,000.00",
@@ -105,7 +105,7 @@ const mockLatestProducts = [
   },
   {
     id: 11,
-    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=300&fit=crop",
+    image: "https://www.nanotek.lk/storage/products/941/wH8IDFSG1Df1NiUX853KBArQqDXL2RHyX4ZAJ1Ee.webp",
     title: "LENOVO LEGION PRO 7i",
     specs: ["Intel Core i9-14900HX", "NVIDIA RTX 4090", "16-inch QHD+ 240Hz", "32GB DDR5", "2TB NVMe SSD"],
     price: "Rs. 899,000.00",
@@ -115,7 +115,7 @@ const mockLatestProducts = [
   },
   {
     id: 12,
-    image: "https://images.unsplash.com/photo-1593642532400-2682a8356e6f?w=400&h=300&fit=crop",
+    image: "https://redtech.lk/wp-content/uploads/2024/02/MSI-Raider-GE78-HX-14VIG.png",
     title: "MSI RAIDER GE78 HX",
     specs: ["Intel Core i9-14900HX", "NVIDIA RTX 4090", "17-inch QHD+ 240Hz", "64GB DDR5", "2TB NVMe SSD"],
     price: "Rs. 1399,000.00",
@@ -125,7 +125,7 @@ const mockLatestProducts = [
   },
   {
     id: 13,
-    image: "https://images.unsplash.com/photo-1522869635100-ce306f98a5b8?w=400&h=300&fit=crop",
+    image: "https://images.samsung.com/is/image/samsung/p6pim/lb/ls34bg850smxue/gallery/lb-odyssey-oled-g8-g85sb-ls34bg850smxue-535055175?$Q90_1248_936_F_PNG$",
     title: "SAMSUNG ODYSSEY OLED G8",
     specs: ["34-inch OLED Curved", "175Hz Refresh Rate", "0.03ms Response Time", "Ultra-Wide QHD", "Quantum Dot Technology"],
     price: "Rs. 459,000.00",
@@ -135,7 +135,7 @@ const mockLatestProducts = [
   },
   {
     id: 14,
-    image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=300&fit=crop",
+    image: "https://dlcdnwebimgs.asus.com/gain/A00C8F15-E127-4AB4-A5F3-B22FF0CB6BC9",
     title: "ASUS ROG SWIFT PG32UQX",
     specs: ["32-inch Mini-LED 4K", "144Hz Refresh Rate", "1ms Response Time", "HDR1000", "G-SYNC Ultimate"],
     price: "Rs. 599,000.00",
@@ -145,7 +145,7 @@ const mockLatestProducts = [
   },
   {
     id: 15,
-    image: "https://images.unsplash.com/photo-1585647376665-08260299de0b?w=400&h=300&fit=crop",
+    image: "https://www.nanotek.lk/storage/products/953/WpyOoUVajLbZkGYfC3yrYWo22G7NNhYHmvLknwvt.webp",
     title: "PLAYSTATION 5 PRO",
     specs: ["Custom AMD Zen CPU", "Enhanced RDNA GPU", "2TB SSD Storage", "4K / 8K Ready", "Wi-Fi 7 Support"],
     price: "Rs. 289,000.00",
@@ -155,7 +155,7 @@ const mockLatestProducts = [
   },
   {
     id: 16,
-    image: "https://images.unsplash.com/photo-1592439694712-e8d03fdd5a23?w=400&h=300&fit=crop",
+    image: "https://m.media-amazon.com/images/I/516JY93vvXL._SS1000_.jpg",
     title: "XBOX SERIES X - 2TB GALAXY",
     specs: ["Custom AMD Zen 2", "12 TFLOPS GPU", "2TB Custom SSD", "4K Gaming Support", "Backward Compatible"],
     price: "Rs. 249,000.00",
