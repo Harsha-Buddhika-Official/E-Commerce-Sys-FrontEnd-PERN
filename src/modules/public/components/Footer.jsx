@@ -34,33 +34,33 @@ const Footer = ({
 }) => {
   return (
     <footer className="w-full bg-black text-white">
-      <div className="max-w-[1920px] mx-auto py-6 px-4 md:px-8 lg:px-80">
+      <div className="max-w-480 mx-auto py-6 px-4 md:px-8 lg:px-80">
         {/* Main Content */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-6 md:gap-0">
           
           {/* Left - Location Info */}
           <div className="flex flex-col gap-1">
             <h3 
-              className="font-semibold text-sm text-white mb-1"
+              className="font-semibold text-base text-white mb-1"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               {locationTitle}
             </h3>
             <p 
-              className="text-xs text-white font-normal"
+              className="text-sm text-white font-normal"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               {address}
             </p>
             <p 
-              className="text-xs text-white font-normal"
+              className="text-sm text-white font-normal"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               {phone}
             </p>
             <a 
               href={`mailto:${email}`}
-              className="text-xs text-white font-normal hover:underline"
+              className="text-sm text-white font-normal hover:underline"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               {email}
@@ -70,7 +70,7 @@ const Footer = ({
           {/* Right - Contact & Social */}
           <div className="flex flex-col items-start md:items-end gap-2">
             <h3 
-              className="font-semibold text-sm text-white"
+              className="font-semibold text-base text-white"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               Contact
@@ -141,7 +141,7 @@ const Footer = ({
         <div className="flex flex-col md:flex-row justify-between items-center gap-3">
           {/* Copyright */}
           <p 
-            className="text-xs text-white font-normal"
+            className="text-sm text-white font-normal"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
             {copyrightText}
@@ -151,14 +151,14 @@ const Footer = ({
           <div className="flex flex-row gap-6">
             <button
               onClick={onPrivacyClick}
-              className="text-xs text-white font-normal bg-transparent border-none cursor-pointer hover:underline"
+              className="text-sm text-white font-normal bg-transparent border-none cursor-pointer hover:underline"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               Privacy and Policy
             </button>
             <button
               onClick={onTermsClick}
-              className="text-xs text-white font-normal bg-transparent border-none cursor-pointer hover:underline"
+              className="text-sm text-white font-normal bg-transparent border-none cursor-pointer hover:underline"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               Terms of Use

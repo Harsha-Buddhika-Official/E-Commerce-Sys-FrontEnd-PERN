@@ -14,13 +14,13 @@ export default function SearchOverlay({ isOpen, onClose }) {
       />
 
       {/* Search Bar Container */}
-      <div className="fixed top-[75px] left-0 right-0 z-50 flex justify-center">
+      <div className="fixed top-[95px] left-0 right-0 z-50 flex justify-center">
         <div style={{ width: '910px' }} className="relative">
           {/* Search Input */}
           <input
             type="text"
             placeholder="Search for Products"
-            className="w-full h-[50px] px-5 pr-12 rounded-lg bg-white text-black text-sm focus:outline-none focus:ring-2 border-2"
+            className="w-full h-14 px-5 pr-12 rounded-lg bg-white text-black text-base focus:outline-none focus:ring-2 focus:ring-blue-500 border-2"
             style={{ borderColor: '#fe1801' }}
             autoFocus
           />
