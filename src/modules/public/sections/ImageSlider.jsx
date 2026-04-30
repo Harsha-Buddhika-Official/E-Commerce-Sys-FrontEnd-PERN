@@ -20,7 +20,7 @@ export default function ImageSlider() {
 
   return (
     <div
-      className="relative w-full max-w-[1920px] mx-auto overflow-hidden"
+      className="relative w-full overflow-hidden"
       style={{ aspectRatio: '16 / 9', maxHeight: 'calc(100vh - 60px)' }}
     >
       {/* Slides */}

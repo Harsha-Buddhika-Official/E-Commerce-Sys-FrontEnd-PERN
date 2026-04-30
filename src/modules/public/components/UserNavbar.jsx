@@ -2,13 +2,16 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Search as SearchIcon, ShoppingCart as ShoppingCartIcon, ExpandMore as ExpandMoreIcon, Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material"
 import Ozone_Logo from "../../../assets/Ozone_Logo.png"
+import SearchOverlay from "./SearchOverlay"
 
 export default function UserNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isProductsOpen, setIsProductsOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-[#0a0a0a] border-b border-zinc-800">
+    <>
+      <nav className="sticky top-0 z-50 w-full bg-[#0a0a0a] border-b border-zinc-800">
       <div className="max-w-[1920px] mx-auto h-[60px] px-4 md:px-8 lg:px-80 flex items-center justify-between">
         {/* Logo Space - Add your logo here */}
         <div className="flex-shrink-0">
@@ -59,7 +62,11 @@ export default function UserNavbar() {
 
         {/* Right Side Icons */}
         <div className="flex items-center gap-4">
-          <button className="text-white hover:text-zinc-300 transition-colors" aria-label="Search">
+          <button 
+            onClick={() => setIsSearchOpen(true)}
+            className="text-white hover:text-zinc-300 transition-colors" 
+            aria-label="Search"
+          >
             <SearchIcon className="w-5 h-5" />
           </button>
           <button className="text-white hover:text-zinc-300 transition-colors" aria-label="Cart">
@@ -118,6 +125,8 @@ export default function UserNavbar() {
           </div>
         </div>
       )}
-    </nav>
+      </nav>
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+    </>
   )
 }
