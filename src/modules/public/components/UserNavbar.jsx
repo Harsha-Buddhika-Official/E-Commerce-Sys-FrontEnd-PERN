@@ -4,11 +4,13 @@ import { Search as SearchIcon, ShoppingCart as ShoppingCartIcon, ExpandMore as E
 import Ozone_Logo from "../../../assets/Ozone_Logo.png"
 import SearchOverlay from "./SearchOverlay"
 import ProductsOverlay from "./ProductsOverlay"
+import Cart from "./Cart"
 
 export default function UserNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isProductsOverlayOpen, setIsProductsOverlayOpen] = useState(false)
+  const [isCartOpen, setIsCartOpen] = useState(false)
 
   return (
     <>
@@ -57,7 +59,11 @@ export default function UserNavbar() {
           >
             <SearchIcon className="w-5 h-5" />
           </button>
-          <button className="text-white hover:text-zinc-300 transition-colors" aria-label="Cart">
+          <button 
+            onClick={() => setIsCartOpen(true)}
+            className="text-white hover:text-zinc-300 transition-colors" 
+            aria-label="Cart"
+          >
             <ShoppingCartIcon className="w-5 h-5" />
           </button>
 
@@ -103,6 +109,7 @@ export default function UserNavbar() {
       </nav>
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       <ProductsOverlay isOpen={isProductsOverlayOpen} onClose={() => setIsProductsOverlayOpen(false)} />
+      <Cart open={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   )
 }

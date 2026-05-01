@@ -9,14 +9,10 @@ import {
 } from "@mui/material";
 import {
   ShoppingCart,
-  Favorite,
-  FavoriteBorder,
   Share,
   LocalShipping,
-  Verified,
   ChevronLeft,
   ChevronRight,
-  CheckCircle,
 } from "@mui/icons-material";
 
 const productImages = [
@@ -44,14 +40,16 @@ const specs = [
   { label: "Warranty", value: "3 Years" },
 ];
 
-export default function ProductPage() {
+export default function ProductInfoPage() {
   const [activeImg, setActiveImg] = useState(0);
   const [wished, setWished] = useState(false);
-  const [added, setAdded] = useState(false);
+  const [shareTooltip, setShareTooltip] = useState("Share");
 
-  const handleAdd = () => {
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?product=i9-14900k`;
+    navigator.clipboard.writeText(shareUrl);
+    setShareTooltip("Copied!");
+    setTimeout(() => setShareTooltip("Share"), 2000);
   };
 
   const prevImg = () => setActiveImg((p) => (p === 0 ? productImages.length - 1 : p - 1));
@@ -194,12 +192,12 @@ export default function ProductPage() {
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mt: 2 }}>
             <Box
               component="button"
-              onClick={handleAdd}
+              onClick={() => window.location.href = '/checkout'}
               sx={{
                 flex: 1, minWidth: 140,
                 py: 1.2, px: 3,
                 border: "none", borderRadius: 1,
-                background: added ? "#22c55e" : "#dc2626",
+                background: "#dc2626",
                 color: "#fff",
                 fontWeight: 700, fontSize: "0.95rem",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 1,
@@ -208,11 +206,11 @@ export default function ProductPage() {
                 "&:hover": { opacity: 0.9 },
               }}
             >
-              {added ? <CheckCircle fontSize="small" /> : <ShoppingCart fontSize="small" />}
-              {added ? "Added!" : "BUY NOW"}
+              <ShoppingCart fontSize="small" />
+              BUY NOW
             </Box>
 
-            <Tooltip title={wished ? "Saved!" : "Save"}>
+            <Tooltip title={wished ? "Added to cart!" : "Add to cart"}>
               <IconButton
                 onClick={() => setWished(!wished)}
                 sx={{
@@ -221,15 +219,18 @@ export default function ProductPage() {
                   "&:hover": { borderColor: "#dc2626", color: "#dc2626" },
                 }}
               >
-                {wished ? <Favorite /> : <FavoriteBorder />}
+                <ShoppingCart />
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Share">
-              <IconButton sx={{
-                border: "2px solid #ddd", borderRadius: 1, color: "#999",
-                "&:hover": { borderColor: "#333", color: "#333" },
-              }}>
+            <Tooltip title={shareTooltip}>
+              <IconButton 
+                onClick={handleShare}
+                sx={{
+                  border: "2px solid #ddd", borderRadius: 1, color: "#999",
+                  "&:hover": { borderColor: "#333", color: "#333" },
+                }}
+              >
                 <Share />
               </IconButton>
             </Tooltip>

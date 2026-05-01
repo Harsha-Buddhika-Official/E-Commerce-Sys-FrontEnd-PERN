@@ -1,8 +1,16 @@
+import { useNavigate } from "react-router-dom"
 import { Close as CloseIcon } from "@mui/icons-material"
 import { products, accessories } from "../services/categoriesService"
 
 export default function ProductsOverlay({ isOpen, onClose }) {
+  const navigate = useNavigate()
+
   if (!isOpen) return null
+
+  const handleSelectCategory = (categoryName) => {
+    navigate(`/products?category=${encodeURIComponent(categoryName)}`)
+    onClose()
+  }
 
   return (
     <>
@@ -24,6 +32,7 @@ export default function ProductsOverlay({ isOpen, onClose }) {
               {products.map((product) => (
                 <button
                   key={product.id}
+                  onClick={() => handleSelectCategory(product.name)}
                   className="flex flex-col items-center gap-3 p-4 rounded-lg bg-zinc-900 hover:bg-zinc-800 transition-colors group cursor-pointer"
                 >
                   <div className={`w-[150px] h-[150px] bg-gradient-to-br ${product.color} rounded-lg flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform`}>
@@ -42,6 +51,7 @@ export default function ProductsOverlay({ isOpen, onClose }) {
               {accessories.map((accessory) => (
                 <button
                   key={accessory.id}
+                  onClick={() => handleSelectCategory(accessory.name)}
                   className="flex flex-col items-center gap-3 p-4 rounded-lg bg-zinc-900 hover:bg-zinc-800 transition-colors group cursor-pointer"
                 >
                   <div className={`w-[150px] h-[150px] bg-gradient-to-br ${accessory.color} rounded-lg flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform`}>

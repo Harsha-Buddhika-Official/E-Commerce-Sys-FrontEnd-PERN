@@ -1,14 +1,21 @@
+import { Routes, Route } from 'react-router-dom'
 import Footer from './modules/public/components/footer.jsx'
 import UserNavbar from './modules/public/components/UserNavbar.jsx'
-// import Home from './modules/public/pages/Home.jsx'
-import ProductPage from './modules/public/components/ProductPage.jsx'
+import Home from './modules/public/pages/Home.jsx'
+import ProductInfoPage from './modules/public/pages/ProductInfoPage.jsx'
+import ProductsPage from './modules/public/pages/ProductsPage.jsx'
+// import ServicesPage from './modules/public/pages/ServicesPage.jsx'
 
 function App() {
   return (
     <>
       <UserNavbar />
-      {/* <Home /> */}
-      <ProductPage />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/product/:id" element={<ProductInfoPage />} />
+        {/* <Route path="/services" element={<ServicesPage />} /> */}
+      </Routes>
       <Footer />
     </>
   )
