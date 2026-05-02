@@ -15,7 +15,7 @@ export const filterMockData = {
         label: "Generation",
         type: "checkbox",
         columnLayout: 2,
-        maxShowInitial: 2,
+        maxShowInitial: 6,
         options: [
           "6th gen",
           "10th gen",
@@ -34,7 +34,7 @@ export const filterMockData = {
         id: "cores",
         label: "Cores",
         type: "checkbox",
-        maxShowInitial: 2,
+        maxShowInitial: 6,
         options: [
           "2 CORES",
           "4 CORES",
@@ -50,7 +50,7 @@ export const filterMockData = {
         id: "threads",
         label: "Threads",
         type: "checkbox",
-        maxShowInitial: 2,
+        maxShowInitial: 6,
         options: [
           "2 Threads",
           "4 Threads",
@@ -77,14 +77,14 @@ export const filterMockData = {
         id: "resolution",
         label: "Resolution",
         type: "checkbox",
-        maxShowInitial: 2,
+        maxShowInitial: 6,
         options: ["1080p", "1440p", "2160p (4K)", "5K"],
       },
       {
         id: "refresh_rate",
         label: "Refresh Rate",
         type: "checkbox",
-        maxShowInitial: 2,
+        maxShowInitial: 6,
         options: [
           "60Hz",
           "75Hz",
@@ -117,7 +117,7 @@ export const filterMockData = {
         label: "Series",
         type: "checkbox",
         columnLayout: 2,
-        maxShowInitial: 2,
+        maxShowInitial: 6,
         options: [
           "RTX 40 Series",
           "RTX 4090",
