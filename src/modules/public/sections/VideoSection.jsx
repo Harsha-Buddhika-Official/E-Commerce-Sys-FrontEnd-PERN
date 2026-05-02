@@ -3,7 +3,7 @@ import Cyborg from "../../../assets/video/Cyborg.mp4";
 export default function VideoSection() {
   return (
     <div>
-      <div className="relative w-full h-screen overflow-hidden">
+      <div className="relative w-full h-[100vh] overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <video
             className="w-full h-full object-cover"

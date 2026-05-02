@@ -7,8 +7,8 @@ export default function SearchOverlay({ isOpen, onClose }) {
     <>
       {/* Dark Overlay */}
       <div
-        style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
-        className="fixed inset-0 z-40"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.55)" }}
+        className="fixed inset-0 z-40 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />

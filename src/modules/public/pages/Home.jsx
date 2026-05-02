@@ -9,6 +9,7 @@ const Home = () => {
       <VideoSection />
       <ProductGrid title="Best Sellers" section="best-sellers" />
       <ProductGrid title="Latest Products" section="latest" />
+      
     </div>
   );
 };

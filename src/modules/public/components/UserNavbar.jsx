@@ -15,10 +15,10 @@ export default function UserNavbar() {
   return (
     <>
       <nav className="sticky top-0 z-50 w-full bg-[#0a0a0a] border-b border-zinc-800">
-      <div className="max-w-[1920px] mx-auto h-20 px-4 md:px-8 lg:px-80 flex items-center justify-between">
+      <div className="max-w-480 mx-auto h-20 px-4 md:px-8 lg:px-80 flex items-center justify-between">
         {/* Logo Space - Add your logo here */}
-        <div className="flex-shrink-0">
-          <Link to="/" className="block w-16 h-16 rounded-full flex items-center justify-center">
+        <div className="shrink-0">
+          <Link to="/" className="w-16 h-16 rounded-full flex items-center justify-center">
             <img src={Ozone_Logo} alt="Ozone Logo"  />
           </Link>
         </div>
