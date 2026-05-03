@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import UserNavbar from "../../modules/public/components/UserNavbar.jsx";
-import Footer from "../../modules/public/components/Footer.jsx";
+import UserNavbar from "../../modules/public/components/Navigation/UserNavbar.jsx";
+import Footer from "../../modules/public/components/Layout/Footer.jsx";
 import Home from "../../modules/public/pages/Home.jsx";
 import ProductsPage from "../../modules/public/pages/ProductsPage.jsx";
 import ProductInfoPage from "../../modules/public/pages/ProductInfoPage.jsx";

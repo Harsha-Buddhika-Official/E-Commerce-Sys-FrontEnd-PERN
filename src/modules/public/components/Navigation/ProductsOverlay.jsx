@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { Close as CloseIcon } from "@mui/icons-material"
-import { products, accessories } from "../features/products/api/categoriesService.js"
-import CategoryTile from "./CategoryTile"
+import { products, accessories } from "../../features/products/api/categoriesService.js"
+import CategoryTile from "../Product/CategoryTile"
 
 export default function ProductsOverlay({ isOpen, onClose }) {
   const navigate = useNavigate()

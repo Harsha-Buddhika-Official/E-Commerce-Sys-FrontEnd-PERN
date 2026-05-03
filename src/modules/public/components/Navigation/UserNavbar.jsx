@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Search as SearchIcon, ShoppingCart as ShoppingCartIcon, ExpandMore as ExpandMoreIcon, Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material"
-import Ozone_Logo from "../../../assets/Ozone_Logo.png"
+import Ozone_Logo from "../../../../assets/Ozone_Logo.png"
 import SearchOverlay from "./SearchOverlay"
 import ProductsOverlay from "./ProductsOverlay"
-import Cart from "./Cart"
+import Cart from "../Cart/Cart"
 
 export default function UserNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)

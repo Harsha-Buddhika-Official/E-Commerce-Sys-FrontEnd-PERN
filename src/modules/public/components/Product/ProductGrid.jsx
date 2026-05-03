@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "./ProductCard.jsx";
-import { fetchProductsBySection } from "../features/products/api/productService.js";
+import { fetchProductsBySection } from "../../features/products/api/productService.js";
 
 const ProductGrid = ({ title = "Best Sellers", section = "best-sellers" }) => {
   const [products, setProducts] = useState([]);

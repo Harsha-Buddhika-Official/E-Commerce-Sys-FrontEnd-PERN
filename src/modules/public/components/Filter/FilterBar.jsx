@@ -3,7 +3,7 @@ import Slider from "@mui/material/Slider";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CloseIcon from "@mui/icons-material/Close";
-import { fetchCategoryFilters } from "../features/products/api/filterService.js";
+import { fetchCategoryFilters } from "../../features/products/api/filterService.js";
 
 // ─── Availability chip (checkbox style) ──────────────────────────────────────
 
@@ -198,150 +198,85 @@ export default function FilterBar({
 
   const handlePriceChange = (range) => {
     setPriceRange(range);
-    setFilterState((prev) => {
-      const next = { ...prev, price: range };
-      onFilterChange(next);
-      return next;
-    });
   };
 
-  const handleCategoryToggle = (filterId, value, type) => {
+  const handleCategoryFilterToggle = (filterId, option, type) => {
     setFilterState((prev) => {
-      let next;
-      if (type === "radio") {
-        next = { ...prev, [filterId]: prev[filterId] === value ? null : value };
-      } else {
-        const arr = prev[filterId] || [];
-        next = { ...prev, [filterId]: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value] };
+      const newState = { ...prev };
+      if (type === "checkbox") {
+        const arr = newState[filterId] || [];
+        newState[filterId] = arr.includes(option) ? arr.filter(v => v !== option) : [...arr, option];
+      } else if (type === "radio") {
+        newState[filterId] = newState[filterId] === option ? null : option;
       }
-      onFilterChange(next);
-      return next;
+      onFilterChange(newState);
+      return newState;
     });
   };
-
-  // Active count for clear-all
-  const priceActive = priceRange[0] !== PRICE_FILTER.defaultMin || priceRange[1] !== PRICE_FILTER.defaultMax ? 1 : 0;
-  const availActive = (filterState.availability || []).length;
-  const catActive   = categoryFilters.reduce((acc, f) => {
-    const v = filterState[f.id];
-    return acc + (Array.isArray(v) ? v.length : v ? 1 : 0);
-  }, 0);
-  const totalActive = priceActive + availActive + catActive;
-
-  const clearAll = () => {
-    const reset = {
-      price: [PRICE_FILTER.defaultMin, PRICE_FILTER.defaultMax],
-      availability: [],
-    };
-    categoryFilters.forEach((f) => {
-      reset[f.id] = f.type === "radio" ? null : [];
-    });
-    setFilterState(reset);
-    setPriceRange([PRICE_FILTER.defaultMin, PRICE_FILTER.defaultMax]);
-    onFilterChange(reset);
-  };
-
-  // Skeleton while loading
-  if (!loaded) {
-    return (
-      <div className="w-full bg-white rounded-2xl border border-gray-200 shadow-sm px-5 py-4 flex items-center gap-4">
-        {[120, 80, 80, 100, 100].map((w, i) => (
-          <div key={i} className="h-7 rounded-full bg-gray-100 animate-pulse shrink-0" style={{ width: w }} />
-        ))}
-      </div>
-    );
-  }
 
   return (
-    <div
-      className="w-full bg-white rounded-2xl border border-gray-200 shadow-sm"
-      style={{ fontFamily: "'Sora','Segoe UI',sans-serif" }}
-    >
-      <div className="flex items-center gap-3 px-5 py-3 flex-wrap">
-
-        {/* ── PRICE — inline slider ─────────────────────────────────── */}
-        <SectionLabel>Price</SectionLabel>
-
-        {/* Value pills */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <div className="border border-gray-200 rounded-lg px-2.5 py-1 text-[11px] font-semibold text-gray-700 bg-gray-50 whitespace-nowrap">
-            Rs {priceRange[0].toLocaleString()}
-          </div>
-          <span className="text-gray-400 text-[11px]">–</span>
-          <div className="border border-gray-200 rounded-lg px-2.5 py-1 text-[11px] font-semibold text-gray-700 bg-gray-50 whitespace-nowrap">
-            Rs {priceRange[1].toLocaleString()}
-          </div>
-        </div>
-
-        {/* Slider — fixed width so it doesn't stretch too wide */}
-        <div className="shrink-0" style={{ width: "160px" }}>
+    <div className="w-full px-2 sm:px-4 py-4 border-b border-gray-200 bg-white">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        {/* Price Filter */}
+        <div className="flex items-center gap-2">
+          <SectionLabel>{PRICE_FILTER.label}</SectionLabel>
           <Slider
             value={priceRange}
-            onChange={(_, val) => handlePriceChange(val)}
+            onChange={(e, newValue) => handlePriceChange(newValue)}
             min={PRICE_FILTER.min}
             max={PRICE_FILTER.max}
             step={PRICE_FILTER.step}
-            disableSwap
-            sx={{
-              color: "#111",
-              height: 3,
-              padding: "8px 0",
-              "& .MuiSlider-thumb": {
-                width: 15,
-                height: 15,
-                backgroundColor: "#fff",
-                border: "2px solid #111",
-                "&:hover": { boxShadow: "0 0 0 5px rgba(0,0,0,0.08)" },
-              },
-              "& .MuiSlider-track": { backgroundColor: "#111", border: "none" },
-              "& .MuiSlider-rail": { backgroundColor: "#e5e7eb" },
-            }}
+            valueLabelDisplay="auto"
+            marks={[
+              { value: PRICE_FILTER.min, label: `${PRICE_FILTER.currency}0` },
+              { value: PRICE_FILTER.max, label: `${PRICE_FILTER.currency}500k` }
+            ]}
+            sx={{ width: 150, mr: 2 }}
           />
         </div>
 
         <VDivider />
 
-        {/* ── AVAILABILITY — inline chips ───────────────────────────── */}
-        <SectionLabel>Availability</SectionLabel>
-
-        <div className="flex items-center gap-2 shrink-0">
-          {AVAILABILITY_FILTER.options.map((option) => (
+        {/* Availability Filter */}
+        <div className="flex items-center gap-2">
+          <SectionLabel>{AVAILABILITY_FILTER.label}</SectionLabel>
+          {AVAILABILITY_FILTER.options.map((opt) => (
             <CheckChip
-              key={option}
-              label={option}
-              selected={(filterState.availability || []).includes(option)}
-              onClick={() => handleAvailabilityToggle(option)}
+              key={opt}
+              label={opt}
+              selected={filterState.availability?.includes(opt) || false}
+              onClick={() => handleAvailabilityToggle(opt)}
             />
           ))}
         </div>
 
-        {/* ── CATEGORY-SPECIFIC filters — dropdowns ────────────────── */}
-        {categoryFilters.length > 0 && (
-          <>
-            <VDivider />
-            {categoryFilters.map((filter) => (
-              <FilterDropdown
-                key={filter.id}
-                filter={filter}
-                filterState={filterState}
-                onToggle={handleCategoryToggle}
-              />
-            ))}
-          </>
-        )}
+        <VDivider />
 
-        {/* ── CLEAR ALL ─────────────────────────────────────────────── */}
-        {totalActive > 0 && (
-          <>
-            <div className="flex-1" /> {/* push clear to right */}
-            <button
-              onClick={clearAll}
-              className="flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold text-red-500 hover:bg-red-50 border border-red-200 transition-all shrink-0 whitespace-nowrap"
-            >
-              <CloseIcon style={{ fontSize: 12 }} />
-              Clear ({totalActive})
-            </button>
-          </>
+        {/* Category-specific filters */}
+        {categoryFilters.map((filter) => (
+          <FilterDropdown
+            key={filter.id}
+            filter={filter}
+            filterState={filterState}
+            onToggle={handleCategoryFilterToggle}
+          />
+        ))}
+
+        {/* Clear all button */}
+        {Object.values(filterState).some(v => v && (Array.isArray(v) ? v.length > 0 : true)) && (
+          <button
+            onClick={() => {
+              setFilterState({
+                price: [PRICE_FILTER.defaultMin, PRICE_FILTER.defaultMax],
+                availability: [],
+              });
+              setPriceRange([PRICE_FILTER.defaultMin, PRICE_FILTER.defaultMax]);
+            }}
+            className="flex items-center gap-1 px-3 py-1 rounded-full border border-gray-300 bg-white text-gray-700 text-[12px] font-semibold hover:border-red-500 hover:text-red-500 transition-all"
+          >
+            <CloseIcon style={{ fontSize: 14 }} />
+            Clear
+          </button>
         )}
       </div>
     </div>

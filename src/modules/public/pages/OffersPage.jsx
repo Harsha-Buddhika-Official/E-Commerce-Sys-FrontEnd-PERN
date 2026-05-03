@@ -1,4 +1,4 @@
-import OfferCard from "../components/OfferCard";
+import OfferCard from "../components/Offer/OfferCard";
 import { useState } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 

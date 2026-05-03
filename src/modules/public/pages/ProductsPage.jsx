@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import FilterBar from "../components/FilterBar.jsx";
-import ProductCard from "../components/ProductCard.jsx";
+import FilterBar from "../components/Filter/FilterBar.jsx";
+import ProductCard from "../components/Product/ProductCard.jsx";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { fetchProductsByCategory } from "../features/products/api/productsByCategoryService.js";

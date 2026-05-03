@@ -1,4 +1,3 @@
-
 const ProductBadge = ({ label }) => {
   // Calculate font size based on text length
   const fontSize = 10;

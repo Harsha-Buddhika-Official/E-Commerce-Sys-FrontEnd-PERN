@@ -1,6 +1,6 @@
 import ImageSlider from "../sections/ImageSlider.jsx";
 import VideoSection from "../sections/VideoSection.jsx";
-import ProductGrid from "../components/ProductGrid.jsx";
+import ProductGrid from "../components/Product/ProductGrid.jsx";
 
 const Home = () => {
   return (
