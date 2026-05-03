@@ -1,5 +1,5 @@
-// Mock filter data for different product categories
-// This is temporary - will be replaced with actual backend API calls
+// Filter service for different product categories
+// This service provides filter data for product filtering functionality
 
 export const filterMockData = {
   processors: {
@@ -192,7 +192,7 @@ export const getFiltersByCategory = (category) => {
   return filterMockData[category] || filterMockData.processors;
 };
 
-// Function to simulate API call (replace with actual API later)
+// Function to fetch category filters (simulates API call)
 export const fetchCategoryFilters = async (category) => {
   return new Promise((resolve) => {
     setTimeout(() => {

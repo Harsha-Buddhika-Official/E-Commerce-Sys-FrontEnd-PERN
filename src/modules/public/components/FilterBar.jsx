@@ -3,7 +3,7 @@ import Slider from "@mui/material/Slider";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CloseIcon from "@mui/icons-material/Close";
-import { fetchCategoryFilters } from "../features/products/mocks/filterMockData.js";
+import { fetchCategoryFilters } from "../features/products/api/filterService.js";
 
 // ─── Availability chip (checkbox style) ──────────────────────────────────────
 
