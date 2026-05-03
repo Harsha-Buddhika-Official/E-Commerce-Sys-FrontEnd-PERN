@@ -1,10 +1,10 @@
 ﻿import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import FilterBar from "../components/FilterBar.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { fetchProductsByCategory } from "../services/productsByCategoryService.js";
+import { fetchProductsByCategory } from "../features/products/api/productsByCategoryService.js";
 
 // 4 cols × 4 rows = 16 per page
 const PRODUCTS_PER_PAGE = 16;
@@ -15,6 +15,7 @@ export default function ProductsPage() {
   const [currentPage, setCurrentPage]       = useState(1);
   const [categoryProducts, setCategoryProducts] = useState([]);
   const [loadedCategory, setLoadedCategory] = useState(null);
+  const navigate                            = useNavigate();
 
   /* Load products */
   useEffect(() => {
@@ -41,6 +42,9 @@ export default function ProductsPage() {
   const currentProducts = categoryProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
 
   const handleAddToCart  = (id) => console.log("Added to cart:", id);
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
+  };
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -122,12 +126,14 @@ export default function ProductsPage() {
             {currentProducts.map((product) => (
               <ProductCard
                 key={product.id}
+                id={product.id}
                 image={product.image}
                 title={product.title}
                 specs={product.specs}
                 price={product.price}
                 inStock={product.inStock}
                 category={product.category}
+                onCardClick={() => handleProductClick(product.id)}
                 onAddToCart={() => handleAddToCart(product.id)}
               />
             ))}

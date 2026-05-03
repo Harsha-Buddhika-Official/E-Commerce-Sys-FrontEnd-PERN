@@ -30,6 +30,7 @@ const ProductSpecs = ({ specs }) => (
 );
 
 const ProductCard = ({
+  id,
   image,
   title,
   specs,
@@ -38,9 +39,11 @@ const ProductCard = ({
   badge = null,
   category = null,
   onAddToCart,
+  onCardClick,
 }) => (
   <div
-    className="relative bg-white border border-[#E6E6E6] rounded-[10px] overflow-hidden flex flex-col w-[95%]"
+    onClick={onCardClick}
+    className="relative bg-white border border-[#E6E6E6] rounded-[10px] overflow-hidden flex flex-col w-[95%] cursor-pointer hover:shadow-lg transition-shadow"
     style={{ boxSizing: 'border-box', minHeight: '450px' }}
   >
     {badge && <ProductBadge label={badge} />}
@@ -82,7 +85,10 @@ const ProductCard = ({
             </div>
           )}
           <button
-            onClick={onAddToCart}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart();
+            }}
             className="p-0 bg-transparent border-none cursor-pointer hover:opacity-70 transition-opacity flex items-center justify-center"
           >
             <ShoppingCartOutlinedIcon style={{ width: '22px', height: '22px', color: '#252525' }} />

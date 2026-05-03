@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { Close as CloseIcon } from "@mui/icons-material"
-import { products, accessories } from "../services/categoriesService"
+import { products, accessories } from "../features/products/api/categoriesService.js"
 import CategoryTile from "./CategoryTile"
 
 export default function ProductsOverlay({ isOpen, onClose }) {
@@ -24,7 +24,7 @@ export default function ProductsOverlay({ isOpen, onClose }) {
       />
 
       {/* Products & Accessories Container */}
-      <div className="fixed top-[95px] left-0 right-0 z-50 flex justify-center max-h-[calc(100vh-95px)] overflow-y-auto px-3 sm:px-4">
+      <div className="fixed top-24 left-0 right-0 z-50 flex justify-center max-h-[calc(100vh-96px)] overflow-y-auto px-3 sm:px-4">
         <div className="relative w-full max-w-7xl px-2 sm:px-4 py-6 sm:py-8">
           <button
             onClick={onClose}

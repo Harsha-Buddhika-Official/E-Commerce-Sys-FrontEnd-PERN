@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ProductCard from "./ProductCard.jsx";
-import { fetchProductsBySection } from "../services/productService.js";
+import { fetchProductsBySection } from "../features/products/api/productService.js";
 
 const ProductGrid = ({ title = "Best Sellers", section = "best-sellers" }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch products based on section
@@ -17,6 +19,10 @@ const ProductGrid = ({ title = "Best Sellers", section = "best-sellers" }) => {
 
     loadProducts();
   }, [section]);
+
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
+  };
 
   return (
     <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-8">
@@ -31,12 +37,14 @@ const ProductGrid = ({ title = "Best Sellers", section = "best-sellers" }) => {
             {products.map((product) => (
               <ProductCard
                 key={product.id}
+                id={product.id}
                 image={product.image}
                 title={product.title}
                 specs={product.specs}
                 price={product.price}
                 inStock={product.inStock}
                 badge={product.badge}
+                onCardClick={() => handleProductClick(product.id)}
                 onAddToCart={() => alert("Added to cart!")}
                 category={product.category}
               />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Chip,
@@ -44,6 +44,11 @@ export default function ProductInfoPage() {
   const [activeImg, setActiveImg] = useState(0);
   const [wished, setWished] = useState(false);
   const [shareTooltip, setShareTooltip] = useState("Share");
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}${window.location.pathname}?product=i9-14900k`;
