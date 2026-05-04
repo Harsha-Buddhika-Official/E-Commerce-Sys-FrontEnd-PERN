@@ -6,7 +6,7 @@ import SearchOverlay from "./SearchOverlay"
 import ProductsOverlay from "./ProductsOverlay"
 import Cart from "../Cart/Cart"
 
-export default function UserNavbar() {
+export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isProductsOverlayOpen, setIsProductsOverlayOpen] = useState(false)

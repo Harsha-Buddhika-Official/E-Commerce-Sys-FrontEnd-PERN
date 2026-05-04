@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import UserNavbar from "../../modules/public/components/Navigation/UserNavbar.jsx";
+import Navbar from "../../modules/public/components/Navigation/Navbar.jsx";
 import Footer from "../../modules/public/components/Layout/Footer.jsx";
 import Home from "../../modules/public/pages/Home.jsx";
 import ProductsPage from "../../modules/public/pages/ProductsPage.jsx";
@@ -12,7 +12,7 @@ import ContactPage from "../../modules/public/pages/ContactPage.jsx";
 export default function PublicRoutes() {
   return (
     <>
-      <UserNavbar />
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<ProductsPage />} />
