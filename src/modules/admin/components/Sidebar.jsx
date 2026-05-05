@@ -87,7 +87,6 @@ const AdminSidebar = ({
         `}
         style={{
           width: isOpen ? 240 : 0,
-          minHeight: "100vh",
           borderRight: isOpen ? "1px solid #f0f0f0" : "none",
         }}
       >

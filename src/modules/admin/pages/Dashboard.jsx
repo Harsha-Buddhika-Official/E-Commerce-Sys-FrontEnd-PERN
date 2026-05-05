@@ -54,28 +54,28 @@ const AdminDashboard = () => {
   const handleLogout    = ()        => console.log("Logout");
 
   return (
-    // Root: full viewport, no fontFamily — avoids cascade into children
-    <div className="flex h-screen overflow-hidden bg-[#f5f5f5]">
+    // Root: full viewport, flex column layout
+    <div className="flex flex-col h-screen overflow-hidden bg-[#f5f5f5]">
 
-      {/* ── Sidebar ── */}
-      <Sidebar
-        activeItem={activePage}
-        onNavigate={setActivePage}
-        onLogout={handleLogout}
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        adminName="Super Admin"
-        adminEmail="admin@example.com"
+      {/* ── Navbar (full width) ── */}
+      <Navbar
+        title={activePage.charAt(0).toUpperCase() + activePage.slice(1)}
+        onMenuClick={() => setSidebarOpen((p) => !p)}
+        notifications={notifications}
       />
 
-      {/* ── Main column ── */}
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+      {/* ── Main content area: sidebar + content side-by-side ── */}
+      <div className="flex flex-1 overflow-hidden">
 
-        {/* Navbar */}
-        <Navbar
-          title={activePage.charAt(0).toUpperCase() + activePage.slice(1)}
-          onMenuClick={() => setSidebarOpen((p) => !p)}
-          notifications={notifications}
+        {/* ── Sidebar ── */}
+        <Sidebar
+          activeItem={activePage}
+          onNavigate={setActivePage}
+          onLogout={handleLogout}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          adminName="Super Admin"
+          adminEmail="admin@example.com"
         />
 
         {/* Scrollable content area */}
@@ -113,8 +113,8 @@ const AdminDashboard = () => {
 
           </div>
         </main>
-      </div>
 
+      </div>
     </div>
   );
 };
