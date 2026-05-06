@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardOutlinedIcon    from "@mui/icons-material/DashboardOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import CategoryOutlinedIcon     from "@mui/icons-material/CategoryOutlined";
@@ -40,6 +41,18 @@ const NAV_GROUPS = [
   },
 ];
 
+// ─── Route mapping ────────────────────────────────────────────────────────────
+const ROUTE_MAP = {
+  dashboard:  "/admin/dashboard",
+  orders:     "/admin/orders",
+  products:   "/admin/products",
+  customers:  "/admin/customers",
+  inventory:  "/admin/inventory",
+  promotions: "/admin/promotions",
+  reports:    "/admin/reports",
+  settings:   "/admin/settings",
+};
+
 // ─── AdminSidebar ─────────────────────────────────────────────────────────────
 // Props:
 //   activeItem    — id string of the currently active nav item
@@ -60,9 +73,14 @@ const AdminSidebar = ({
   onClose     = () => {},
 }) => {
   const [active, setActive] = useState(activeItem);
+  const navigate = useNavigate();
 
   const handleNav = (id) => {
     setActive(id);
+    const route = ROUTE_MAP[id];
+    if (route) {
+      navigate(route);
+    }
     onNavigate(id);
   };
 
