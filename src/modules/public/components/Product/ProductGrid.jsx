@@ -61,7 +61,7 @@ const ProductGrid = ({ title = "Best Sellers", products, loading, error }) => {
                   image={primaryImage?.image_url || "/placeholder.png"}
                   title={product.name}
                   specs={specs}
-                  price={`$${parseFloat(product.selling_price).toFixed(2)}`}
+                  price={`Rs. ${parseFloat(product.selling_price).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                   inStock={product.stock_quantity > 0}
                   badge={formatProductTag(product.product_tag)}
                   onCardClick={() => handleProductClick(product.product_id)}

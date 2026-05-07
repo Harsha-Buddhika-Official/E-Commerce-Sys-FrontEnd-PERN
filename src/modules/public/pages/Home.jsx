@@ -5,6 +5,9 @@ import { useHomepage} from "../features/products/hooks/useHomepage.js";
 
 const Home = () => {
   const { bestSellers, latestProducts, loading, error } = useHomepage();
+  latestProducts.forEach(product => {
+    product.product_tag = "LATEST";
+  });
 
   return (
     <div>

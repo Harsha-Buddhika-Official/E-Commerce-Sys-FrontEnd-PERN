@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Close as CloseIcon } from "@mui/icons-material";
-import { useCategories } from "../../features/products/hooks/useCategories";
+import { useCategories } from "../../features/categories/hooks/useCategories";
 import CategoryTile from "../Product/CategoryTile";
 
 export default function CategoriesOverlay({ isOpen, onClose }) {
