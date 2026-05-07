@@ -64,9 +64,9 @@ const ProductGrid = ({ title = "Best Sellers", products, loading, error }) => {
                   price={`Rs. ${parseFloat(product.selling_price).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                   inStock={product.stock_quantity > 0}
                   badge={formatProductTag(product.product_tag)}
+                  category={product.category_name}
                   onCardClick={() => handleProductClick(product.product_id)}
                   onAddToCart={() => alert("Added to cart!")}
-                  category={product.category_name}
                 />
               );
             })}
