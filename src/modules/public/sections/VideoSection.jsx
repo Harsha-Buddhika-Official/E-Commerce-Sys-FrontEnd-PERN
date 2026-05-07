@@ -1,4 +1,4 @@
-import Cyborg from "../../../assets/video/Cyborg.mp4";
+import Cyborg from "../../../assets/video/cyborg.mp4";
 
 export default function VideoSection() {
   return (

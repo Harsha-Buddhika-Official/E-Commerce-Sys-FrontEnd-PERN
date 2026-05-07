@@ -1,13 +1,26 @@
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import ProductBadge from './ProductBadge';
+import { useState } from 'react';
 
-const ProductImage = ({ src, alt }) => (
-  <img
-    src={src}
-    alt={alt}
-    className="max-w-[90%] max-h-[90%] object-contain transition-transform duration-300 hover:scale-105"
-  />
-);
+const ProductImage = ({ src, alt }) => {
+  const [fit, setFit] = useState('contain');
+
+  const handleImageLoad = (e) => {
+    const img = e.target;
+    const isLandscape = img.naturalWidth > img.naturalHeight;
+    setFit(isLandscape ? 'cover' : 'contain');
+  };
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onLoad={handleImageLoad}
+      className="w-full h-full transition-transform duration-300 hover:scale-105"
+      style={{ objectFit: fit }}
+    />
+  );
+};
 
 const StockBadge = ({ inStock }) => (
   <div className="absolute bottom-2.25 right-2.5 flex items-center gap-1.25 bg-white border border-[#CCCCCC] rounded-[10px] px-3 py-0.5 h-5">
@@ -30,7 +43,6 @@ const ProductSpecs = ({ specs }) => (
 );
 
 const ProductCard = ({
-  id,
   image,
   title,
   specs,

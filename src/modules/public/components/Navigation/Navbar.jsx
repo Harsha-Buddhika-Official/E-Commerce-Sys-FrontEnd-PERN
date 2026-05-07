@@ -3,13 +3,13 @@ import { Link } from "react-router-dom"
 import { Search as SearchIcon, ShoppingCart as ShoppingCartIcon, ExpandMore as ExpandMoreIcon, Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material"
 import Ozone_Logo from "../../../../assets/Ozone_Logo.png"
 import SearchOverlay from "./SearchOverlay"
-import ProductsOverlay from "./ProductsOverlay"
+import CategoriesOverlay from "./CategoriesOverlay"
 import Cart from "../Cart/Cart"
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [isProductsOverlayOpen, setIsProductsOverlayOpen] = useState(false)
+  const [isCategoriesOverlayOpen, setIsCategoriesOverlayOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
 
   return (
@@ -28,11 +28,11 @@ export default function Navbar() {
           {/* All Products Dropdown */}
           <div className="relative">
             <button
-              onClick={() => setIsProductsOverlayOpen(!isProductsOverlayOpen)}
+              onClick={() => setIsCategoriesOverlayOpen(!isCategoriesOverlayOpen)}
               className="flex items-center gap-1 text-white text-base font-medium hover:text-zinc-300 transition-colors"
             >
-              All Products
-              <ExpandMoreIcon className={`w-4 h-4 transition-transform ${isProductsOverlayOpen ? "rotate-180" : ""}`} />
+              Categories
+              <ExpandMoreIcon className={`w-4 h-4 transition-transform ${isCategoriesOverlayOpen ? "rotate-180" : ""}`} />
             </button>
           </div>
 
@@ -84,11 +84,11 @@ export default function Navbar() {
           <div className="flex flex-col gap-4">
             <div>
               <button
-                onClick={() => setIsProductsOverlayOpen(!isProductsOverlayOpen)}
+                onClick={() => setIsCategoriesOverlayOpen(!isCategoriesOverlayOpen)}
                 className="flex items-center justify-between w-full text-white text-sm font-medium py-2"
               >
-                All Products
-                <ExpandMoreIcon className={`w-4 h-4 transition-transform ${isProductsOverlayOpen ? "rotate-180" : ""}`} />
+                Categories
+                <ExpandMoreIcon className={`w-4 h-4 transition-transform ${isCategoriesOverlayOpen ? "rotate-180" : ""}`} />
               </button>
             </div>
             <Link to="/services" className="text-white text-sm font-medium py-2">
@@ -108,7 +108,7 @@ export default function Navbar() {
       )}
       </nav>
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-      <ProductsOverlay isOpen={isProductsOverlayOpen} onClose={() => setIsProductsOverlayOpen(false)} />
+      <CategoriesOverlay isOpen={isCategoriesOverlayOpen} onClose={() => setIsCategoriesOverlayOpen(false)} />
       <Cart open={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   )

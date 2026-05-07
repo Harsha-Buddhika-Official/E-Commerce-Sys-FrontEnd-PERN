@@ -4,7 +4,7 @@ import Sidebar            from "../components/Sidebar";
 import OrderStatCard      from "../components/Orders/OrderStatCard";
 import OrdersTable        from "../components/Orders/OrdersTable";
 import OrderStatusChanger from "../components/Orders/OrderStatusChanger";
-import { getOrders, updateOrderStatus } from "../features/orders/api/ordersService";
+import { getOrders, updateOrderStatus } from "../features/orders/ordersService";
 import { getMockOrders }                 from "../features/orders/api/ordersMockData";
 import { getAdminNotifications }        from "../features/notifications/api/notificationsService";
 
