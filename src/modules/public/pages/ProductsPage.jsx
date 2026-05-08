@@ -1,45 +1,29 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import FilterBar from "../components/Filter/FilterBar.jsx";
-import ProductCard from "../components/Product/ProductCard.jsx";
+import ProductGrid from "../components/Product/ProductGrid.jsx";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { fetchProductsByCategory } from "../features/products/api/productsByCategoryService.js";
+import { useProducts } from "../features/products/hooks/useProductsByCategory.js";
 
 // 4 cols × 4 rows = 16 per page
 const PRODUCTS_PER_PAGE = 16;
 
 export default function ProductsPage() {
-  const [searchParams]                      = useSearchParams();
-  const categoryParam                       = searchParams.get("category") || "Processors";
-  const [currentPage, setCurrentPage]       = useState(1);
-  const [categoryProducts, setCategoryProducts] = useState([]);
-  const [loadedCategory, setLoadedCategory] = useState(null);
-  const navigate                            = useNavigate();
+  const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category") || "Processors";
+  const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+  
+  const { products, loading, error } = useProducts();
 
-  /* Load products */
-  useEffect(() => {
-    let active = true;
-    fetchProductsByCategory(categoryParam).then((products) => {
-      if (!active) return;
-      setCategoryProducts(products);
-      setCurrentPage(1);
-      setLoadedCategory(categoryParam);
-    }).catch(() => {
-      if (!active) return;
-      setCategoryProducts([]);
-      setCurrentPage(1);
-      setLoadedCategory(categoryParam);
-    });
-    return () => { active = false; };
-  }, [categoryParam]);
-
-  const loading = loadedCategory !== categoryParam;
+  // Filter products based on selected category name
+  const filteredProducts = products.filter(p => p.category_name === categoryParam);
 
   /* Pagination */
-  const totalPages      = Math.ceil(categoryProducts.length / PRODUCTS_PER_PAGE);
-  const startIndex      = (currentPage - 1) * PRODUCTS_PER_PAGE;
-  const currentProducts = categoryProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const currentProducts = filteredProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
 
   const handleAddToCart  = (id) => console.log("Added to cart:", id);
   const handleProductClick = (productId) => {
@@ -121,23 +105,16 @@ export default function ProductsPage() {
               />
             ))}
           </div>
-        ) : currentProducts.length > 0 ? (
-          <div className="product-grid grid gap-5">
-            {currentProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                image={product.image}
-                title={product.title}
-                specs={product.specs}
-                price={product.price}
-                inStock={product.inStock}
-                category={product.category}
-                onCardClick={() => handleProductClick(product.id)}
-                onAddToCart={() => handleAddToCart(product.id)}
-              />
-            ))}
+        ) : error ? (
+          <div className="text-center py-24">
+            <p className="text-red-600 text-lg font-medium">Error loading products: {error}</p>
           </div>
+        ) : currentProducts.length > 0 ? (
+          <ProductGrid 
+            products={currentProducts}
+            onProductClick={handleProductClick}
+            onAddToCart={handleAddToCart}
+          />
         ) : (
           <div className="text-center py-24">
             <p className="text-gray-400 text-lg font-medium">No products found in this category</p>
@@ -145,7 +122,7 @@ export default function ProductsPage() {
         )}
 
         {/* ── Pagination ── */}
-        {!loading && categoryProducts.length > PRODUCTS_PER_PAGE && (
+        {!loading && !error && filteredProducts.length > PRODUCTS_PER_PAGE && (
           <div className="flex items-center justify-center gap-2 sm:gap-3 mt-12 flex-wrap">
             <button
               onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
