@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import { useState } from "react";
 import Navbar from "../../modules/public/components/Navigation/Navbar.jsx";
 import Footer from "../../modules/public/components/Layout/Footer.jsx";
 import Home from "../../modules/public/pages/Home.jsx";
@@ -11,16 +10,14 @@ import AboutPage from "../../modules/public/pages/AboutPage.jsx";
 import ContactPage from "../../modules/public/pages/ContactPage.jsx";
 
 export default function PublicRoutes() {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  // const [selectedCategory, setSelectedCategory] = useState(null);
   return (
     <>
-      <Navbar 
-        selectedCategory={selectedCategory} 
-        onCategoryChange={setSelectedCategory}
+      <Navbar
       />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={<ProductsPage selectedCategory={selectedCategory}/>} />
+        <Route path="/products" element={<ProductsPage/>} />
         <Route path="/product/:id" element={<ProductInfoPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/offers" element={<OffersPage />} />
