@@ -4,7 +4,7 @@ import FilterBar from "../components/Filter/FilterBar.jsx";
 import ProductGrid from "../components/Product/ProductGrid.jsx";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { useProducts } from "../features/products/hooks/useProductsByCategory.js";
+import { useProducts } from "../features/products/hooks/useProducts.js";
 
 // 4 cols × 4 rows = 16 per page
 const PRODUCTS_PER_PAGE = 16;

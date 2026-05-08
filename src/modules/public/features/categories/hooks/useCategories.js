@@ -1,35 +1,41 @@
 import { useEffect, useState } from "react";
-import { fetchAllCategories } from "../api/categoriesService";
+import { fetchAllCategories } from "../services/categories.service.js";
 
-/**
- * Custom hook to fetch product and accessory categories
+/** * Custom hook to fetch product and accessory categories
  * Handles loading, error states, and automatic refetch on mount
  * @returns {Object} { products, accessories, loading, error }
- */
+ * */
+const INITIAL_STATE = {
+    products: [],
+    accessories: [],
+    loading: true,
+    error: null,
+};
+
 export const useCategories = () => {
-  const [products, setProducts] = useState([]);
-  const [accessories, setAccessories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [state, setState] = useState(INITIAL_STATE);
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await fetchAllCategories();
-        setProducts(data.products);
-        setAccessories(data.accessories);
-      } catch (err) {
-        setError(err.message);
-        console.error("Failed to load categories:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCategories();
-  }, []);
-
-  return { products, accessories, loading, error };
+    useEffect(() => {
+        let cancelled = false;
+ 
+        const load = async () => {
+            setState((prev) => ({ ...prev, loading: true, error: null }));
+            try {
+                const { products, accessories } = await fetchAllCategories();
+                if (!cancelled) {
+                    setState({ products, accessories, loading: false, error: null });
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setState({ ...INITIAL_STATE, loading: false, error: err.message });
+                }
+            }
+        };
+        load();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+ 
+    return state;
 };

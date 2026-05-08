@@ -1,27 +1,105 @@
-import {useEffect, useState} from "react";
-import { fetchAllProducts } from "../api/product.service";
+import { useEffect, useState } from "react";
+import { fetchProducts } from "../services/products.service";
+
+const PRODUCTS_INITIAL_STATE = {
+    products: [],
+    loading: true,
+    error: null,
+};
 
 export const useProducts = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [state, setState] = useState(PRODUCTS_INITIAL_STATE);
 
     useEffect(() => {
-        const loadProducts = async () => {
-            setLoading(true);
-            setError(null);
+        let cancelled = false;
+
+        const load = async () => {
+            setState((prev) => ({ ...prev, loading: true, error: null }));
+
             try {
-                const productsData = await fetchAllProducts();
-                setProducts(productsData);
+                const products = await fetchProducts();
+                if (!cancelled) {
+                    setState({ products, loading: false, error: null });
+                }
             } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    setState({ ...PRODUCTS_INITIAL_STATE, loading: false, error: err.message });
+                }
             }
         };
 
-        loadProducts();
+        load();
+        return () => { cancelled = true; };
     }, []);
 
-    return { products, loading, error };
+    return state;
 };
+
+// ─── useProductsByCategory ────────────────────────────────────────────────────
+// Re-fetches whenever `category` changes.
+
+// export const useProductsByCategory = (category = "Processors") => {
+//     const [state, setState] = useState(PRODUCTS_INITIAL_STATE);
+
+//     useEffect(() => {
+//         let cancelled = false;
+
+//         const load = async () => {
+//             setState((prev) => ({ ...prev, loading: true, error: null }));
+
+//             try {
+//                 const products = await fetchProductsByCategory(category);
+//                 if (!cancelled) {
+//                     setState({ products, loading: false, error: null });
+//                 }
+//             } catch (err) {
+//                 if (!cancelled) {
+//                     setState({ ...PRODUCTS_INITIAL_STATE, loading: false, error: err.message });
+//                 }
+//             }
+//         };
+
+//         load();
+//         return () => { cancelled = true; };
+//     }, [category]); // ← re-runs when category changes
+
+//     return state;
+// };
+
+// // ─── useCategories ────────────────────────────────────────────────────────────
+// // Fetches both product and accessory categories on mount.
+
+// const CATEGORIES_INITIAL_STATE = {
+//     products: [],
+//     accessories: [],
+//     loading: true,
+//     error: null,
+// };
+
+// export const useCategories = () => {
+//     const [state, setState] = useState(CATEGORIES_INITIAL_STATE);
+
+//     useEffect(() => {
+//         let cancelled = false;
+
+//         const load = async () => {
+//             setState((prev) => ({ ...prev, loading: true, error: null }));
+
+//             try {
+//                 const { products, accessories } = await fetchAllCategories();
+//                 if (!cancelled) {
+//                     setState({ products, accessories, loading: false, error: null });
+//                 }
+//             } catch (err) {
+//                 if (!cancelled) {
+//                     setState({ ...CATEGORIES_INITIAL_STATE, loading: false, error: err.message });
+//                 }
+//             }
+//         };
+
+//         load();
+//         return () => { cancelled = true; };
+//     }, []);
+
+//     return state;
+// };

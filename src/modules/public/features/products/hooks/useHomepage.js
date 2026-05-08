@@ -1,30 +1,53 @@
-import { useEffect,useState } from "react";
-import { fetchHomepageData } from "../api/homepageService";
+// features/products/hooks/useHomepage.js
+// Layer: Hook — owns async state only. No API calls, no transforms.
+
+import { useEffect, useState } from "react";
+import { fetchHomepageData } from "../services/homepage.service.js";  // ← correct path
+
+const INITIAL_STATE = {
+    bestSellers: [],
+    latestProducts: [],
+    loading: true,
+    error: null,
+};
 
 export const useHomepage = () => {
-    const [bestSellers, setBestSellers] = useState([]);
-    const [latestProducts, setLatestProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [state, setState] = useState(INITIAL_STATE);
 
     useEffect(() => {
-        const loadHomepageData = async () => {
-            setLoading(true);
-            setError(null);
+        let cancelled = false;
+
+        const load = async () => {
+            setState((prev) => ({ ...prev, loading: true, error: null }));
 
             try {
-                const data = await fetchHomepageData();
-                setBestSellers(data.bestSellers);
-                setLatestProducts(data.latest);
+                const { bestSellers, latest } = await fetchHomepageData();
+
+                if (!cancelled) {
+                    setState({
+                        bestSellers,
+                        latestProducts: latest,
+                        loading: false,
+                        error: null,
+                    });
+                }
             } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    setState({
+                        ...INITIAL_STATE,
+                        loading: false,
+                        error: err.message,
+                    });
+                }
             }
         };
 
-        loadHomepageData();
+        load();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
-    return { bestSellers, latestProducts, loading, error };
-}
+    return state;
+};
