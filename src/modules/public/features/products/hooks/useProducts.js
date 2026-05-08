@@ -35,71 +35,73 @@ export const useProducts = () => {
     return state;
 };
 
+/*
 // ─── useProductsByCategory ────────────────────────────────────────────────────
 // Re-fetches whenever `category` changes.
 
-// export const useProductsByCategory = (category = "Processors") => {
-//     const [state, setState] = useState(PRODUCTS_INITIAL_STATE);
+export const useProductsByCategory = (category = "Processors") => {
+    const [state, setState] = useState(PRODUCTS_INITIAL_STATE);
 
-//     useEffect(() => {
-//         let cancelled = false;
+    useEffect(() => {
+        let cancelled = false;
 
-//         const load = async () => {
-//             setState((prev) => ({ ...prev, loading: true, error: null }));
+        const load = async () => {
+            setState((prev) => ({ ...prev, loading: true, error: null }));
 
-//             try {
-//                 const products = await fetchProductsByCategory(category);
-//                 if (!cancelled) {
-//                     setState({ products, loading: false, error: null });
-//                 }
-//             } catch (err) {
-//                 if (!cancelled) {
-//                     setState({ ...PRODUCTS_INITIAL_STATE, loading: false, error: err.message });
-//                 }
-//             }
-//         };
+            try {
+                const products = await fetchProductsByCategory(category);
+                if (!cancelled) {
+                    setState({ products, loading: false, error: null });
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setState({ ...PRODUCTS_INITIAL_STATE, loading: false, error: err.message });
+                }
+            }
+        };
 
-//         load();
-//         return () => { cancelled = true; };
-//     }, [category]); // ← re-runs when category changes
+        load();
+        return () => { cancelled = true; };
+    }, [category]); // ← re-runs when category changes
 
-//     return state;
-// };
+    return state;
+};
 
-// // ─── useCategories ────────────────────────────────────────────────────────────
-// // Fetches both product and accessory categories on mount.
+// ─── useCategories ────────────────────────────────────────────────────────────
+// Fetches both product and accessory categories on mount.
 
-// const CATEGORIES_INITIAL_STATE = {
-//     products: [],
-//     accessories: [],
-//     loading: true,
-//     error: null,
-// };
+const CATEGORIES_INITIAL_STATE = {
+    products: [],
+    accessories: [],
+    loading: true,
+    error: null,
+};
 
-// export const useCategories = () => {
-//     const [state, setState] = useState(CATEGORIES_INITIAL_STATE);
+export const useCategories = () => {
+    const [state, setState] = useState(CATEGORIES_INITIAL_STATE);
 
-//     useEffect(() => {
-//         let cancelled = false;
+    useEffect(() => {
+        let cancelled = false;
 
-//         const load = async () => {
-//             setState((prev) => ({ ...prev, loading: true, error: null }));
+        const load = async () => {
+            setState((prev) => ({ ...prev, loading: true, error: null }));
 
-//             try {
-//                 const { products, accessories } = await fetchAllCategories();
-//                 if (!cancelled) {
-//                     setState({ products, accessories, loading: false, error: null });
-//                 }
-//             } catch (err) {
-//                 if (!cancelled) {
-//                     setState({ ...CATEGORIES_INITIAL_STATE, loading: false, error: err.message });
-//                 }
-//             }
-//         };
+            try {
+                const { products, accessories } = await fetchAllCategories();
+                if (!cancelled) {
+                    setState({ products, accessories, loading: false, error: null });
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setState({ ...CATEGORIES_INITIAL_STATE, loading: false, error: err.message });
+                }
+            }
+        };
 
-//         load();
-//         return () => { cancelled = true; };
-//     }, []);
+        load();
+        return () => { cancelled = true; };
+    }, []);
 
-//     return state;
-// };
+    return state;
+};
+*/
