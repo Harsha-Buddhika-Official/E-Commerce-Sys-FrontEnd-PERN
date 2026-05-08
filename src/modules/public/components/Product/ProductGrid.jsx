@@ -16,7 +16,7 @@ const ProductGrid = ({ products, onProductClick, onAddToCart }) => {
     if (onAddToCart) {
       onAddToCart(productId);
     } else {
-      console.log("Added to cart:", productId);
+      alert("Added to cart!");
     }
   };
 
