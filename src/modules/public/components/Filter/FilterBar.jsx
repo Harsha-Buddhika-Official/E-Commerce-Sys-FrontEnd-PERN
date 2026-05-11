@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { formatAttributeName } from '../../../../utils/formatAttributeName';
 import Slider from "@mui/material/Slider";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -71,7 +72,7 @@ function AttributeDropdown({ attribute, isValueChecked, onToggle }) {
             : "border-gray-300 bg-white text-gray-700 hover:border-black hover:text-black"
           }`}
       >
-        {attribute.name}
+        {formatAttributeName(attribute.name)}
         {activeCount > 0 && (
           <span className="flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold bg-white text-black">
             {activeCount}

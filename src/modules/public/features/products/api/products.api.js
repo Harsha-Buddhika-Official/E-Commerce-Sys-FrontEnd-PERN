@@ -19,3 +19,5 @@ export const getFilterOptions = (categoryId) =>
 
 export const getFilteredProducts = (categoryId, filters) =>
   API.post(`/products/filter/${categoryId}`, filters);
+
+//product details
