@@ -32,7 +32,7 @@ const ProductGrid = ({ products, onProductClick, onAddToCart }) => {
             image={primaryImage?.image_url || "/placeholder.png"}
             title={product.name}
             specs={specs}
-            price={`Rs. ${parseFloat(product.selling_price).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            price={`Rs. ${parseFloat(product.discounted_price).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             inStock={product.stock_quantity > 0}
             category={product.category_name}
             onCardClick={() => handleProductClick(product.product_id)}

@@ -1,7 +1,7 @@
 // features/products/services/products.service.js
 // Layer: Service — normalization, business rules, error handling.
 
-import { getAllProducts, getProductsByCategory, getFilterOptions, getFilteredProducts } from "../api/products.api";
+import { getAllProducts, getProductsByCategory, getFilterOptions, getFilteredProducts, getProductDetails } from "../api/products.api";
 
 const extractList = (response) => {
   const payload =
@@ -53,4 +53,14 @@ export const fetchProductsWithFilters = async (categoryId, filters) => {
     });
 
     return extractList(response);
+};
+
+/**
+ * Fetches details for a specific product.
+ * @param {string} productId
+ * @returns {Promise<Product>}
+ */
+export const fetchProductDetails = async (productId) => {
+    const response = await getProductDetails(productId);
+    return response?.data?.data ?? response?.data;
 };

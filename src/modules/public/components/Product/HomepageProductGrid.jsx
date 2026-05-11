@@ -84,7 +84,7 @@ const HomepageProductGrid = ({
                   image={primaryImage?.image_url || "/placeholder.png"}
                   title={product.name}
                   specs={specs}
-                  price={`Rs. ${parseFloat(product.selling_price).toLocaleString(
+                  price={`Rs. ${parseFloat(product.discounted_price).toLocaleString(
                     "en-LK",
                     {
                       minimumFractionDigits: 2,
