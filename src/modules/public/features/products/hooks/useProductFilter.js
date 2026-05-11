@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { fetchAllCategories } from '../../categories/services/categories.service';
 import {
@@ -16,29 +16,38 @@ export function useProductFilter() {
   const [searchParams]    = useSearchParams();
   const categoryName      = decodeURIComponent(searchParams.get('category') || '');
 
-  const [allCategories,    setAllCategories]    = useState([]);
-  const [selectedCat,      setSelectedCat]      = useState(null);
-  const [filterOptions,    setFilterOptions]    = useState([]);
-  const [filters,          setFilters]          = useState(INITIAL_FILTERS);
-  const [products,         setProducts]         = useState([]);
-  const [loadingOptions,   setLoadingOptions]   = useState(false);
-  const [loadingProducts,  setLoadingProducts]  = useState(false);
-  const [error,            setError]            = useState(null);
+  const [allCategories,   setAllCategories]   = useState([]);
+  const [selectedCat,     setSelectedCat]     = useState(null);
+  const [filterOptions,   setFilterOptions]   = useState([]);
+  const [filters,         setFilters]         = useState(INITIAL_FILTERS);
+  const [productList,     setProductList]     = useState([]);
+  const [loadingOptions,  setLoadingOptions]  = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [error,           setError]           = useState(null);
 
-  // ── 1. load all categories once, match URL → category object ──
+  const categoryNameRef = useRef(categoryName);
+  useEffect(() => { categoryNameRef.current = categoryName; }, [categoryName]);
+
+  // 1 — load categories once
   useEffect(() => {
-    fetchAllCategories()
-      .then(({ products, accessories }) => {
-        const flat = [...products, ...accessories];
-        setAllCategories(flat);
+    let cancelled = false;
 
-        const matched = flat.find(c => c.name === categoryName);
-        setSelectedCat(matched ?? flat[0] ?? null);
+    fetchAllCategories()
+      .then(({ products: prodCats, accessories }) => {
+        if (cancelled) return;
+        const flat = [...prodCats, ...accessories];
+        setAllCategories(flat);
+        const matched = flat.find(c => c.name === categoryNameRef.current);
+        setSelectedCat(matched || flat[0] || null);
       })
-      .catch(err => setError(err.message));
+      .catch(err => {
+        if (!cancelled) setError(err.message);
+      });
+
+    return () => { cancelled = true; };
   }, []);
 
-  // ── 2. URL param changes → update selectedCat ──
+  // 2 — URL category param changes
   useEffect(() => {
     if (!allCategories.length || !categoryName) return;
     const matched = allCategories.find(c => c.name === categoryName);
@@ -46,50 +55,58 @@ export function useProductFilter() {
       setSelectedCat(matched);
       setFilters(INITIAL_FILTERS);
     }
-  }, [categoryName]);
+  }, [categoryName, allCategories, selectedCat]);
 
-  // ── 3. category changes → fetch filter options ──
+  // 3 — fetch filter options when category changes
   useEffect(() => {
     if (!selectedCat) return;
+    let cancelled = false;
 
     setFilterOptions([]);
-    setProducts([]);
+    setProductList([]);
     setLoadingOptions(true);
     setError(null);
 
     fetchFilterOptions(selectedCat.category_id)
-      .then(opts => setFilterOptions(opts))
-      .catch(() => setFilterOptions([]))
-      .finally(() => setLoadingOptions(false));
-  }, [selectedCat?.category_id]);
+      .then(opts => {
+        if (!cancelled) setFilterOptions(Array.isArray(opts) ? opts : []);
+      })
+      .catch(() => {
+        if (!cancelled) setFilterOptions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingOptions(false);
+      });
 
-  // ── 4. category or filters change → fetch products ──
+    return () => { cancelled = true; };
+  }, [selectedCat]);
+
+  // 4 — fetch products when category or filters change
   useEffect(() => {
     if (!selectedCat) return;
+    let cancelled = false;
 
-    const controller = new AbortController();
     setLoadingProducts(true);
     setError(null);
 
     fetchProductsWithFilters(selectedCat.category_id, filters)
       .then(data => {
-        if (!controller.signal.aborted) setProducts(data);
+        if (!cancelled) setProductList(Array.isArray(data) ? data : []);
       })
       .catch(err => {
-        if (controller.signal.aborted) return;
-        setProducts([]);
-        if (err.response?.status !== 404) {
-          setError(err.response?.data?.message || err.message);
-        }
+        if (cancelled) return;
+        setProductList([]);
+        const status = err.response ? err.response.status : null;
+        const message = err.response ? err.response.data.message : err.message;
+        if (status !== 404) setError(message);
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoadingProducts(false);
+        if (!cancelled) setLoadingProducts(false);
       });
 
-    return () => controller.abort();
-  }, [selectedCat?.category_id, filters]);
+    return () => { cancelled = true; };
+  }, [selectedCat, filters]);
 
-  // ── filter action helpers ──────────────────────────────
   const toggleAttributeValue = useCallback((attributeId, value) => {
     setFilters(prev => {
       const existing = prev.attributeFilters.find(f => f.attributeId === attributeId);
@@ -116,24 +133,25 @@ export function useProductFilter() {
     setFilters(prev => ({ ...prev, priceMin, priceMax }));
   }, []);
 
-  const clearFilters = useCallback(() => setFilters(INITIAL_FILTERS), []);
+  const clearFilters = useCallback(() => {
+    setFilters(INITIAL_FILTERS);
+  }, []);
 
-  const isValueChecked = useCallback((attributeId, value) =>
-    filters.attributeFilters
-      .find(f => f.attributeId === attributeId)
-      ?.values.includes(value) ?? false,
-  [filters.attributeFilters]);
+  const isValueChecked = useCallback((attributeId, value) => {
+    const found = filters.attributeFilters.find(f => f.attributeId === attributeId);
+    return found ? found.values.includes(value) : false;
+  }, [filters.attributeFilters]);
 
   const activeFilterCount =
     filters.attributeFilters.reduce((acc, f) => acc + f.values.length, 0) +
-    (filters.priceMin ? 1 : 0) +
-    (filters.priceMax ? 1 : 0);
+    (filters.priceMin !== '' ? 1 : 0) +
+    (filters.priceMax !== '' ? 1 : 0);
 
   return {
     selectedCat,
     filterOptions,
     filters,
-    products,
+    products: productList,
     loadingOptions,
     loadingProducts,
     error,

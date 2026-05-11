@@ -4,10 +4,12 @@
 import { getAllProducts, getProductsByCategory, getFilterOptions, getFilteredProducts } from "../api/products.api";
 
 const extractList = (response) => {
-    const payload = response?.data?.data ?? response?.data;
-    return Array.isArray(payload) ? payload : [];
+  const payload =
+    response?.data?.products  // POST /filter/:id → { success, products }
+    || response?.data?.data   // GET /category/:id → { success, data }
+    || response?.data;
+  return Array.isArray(payload) ? payload : [];
 };
-
 /**
  * Fetches all products with no category filter.
  * @returns {Promise<Product[]>}
