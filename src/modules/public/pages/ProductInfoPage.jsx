@@ -97,11 +97,11 @@ export default function ProductInfoPage() {
     >
       <div className="mx-auto max-w-[1200px] overflow-hidden rounded-xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.1)] md:flex">
         <div className="relative flex w-full flex-col items-center justify-center gap-4 border-zinc-200 bg-zinc-50 p-6 md:w-1/2 md:border-r">
-          <div className="relative w-full max-w-[350px]">
+          <div className="relative w-full max-w-[460px]">
             <img
               src={productImages[activeImg]}
               alt={product?.name || "Product"}
-              className="block w-full rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-300"
+              className="block aspect-[4/3] h-auto w-full rounded-md bg-white object-contain shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-300"
             />
             <button
               type="button"
