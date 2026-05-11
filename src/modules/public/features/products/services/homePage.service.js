@@ -1,7 +1,7 @@
 // features/products/services/homepageService.js
 // Layer: Service — normalization, business rules, error handling.
 
-import { getBestSellers, getLatestProducts } from "../api/homePage.api.js";
+import { getBestSellers, getLatestProducts } from "../api/products.api";
 
 const extractList = (response) => {
     const payload = response?.data?.data ?? response?.data;

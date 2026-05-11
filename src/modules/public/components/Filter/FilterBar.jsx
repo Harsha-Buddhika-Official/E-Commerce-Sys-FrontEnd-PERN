@@ -3,9 +3,8 @@ import Slider from "@mui/material/Slider";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CloseIcon from "@mui/icons-material/Close";
-import { fetchCategoryFilters } from "../../features/products/api/filterService.js";
 
-// ─── Availability chip (checkbox style) ──────────────────────────────────────
+// ─── Chip components (keep exactly as you have) ───────────────────────────────
 
 function CheckChip({ label, selected, onClick }) {
   return (
@@ -30,32 +29,9 @@ function CheckChip({ label, selected, onClick }) {
   );
 }
 
-function RadioChip({ label, selected, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-[12px] font-semibold whitespace-nowrap transition-all duration-150
-        ${selected
-          ? "border-black bg-black text-white"
-          : "border-gray-300 bg-white text-gray-700 hover:border-black hover:text-black"
-        }`}
-    >
-      <span className={`w-3 h-3 rounded-full border-2 flex items-center justify-center shrink-0
-        ${selected ? "border-white" : "border-gray-400"}`}>
-        {selected && <span className="w-1.5 h-1.5 rounded-full bg-white block" />}
-      </span>
-      {label}
-    </button>
-  );
-}
-
-// ─── Vertical divider ─────────────────────────────────────────────────────────
-
 function VDivider() {
   return <div className="shrink-0 self-stretch w-px bg-gray-200 mx-1" />;
 }
-
-// ─── Section label ────────────────────────────────────────────────────────────
 
 function SectionLabel({ children }) {
   return (
@@ -65,32 +41,37 @@ function SectionLabel({ children }) {
   );
 }
 
-// ─── Dropdown for category-specific filters (non-common) ─────────────────────
+// ─── Dropdown for each attribute group ────────────────────────────────────────
 
-function FilterDropdown({ filter, filterState, onToggle }) {
+function AttributeDropdown({ attribute, isValueChecked, onToggle }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
+  // close on outside click
   useEffect(() => {
-    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const val = filterState[filter.id];
-  const activeCount = Array.isArray(val) ? val.length : (val ? 1 : 0);
+  // count how many values are checked for this attribute
+  const activeCount = attribute.values.filter(({ value }) =>
+    isValueChecked(attribute.attributeId, value)
+  ).length;
 
   return (
     <div ref={ref} className="relative shrink-0">
       <button
-        onClick={() => setOpen((p) => !p)}
+        onClick={() => setOpen(p => !p)}
         className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[12px] font-semibold transition-all duration-150 whitespace-nowrap
           ${open || activeCount > 0
             ? "border-black bg-black text-white"
             : "border-gray-300 bg-white text-gray-700 hover:border-black hover:text-black"
           }`}
       >
-        {filter.label}
+        {attribute.name}
         {activeCount > 0 && (
           <span className="flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold bg-white text-black">
             {activeCount}
@@ -103,22 +84,17 @@ function FilterDropdown({ filter, filterState, onToggle }) {
       </button>
 
       {open && (
-        <div
-          className="absolute top-[calc(100%+8px)] left-0 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 flex flex-col gap-2"
-          style={{ minWidth: "200px" }}
+        <div className="absolute top-[calc(100%+8px)] left-0 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 flex flex-col gap-2"
+          style={{ minWidth: "220px", maxHeight: "300px", overflowY: "auto" }}
         >
-          {filter.options.map((option) => {
-            const isCheckbox = filter.type === "checkbox";
-            const isSelected = isCheckbox
-              ? filterState[filter.id]?.includes(option)
-              : filterState[filter.id] === option;
-            const Chip = isCheckbox ? CheckChip : RadioChip;
+          {attribute.values.map(({ value, count }) => {
+            const checked = isValueChecked(attribute.attributeId, value);
             return (
-              <Chip
-                key={option}
-                label={option}
-                selected={isSelected}
-                onClick={() => onToggle(filter.id, option, filter.type)}
+              <CheckChip
+                key={value}
+                label={`${value} (${count})`}
+                selected={checked}
+                onClick={() => onToggle(attribute.attributeId, value)}
               />
             );
           })}
@@ -128,156 +104,120 @@ function FilterDropdown({ filter, filterState, onToggle }) {
   );
 }
 
+// ─── Price range constants ─────────────────────────────────────────────────────
+
+const PRICE_MIN = 0;
+const PRICE_MAX = 500000;
+const PRICE_STEP = 1000;
+
 // ─── Main FilterBar ───────────────────────────────────────────────────────────
 
-const PRICE_FILTER = {
-  id: "price",
-  label: "Price",
-  type: "range",
-  min: 0,
-  max: 500000,
-  step: 1000,
-  defaultMin: 40000,
-  defaultMax: 300000,
-  currency: "Rs",
-};
-
-const AVAILABILITY_FILTER = {
-  id: "availability",
-  label: "Availability",
-  type: "checkbox",
-  options: ["In Stock", "Pre Order"],
-};
-
 export default function FilterBar({
-  category = "processors",
-  onFilterChange = () => {},
+  filterOptions   = [],   // [{ attributeId, name, values: [{value, count}] }]
+  loadingOptions  = false,
+  filters,                // { attributeFilters, priceMin, priceMax } from hook
+  isValueChecked,         // (attributeId, value) => bool
+  toggleAttributeValue,   // (attributeId, value) => void
+  setPriceRange,          // (min, max) => void
+  clearFilters,           // () => void
+  activeFilterCount = 0,
 }) {
-  const [categoryFilters, setCategoryFilters] = useState([]);
-  const [filterState, setFilterState]         = useState({});
-  const [priceRange, setPriceRange]           = useState([PRICE_FILTER.defaultMin, PRICE_FILTER.defaultMax]);
-  const [loaded, setLoaded]                   = useState(false);
+  // local slider state for smooth dragging — only calls setPriceRange on commit
+  const [sliderValue, setSliderValue] = useState([
+    filters.priceMin !== '' ? Number(filters.priceMin) : PRICE_MIN,
+    filters.priceMax !== '' ? Number(filters.priceMax) : PRICE_MAX,
+  ]);
 
+  // sync slider if filters cleared externally
   useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await fetchCategoryFilters(category);
-        const catFilters = data.filters || [];
-        setCategoryFilters(catFilters);
+    if (filters.priceMin === '' && filters.priceMax === '') {
+      setSliderValue([PRICE_MIN, PRICE_MAX]);
+    }
+  }, [filters.priceMin, filters.priceMax]);
 
-        const initial = {
-          price: [PRICE_FILTER.defaultMin, PRICE_FILTER.defaultMax],
-          availability: [],
-        };
-        catFilters.forEach((f) => {
-          if (f.type === "radio")         initial[f.id] = null;
-          else if (f.type === "checkbox") initial[f.id] = [];
-          else if (f.type === "range")    initial[f.id] = [f.defaultMin, f.defaultMax];
-        });
-        setFilterState(initial);
-        setPriceRange([PRICE_FILTER.defaultMin, PRICE_FILTER.defaultMax]);
-        setLoaded(true);
-      } catch (e) {
-        console.error("Failed to load filters", e);
-      }
-    };
-    load();
-  }, [category]);
-
-  const handleAvailabilityToggle = (value) => {
-    setFilterState((prev) => {
-      const arr = prev.availability || [];
-      const next = {
-        ...prev,
-        availability: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value],
-      };
-      onFilterChange(next);
-      return next;
-    });
+  const handleSliderChange = (_, newValue) => {
+    setSliderValue(newValue); // smooth UI update
   };
 
-  const handlePriceChange = (range) => {
-    setPriceRange(range);
+  const handleSliderCommit = (_, newValue) => {
+    // only call API when user releases the slider
+    setPriceRange(
+      newValue[0] === PRICE_MIN ? '' : newValue[0],
+      newValue[1] === PRICE_MAX ? '' : newValue[1],
+    );
   };
 
-  const handleCategoryFilterToggle = (filterId, option, type) => {
-    setFilterState((prev) => {
-      const newState = { ...prev };
-      if (type === "checkbox") {
-        const arr = newState[filterId] || [];
-        newState[filterId] = arr.includes(option) ? arr.filter(v => v !== option) : [...arr, option];
-      } else if (type === "radio") {
-        newState[filterId] = newState[filterId] === option ? null : option;
-      }
-      onFilterChange(newState);
-      return newState;
-    });
-  };
+  if (loadingOptions) {
+    return (
+      <div className="w-full px-2 sm:px-4 py-4 border-b border-gray-200 bg-white">
+        <div className="flex gap-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-7 w-24 bg-gray-100 rounded-full animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full px-2 sm:px-4 py-4 border-b border-gray-200 bg-white">
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        {/* Price Filter */}
+
+        {/* ── Price ── */}
         <div className="flex items-center gap-2">
-          <SectionLabel>{PRICE_FILTER.label}</SectionLabel>
+          <SectionLabel>Price</SectionLabel>
           <Slider
-            value={priceRange}
-            onChange={(e, newValue) => handlePriceChange(newValue)}
-            min={PRICE_FILTER.min}
-            max={PRICE_FILTER.max}
-            step={PRICE_FILTER.step}
+            value={sliderValue}
+            onChange={handleSliderChange}
+            onChangeCommitted={handleSliderCommit}
+            min={PRICE_MIN}
+            max={PRICE_MAX}
+            step={PRICE_STEP}
             valueLabelDisplay="auto"
+            valueLabelFormat={(v) => `Rs ${v.toLocaleString()}`}
             marks={[
-              { value: PRICE_FILTER.min, label: `${PRICE_FILTER.currency}0` },
-              { value: PRICE_FILTER.max, label: `${PRICE_FILTER.currency}500k` }
+              { value: PRICE_MIN, label: "Rs 0" },
+              { value: PRICE_MAX, label: "Rs 500k" },
             ]}
-            sx={{ width: 150, mr: 2 }}
-          />
-        </div>
-
-        <VDivider />
-
-        {/* Availability Filter */}
-        <div className="flex items-center gap-2">
-          <SectionLabel>{AVAILABILITY_FILTER.label}</SectionLabel>
-          {AVAILABILITY_FILTER.options.map((opt) => (
-            <CheckChip
-              key={opt}
-              label={opt}
-              selected={filterState.availability?.includes(opt) || false}
-              onClick={() => handleAvailabilityToggle(opt)}
-            />
-          ))}
-        </div>
-
-        <VDivider />
-
-        {/* Category-specific filters */}
-        {categoryFilters.map((filter) => (
-          <FilterDropdown
-            key={filter.id}
-            filter={filter}
-            filterState={filterState}
-            onToggle={handleCategoryFilterToggle}
-          />
-        ))}
-
-        {/* Clear all button */}
-        {Object.values(filterState).some(v => v && (Array.isArray(v) ? v.length > 0 : true)) && (
-          <button
-            onClick={() => {
-              setFilterState({
-                price: [PRICE_FILTER.defaultMin, PRICE_FILTER.defaultMax],
-                availability: [],
-              });
-              setPriceRange([PRICE_FILTER.defaultMin, PRICE_FILTER.defaultMax]);
+            sx={{
+              width: 150,
+              mr: 2,
+              color: "black",
+              "& .MuiSlider-thumb": { backgroundColor: "black" },
+              "& .MuiSlider-track": { backgroundColor: "black" },
+              "& .MuiSlider-rail": { backgroundColor: "#e5e7eb" },
             }}
+          />
+        </div>
+
+        <VDivider />
+
+        {/* ── Category attribute dropdowns ── */}
+        {filterOptions.length > 0 && (
+          <>
+            {filterOptions.map(attr => (
+              <AttributeDropdown
+                key={attr.attributeId}
+                attribute={attr}
+                isValueChecked={isValueChecked}
+                onToggle={toggleAttributeValue}
+              />
+            ))}
+            <VDivider />
+          </>
+        )}
+
+        {/* ── Clear all ── */}
+        {activeFilterCount > 0 && (
+          <button
+            onClick={clearFilters}
             className="flex items-center gap-1 px-3 py-1 rounded-full border border-gray-300 bg-white text-gray-700 text-[12px] font-semibold hover:border-red-500 hover:text-red-500 transition-all"
           >
             <CloseIcon style={{ fontSize: 14 }} />
-            Clear
+            Clear all ({activeFilterCount})
           </button>
         )}
+
       </div>
     </div>
   );
