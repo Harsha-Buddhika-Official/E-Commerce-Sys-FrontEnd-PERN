@@ -1,20 +1,14 @@
 import { useEffect, useState } from "react";
-import Navbar    from "../components/Navbar";
-import Sidebar   from "../components/Sidebar";
 import StatCard  from "../components/Dashboard/StatCard";
 import RecentOrders   from "../components/Dashboard/RecentOrders";
 import LowStockAlert  from "../components/Dashboard/LowStockAlert";
 import { getDashboardData } from "../features/dashboard/api/dashboardService";
-import { getAdminNotifications } from "../features/notifications/api/notificationsService";
 
 // ─── AdminDashboard ───────────────────────────────────────────────────────────
 const AdminDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activePage,  setActivePage]  = useState("dashboard");
   const [stats, setStats] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
   const [lowStockItems, setLowStockItems] = useState([]);
-  const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -22,17 +16,13 @@ const AdminDashboard = () => {
 
     const loadDashboardData = async () => {
       try {
-        const [data, notificationsData] = await Promise.all([
-          getDashboardData(),
-          getAdminNotifications(),
-        ]);
+        const data = await getDashboardData();
 
         if (!isMounted) return;
 
         setStats(data.stats);
         setRecentOrders(data.recentOrders);
         setLowStockItems(data.lowStockItems);
-        setNotifications(notificationsData);
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
       } finally {
@@ -51,35 +41,9 @@ const AdminDashboard = () => {
 
   const handleRestock   = (item)    => console.log("Restock:", item.name);
   const handleViewOrder = (orderId) => console.log("View order:", orderId);
-  const handleLogout    = ()        => console.log("Logout");
 
   return (
-    // Root: full viewport, flex column layout
-    <div className="flex flex-col h-screen overflow-hidden bg-[#f5f5f5]">
-
-      {/* ── Navbar (full width) ── */}
-      <Navbar
-        title={activePage.charAt(0).toUpperCase() + activePage.slice(1)}
-        onMenuClick={() => setSidebarOpen((p) => !p)}
-        notifications={notifications}
-      />
-
-      {/* ── Main content area: sidebar + content side-by-side ── */}
-      <div className="flex flex-1 overflow-hidden">
-
-        {/* ── Sidebar ── */}
-        <Sidebar
-          activeItem={activePage}
-          onNavigate={setActivePage}
-          onLogout={handleLogout}
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-          adminName="Super Admin"
-          adminEmail="admin@example.com"
-        />
-
-        {/* Scrollable content area */}
-        <main className="flex-1 overflow-y-auto p-5 lg:p-6">
+    <main className="h-full overflow-y-auto p-5 lg:p-6">
 
           {/* ── Stat cards row ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
@@ -112,10 +76,7 @@ const AdminDashboard = () => {
             </div>
 
           </div>
-        </main>
-
-      </div>
-    </div>
+    </main>
   );
 };
 

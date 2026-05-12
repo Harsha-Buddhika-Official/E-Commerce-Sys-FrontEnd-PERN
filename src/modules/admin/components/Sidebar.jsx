@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardOutlinedIcon    from "@mui/icons-material/DashboardOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
@@ -74,6 +74,10 @@ const AdminSidebar = ({
 }) => {
   const [active, setActive] = useState(activeItem);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setActive(activeItem);
+  }, [activeItem]);
 
   const handleNav = (id) => {
     setActive(id);
@@ -185,10 +189,10 @@ const AdminSidebar = ({
 
         {/* ── Admin profile footer ── */}
         <div
-          className="flex items-center gap-3 px-4 py-4 border-t border-[#f0f0f0] flex-shrink-0"
+          className="flex items-center gap-3 px-4 py-4 border-t border-[#f0f0f0] shrink-0"
         >
           {/* Avatar — Ozone logo mark */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <svg width="38" height="38" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="40" cy="40" r="38" stroke="#333" strokeWidth="2" fill="#111" />
               <circle cx="40" cy="40" r="36" stroke="#888" strokeWidth="2" fill="none" />

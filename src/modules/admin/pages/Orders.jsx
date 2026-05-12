@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import Navbar              from "../components/Navbar";
-import Sidebar             from "../components/Sidebar";
 import OrderStatCard       from "../components/Orders/OrderStatCard";
 import OrdersTable         from "../components/Orders/OrdersTable";
 import OrderStatusChanger  from "../components/Orders/OrderStatusChanger";
@@ -20,9 +18,7 @@ const MOCK_ORDERS = Array.from({ length: 48 }, (_, i) => ({
 
 // ─── OrdersPage ───────────────────────────────────────────────────────────────
 const Orders = () => {
-  const [sidebarOpen,   setSidebarOpen]   = useState(true);
   const [orders,        setOrders]        = useState([]);
-  const [notifications, setNotifications] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null); // full order object
   const [isLoading,     setIsLoading]     = useState(true);
 
@@ -36,7 +32,6 @@ const Orders = () => {
         await new Promise((r) => setTimeout(r, 400)); // simulate network
         if (!active) return;
         setOrders(MOCK_ORDERS);
-        setNotifications([]);
       } catch (err) {
         console.error("Failed to load orders:", err);
       } finally {
@@ -71,31 +66,7 @@ const Orders = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#f5f5f5]">
-
-      {/* ── Navbar (full width top bar) ── */}
-      <Navbar
-        title="Orders"
-        onMenuClick={() => setSidebarOpen((p) => !p)}
-        notifications={notifications}
-      />
-
-      {/* ── Body row: sidebar + main content ── */}
-      <div className="flex flex-1 overflow-hidden">
-
-        {/* Sidebar */}
-        <Sidebar
-          activeItem="orders"
-          onNavigate={(page) => console.log("Navigate to:", page)}
-          onLogout={() => console.log("Logout")}
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-          adminName="Super Admin"
-          adminEmail="admin@example.com"
-        />
-
-        {/* ── Main scrollable content ── */}
-        <main className="flex-1 overflow-y-auto p-5 lg:p-6 min-w-0">
+    <main className="h-full overflow-y-auto p-5 lg:p-6 min-w-0">
 
           {/* ── Stat cards row — Pending / Completed / Cancelled ── */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -164,9 +135,7 @@ const Orders = () => {
             </div>
 
           </div>
-        </main>
-      </div>
-    </div>
+    </main>
   );
 };
 
