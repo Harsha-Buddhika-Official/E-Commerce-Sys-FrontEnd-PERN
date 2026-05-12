@@ -11,7 +11,7 @@ export const loginAdmin = async (credentials) => {
     const response = await getAdminLogin(credentials);
 
     const token = response?.data?.token ?? response?.data?.data?.token ?? null;
-
+    
     if (!token) {
         throw new Error("Invalid response from server. Please try again.");
     }
