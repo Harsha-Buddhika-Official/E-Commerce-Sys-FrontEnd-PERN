@@ -1,20 +1,25 @@
+// features/auth/pages/AdminLogin.jsx
+// Layer: UI — renders form state only. No API calls, no token logic.
+
 import { useState } from "react";
-import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-import LockOutlinedIcon  from "@mui/icons-material/LockOutlined";
+import EmailOutlinedIcon          from "@mui/icons-material/EmailOutlined";
+import LockOutlinedIcon           from "@mui/icons-material/LockOutlined";
 import VisibilityOffOutlinedIcon  from "@mui/icons-material/VisibilityOffOutlined";
+import OzoneLogo                  from "../../../assets/Ozone_Logo.png";
+import { useAdminLogin }          from "../features/auth/hooks/useAdminLogin";
+// ↑ import path assumes: features/auth/hooks/useAdminLogin.js
 
 // ─── Font — leaf elements only ────────────────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
-// ─── SVG network mesh background (matches the screenshot) ────────────────────
+// ─── SVG network mesh background ─────────────────────────────────────────────
 const NetworkBg = () => (
   <svg
     className="absolute inset-0 w-full h-full pointer-events-none select-none"
     xmlns="http://www.w3.org/2000/svg"
     style={{ opacity: 0.18 }}
   >
-    {/* Nodes */}
     {[
       [1220,260],[1310,340],[1380,440],[1270,480],[1180,390],
       [1420,300],[1340,210],[1460,400],[1160,510],[1290,560],
@@ -25,7 +30,6 @@ const NetworkBg = () => (
     ].map(([cx, cy], i) => (
       <circle key={i} cx={cx} cy={cy} r="4" fill="#aaa" />
     ))}
-    {/* Edges — mimics the screenshot's sparse mesh */}
     {[
       [[1220,260],[1310,340]],[[1310,340],[1380,440]],[[1380,440],[1270,480]],
       [[1270,480],[1180,390]],[[1180,390],[1220,260]],[[1310,340],[1420,300]],
@@ -47,63 +51,30 @@ const NetworkBg = () => (
   </svg>
 );
 
-// ─── Ozone logo mark (SVG — matches the circular C+ZONE mark) ────────────────
-const OzoneLogo = () => (
-  <div className="flex flex-col items-center gap-3 mb-6">
-    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Outer ring arc */}
-      <circle cx="40" cy="40" r="36" stroke="#888" strokeWidth="2.5" fill="none" />
-      {/* Red arc sweep (bottom-right) */}
-      <path
-        d="M 40 4 A 36 36 0 0 1 72 56"
-        stroke="#e53935" strokeWidth="3.5" fill="none" strokeLinecap="round"
-      />
-      {/* Inner circle */}
-      <circle cx="40" cy="40" r="26" stroke="#555" strokeWidth="1.5" fill="#1a1a1a" />
-      {/* ZONE text */}
-      <text x="40" y="45" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="800" fontFamily="'Sora','Segoe UI',sans-serif" letterSpacing="1">
-        ZONE
-      </text>
-      {/* Small C arc on left of text */}
-      <path
-        d="M 21 34 A 8 8 0 0 0 21 46"
-        stroke="#e53935" strokeWidth="2.5" fill="none" strokeLinecap="round"
-      />
-    </svg>
-  </div>
-);
-
 // ─── AdminLogin ───────────────────────────────────────────────────────────────
-const AdminLogin = ({ onLogin = () => {} }) => {
+const AdminLogin = () => {
   const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
   const [showPw,   setShowPw]   = useState(false);
-  const [loading,  setLoading]  = useState(false);
-  const [error,    setError]    = useState("");
+
+  // All async state (loading, error) and the login call come from the hook.
+  // The hook handles token storage and navigation to /admin/dashboard on success.
+  const { loading, error, login } = useAdminLogin();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!email || !password) { setError("Please fill in all fields."); return; }
-    setError("");
-    setLoading(true);
-    // Replace with real auth call
-    setTimeout(() => { setLoading(false); onLogin({ email, password }); }, 1200);
+    if (!email || !password) return; // HTML5 `required` handles empty fields
+    login({ email, password });
   };
 
   return (
-    // Full-screen black background — no fontFamily to avoid cascade
     <div className="relative w-full min-h-screen bg-[#111111] flex flex-col items-center justify-center overflow-hidden px-4">
-
-      {/* Network mesh — decorative, positioned to match screenshot (right + bottom-left) */}
       <NetworkBg />
 
-      {/* Card + content — z above the mesh */}
       <div className="relative z-10 flex flex-col items-center w-full max-w-sm">
 
-        {/* Logo */}
-        <OzoneLogo />
+        <img src={OzoneLogo} alt="Ozone Logo" className="w-20 h-20 mb-6" />
 
-        {/* Title */}
         <h1
           className="text-white mb-6 text-center leading-none"
           style={{ ...SORA, fontSize: 26, fontWeight: 600, letterSpacing: "0.02em" }}
@@ -111,53 +82,50 @@ const AdminLogin = ({ onLogin = () => {} }) => {
           Admin Login
         </h1>
 
-        {/* Card */}
         <div
           className="w-full rounded-2xl border border-white/10 px-8 py-8"
           style={{ backgroundColor: "#2a2a2a" }}
         >
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
-            {/* Email field */}
-            <div className="flex flex-col gap-0">
-              <div className="flex items-center gap-3 border-b border-white/20 pb-2 focus-within:border-white/60 transition-colors">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email"
-                  className="flex-1 bg-transparent text-white placeholder-white/40 outline-none border-none text-[14px]"
-                  style={INTER}
-                />
-                <EmailOutlinedIcon style={{ fontSize: 20, color: "rgba(255,255,255,0.5)" }} />
-              </div>
+            {/* Email */}
+            <div className="flex items-center gap-3 border-b border-white/20 pb-2 focus-within:border-white/60 transition-colors">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                required
+                className="flex-1 bg-transparent text-white placeholder-white/40 outline-none border-none text-[14px]"
+                style={INTER}
+              />
+              <EmailOutlinedIcon style={{ fontSize: 20, color: "rgba(255,255,255,0.5)" }} />
             </div>
 
-            {/* Password field */}
-            <div className="flex flex-col gap-0">
-              <div className="flex items-center gap-3 border-b border-white/20 pb-2 focus-within:border-white/60 transition-colors">
-                <input
-                  type={showPw ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="flex-1 bg-transparent text-white placeholder-white/40 outline-none border-none text-[14px]"
-                  style={INTER}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPw((p) => !p)}
-                  className="flex items-center bg-transparent border-none cursor-pointer p-0 text-white/50 hover:text-white/80 transition-colors"
-                >
-                  {showPw
-                    ? <VisibilityOffOutlinedIcon style={{ fontSize: 20 }} />
-                    : <LockOutlinedIcon style={{ fontSize: 20 }} />
-                  }
-                </button>
-              </div>
+            {/* Password */}
+            <div className="flex items-center gap-3 border-b border-white/20 pb-2 focus-within:border-white/60 transition-colors">
+              <input
+                type={showPw ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                required
+                className="flex-1 bg-transparent text-white placeholder-white/40 outline-none border-none text-[14px]"
+                style={INTER}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((p) => !p)}
+                className="flex items-center bg-transparent border-none cursor-pointer p-0 text-white/50 hover:text-white/80 transition-colors"
+              >
+                {showPw
+                  ? <VisibilityOffOutlinedIcon style={{ fontSize: 20 }} />
+                  : <LockOutlinedIcon style={{ fontSize: 20 }} />
+                }
+              </button>
             </div>
 
-            {/* Error message */}
+            {/* Error — only shown when the API returns an error */}
             {error && (
               <p
                 className="text-red-400 text-center -mt-2"
@@ -167,28 +135,22 @@ const AdminLogin = ({ onLogin = () => {} }) => {
               </p>
             )}
 
-            {/* Sign In button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
               className="w-full py-3 rounded-lg text-white font-bold transition-all duration-150 hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              style={{
-                ...SORA,
-                fontSize: 15,
-                fontWeight: 700,
-                letterSpacing: "0.04em",
-                backgroundColor: "#e53935",
-              }}
+              style={{ ...SORA, fontSize: 15, fontWeight: 700, letterSpacing: "0.04em", backgroundColor: "#e53935" }}
             >
-              {loading ? (
-                <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-              ) : "Sign In"}
+              {loading
+                ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                : "Sign In"
+              }
             </button>
 
           </form>
         </div>
 
-        {/* Subtle footer */}
         <p
           className="mt-5 text-white/20 text-center"
           style={{ ...INTER, fontSize: 11, fontWeight: 400 }}
