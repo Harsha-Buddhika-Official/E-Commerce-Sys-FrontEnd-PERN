@@ -8,19 +8,18 @@ export const useAutoLogout = () => {
     useEffect(() => {
 
         const token = localStorage.getItem(TOKEN_KEY);
-
         if (!token) return;
-
         const expiryTime = getTokenExpiryTime(token);
-        console.log("⏰ Token Expiry Time:", new Date(expiryTime).toLocaleString());
         const timeout = expiryTime - Date.now();
 
         if (timeout <= 0) {
+            console.alert("⏰ Token has expired.");
             logout(navigate);
             return;
         }
 
         const timer = setTimeout(() => {
+            console.alert("⏰ Token has expired.");
             logout(navigate);
         }, timeout);
 

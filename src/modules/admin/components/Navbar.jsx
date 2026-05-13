@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MenuIcon              from "@mui/icons-material/Menu";
 import SearchIcon            from "@mui/icons-material/Search";
 import CloseIcon             from "@mui/icons-material/Close";
 import NotificationOverlay   from "./NotificationOverlay";
+import TimeoutOverlay        from "./TimeoutOverlay";
 
 // ─── Font constant — leaf elements only ───────────────────────────────────────
 const SORA = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
@@ -19,6 +20,15 @@ const Navbar = ({
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
+  const [currentTime, setCurrentTime] = useState(() => formatCurrentTime());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(formatCurrentTime());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     // Full-width black bar with relative positioning for absolute children
@@ -28,7 +38,7 @@ const Navbar = ({
     >
 
       {/* ── LEFT: hamburger + title ── */}
-      <div className="flex items-center gap-3 shrink-0 max-w-[200px]">
+      <div className="flex items-center gap-3 shrink-0 max-w-50">
         <button
           onClick={onMenuClick}
           className="flex items-center justify-center text-white hover:text-white/70 transition-colors bg-transparent border-none cursor-pointer p-1 -ml-1"
@@ -78,12 +88,27 @@ const Navbar = ({
       </div>
 
       {/* ── RIGHT: notification overlay (absolutely positioned) ── */}
-      <div className="absolute right-4 sm:right-6">
+      <div className="absolute right-4 sm:right-6 flex items-center gap-3 text-white">
+        <TimeoutOverlay />
+        <span
+          className="hidden sm:inline-flex text-[12px] font-medium text-white/70 tracking-wide"
+          aria-label="Current time"
+        >
+          {currentTime}
+        </span>
         <NotificationOverlay notifications={notifications} />
       </div>
 
     </nav>
   );
 };
+
+function formatCurrentTime() {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date());
+}
 
 export default Navbar;

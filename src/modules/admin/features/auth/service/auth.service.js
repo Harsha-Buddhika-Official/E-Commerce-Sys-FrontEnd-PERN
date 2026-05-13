@@ -19,6 +19,7 @@ export const loginAdmin = async (credentials) => {
 
     // Store token for subsequent authenticated requests.
     localStorage.setItem(TOKEN_KEY, token);
+    console.log(token);
 
     return {
         token,
@@ -35,6 +36,5 @@ export const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
 /** Returns true if a valid, unexpired token exists in storage. */
 export const isAuthenticated = () => {
     const token = getStoredToken();
-
     return Boolean(token) && !isTokenExpired(token);
 };

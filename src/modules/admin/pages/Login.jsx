@@ -1,13 +1,9 @@
-// features/auth/pages/AdminLogin.jsx
-// Layer: UI — renders form state only. No API calls, no token logic.
-
 import { useState } from "react";
 import EmailOutlinedIcon          from "@mui/icons-material/EmailOutlined";
 import LockOutlinedIcon           from "@mui/icons-material/LockOutlined";
 import VisibilityOffOutlinedIcon  from "@mui/icons-material/VisibilityOffOutlined";
 import OzoneLogo                  from "../../../assets/Ozone_Logo.png";
 import { useAdminLogin }          from "../features/auth/hooks/useAdminLogin";
-// ↑ import path assumes: features/auth/hooks/useAdminLogin.js
 
 // ─── Font — leaf elements only ────────────────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
