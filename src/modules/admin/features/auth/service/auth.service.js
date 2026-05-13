@@ -1,4 +1,5 @@
 import { getAdminLogin } from "../api/auth.api";
+import { isTokenExpired } from "../utils/token.utils";
 
 const TOKEN_KEY = "admin_token";
 
@@ -31,5 +32,9 @@ export const logoutAdmin = () => localStorage.removeItem(TOKEN_KEY);
 /** Returns the stored JWT or null if not logged in. */
 export const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
 
-/** Returns true if a token exists in storage. */
-export const isAuthenticated = () => Boolean(getStoredToken());
+/** Returns true if a valid, unexpired token exists in storage. */
+export const isAuthenticated = () => {
+    const token = getStoredToken();
+
+    return Boolean(token) && !isTokenExpired(token);
+};
