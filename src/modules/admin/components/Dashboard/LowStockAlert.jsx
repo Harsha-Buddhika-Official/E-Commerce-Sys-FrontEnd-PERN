@@ -1,5 +1,4 @@
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
-import ReplayOutlinedIcon        from "@mui/icons-material/ReplayOutlined";
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
@@ -26,7 +25,7 @@ function StockBar({ stock, maxStock }) {
       </div>
       {/* Count */}
       <span
-        className="flex-shrink-0 w-6 text-right"
+        className="shrink-0 w-6 text-right"
         style={{ ...INTER, fontSize: 13, fontWeight: 700, color: "#ef4444" }}
       >
         {stock}
@@ -42,9 +41,8 @@ function StockBar({ stock, maxStock }) {
 //   title       — section heading
 
 const LowStockAlert = ({
-  items     = [],
-  onRestock = () => {},
-  title     = "LOW STOCK ALERT",
+  items = [],
+  title = "LOW STOCK ALERT",
 }) => (
   <div
     className="w-full bg-white rounded-2xl p-5 flex flex-col gap-4"
@@ -79,25 +77,8 @@ const LowStockAlert = ({
               >
                 {item.name}
               </p>
-              <StockBar stock={item.stock} maxStock={item.maxStock} />
+              <StockBar stock={item.stock_quantity} maxStock={5} />
             </div>
-
-            {/* Right: Restock button */}
-            <button
-              onClick={() => onRestock(item)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-white transition-all duration-150 hover:brightness-110 active:scale-95"
-              style={{
-                ...INTER,
-                fontSize: 12,
-                fontWeight: 700,
-                backgroundColor: "#1a73e8",
-                whiteSpace: "nowrap",
-              }}
-            >
-              <ReplayOutlinedIcon style={{ fontSize: 14 }} />
-              Restock
-            </button>
-
           </div>
         ))
       )}

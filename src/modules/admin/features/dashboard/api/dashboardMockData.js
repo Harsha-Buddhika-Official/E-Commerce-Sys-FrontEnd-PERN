@@ -1,33 +1,4 @@
-export const DASHBOARD_STATS = [
-  {
-    title: "Total Revenue",
-    value: "LKR 1,40,689.00",
-    change: 8.5,
-    changeLabel: "Up from last month",
-    preset: "revenue",
-  },
-  {
-    title: "Orders This Month",
-    value: "50",
-    change: 10,
-    changeLabel: "Up from last month",
-    preset: "orders",
-  },
-  {
-    title: "Active Products",
-    value: "351",
-    change: -5,
-    changeLabel: "out of stock",
-    preset: "customers",
-  },
-  {
-    title: "Pending Orders",
-    value: "21",
-    change: 20,
-    changeLabel: "Shipped",
-    preset: "inventory",
-  },
-];
+
 
 export const DASHBOARD_RECENT_ORDERS = Array.from({ length: 32 }, (_, i) => ({
   id: `#${4231 + i}`,

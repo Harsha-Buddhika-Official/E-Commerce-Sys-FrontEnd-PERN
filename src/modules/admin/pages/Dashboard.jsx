@@ -5,11 +5,11 @@ import LowStockAlert  from "../components/Dashboard/LowStockAlert";
 import { getDashboardData } from "../features/dashboard/api/dashboardService";
 import { useStatusBar } from "../features/dashboard/hooks/useStatusBar";
 import { buildDashboardStats } from "../features/dashboard/utils/dashboardStats";
+import { useStock } from "../features/dashboard/hooks/useStock";
 
 // ─── AdminDashboard ───────────────────────────────────────────────────────────
 const AdminDashboard = () => {
   const [recentOrders, setRecentOrders] = useState([]);
-  const [lowStockItems, setLowStockItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const {
     totalRevenueThisMonth,
@@ -23,6 +23,12 @@ const AdminDashboard = () => {
     loading: statusLoading,
     error: statusError,
   } = useStatusBar();
+  const {
+    lowStockItems,
+    loading: lowStockLoading,
+    error: lowStockError,
+  } = useStock();
+  const dashboardError = statusError || lowStockError;
 
   const stats = buildDashboardStats({
     totalRevenueThisMonth,
@@ -44,7 +50,6 @@ const AdminDashboard = () => {
         if (!isMounted) return;
 
         setRecentOrders(data.recentOrders);
-        setLowStockItems(data.lowStockItems);
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
       } finally {
@@ -61,7 +66,6 @@ const AdminDashboard = () => {
     };
   }, []);
 
-  const handleRestock   = (item)    => console.log("Restock:", item.name);
   const handleViewOrder = (orderId) => console.log("View order:", orderId);
 
   return (
@@ -74,12 +78,12 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {(isLoading || statusLoading) && (
+      {(isLoading || statusLoading || lowStockLoading) && (
         <p className="text-sm text-gray-500 mb-6">Loading dashboard data...</p>
       )}
 
-      {statusError && (
-        <p className="text-sm text-red-500 mb-6">{statusError}</p>
+      {dashboardError && (
+        <p className="text-sm text-red-500 mb-6">{dashboardError}</p>
       )}
 
       {/* ── Recent Orders + Low Stock ── */}
@@ -94,10 +98,9 @@ const AdminDashboard = () => {
         </div>
 
         {/* Low Stock Alert — fixed width sidebar panel */}
-        <div className="w-full lg:w-[280px] xl:w-[300px] flex-shrink-0">
+        <div className="w-full lg:w-70 xl:w-75 shrink-0">
           <LowStockAlert
             items={lowStockItems}
-            onRestock={handleRestock}
           />
         </div>
 

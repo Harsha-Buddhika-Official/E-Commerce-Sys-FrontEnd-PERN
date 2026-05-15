@@ -61,7 +61,7 @@ function DeleteModal({ product, onConfirm, onCancel }) {
         {/* Header */}
         <div className="flex items-center gap-3">
           <div
-            className="flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0"
+            className="flex items-center justify-center w-10 h-10 rounded-full shrink-0"
             style={{ backgroundColor: "#fef2f2" }}
           >
             <WarningAmberOutlinedIcon style={{ fontSize: 20, color: "#e53935" }} />
@@ -99,107 +99,6 @@ function DeleteModal({ product, onConfirm, onCancel }) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// VIEW DETAIL MODAL
-// ══════════════════════════════════════════════════════════════════════════════
-function ViewModal({ product, onClose }) {
-  if (!product) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div
-        className="bg-white rounded-2xl overflow-hidden w-full flex flex-col"
-        style={{ maxWidth: 500, maxHeight: "90vh", border: "1px solid #f0f0f0", boxShadow: "0 8px 40px rgba(0,0,0,0.16)" }}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#f0f0f0]">
-          <h3 style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>
-            Product Details
-          </h3>
-          <button
-            onClick={onClose}
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-transparent border border-gray-200 text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all cursor-pointer"
-          >
-            <CloseIcon style={{ fontSize: 16 }} />
-          </button>
-        </div>
-
-        <div className="overflow-y-auto flex-1 px-6 py-5 flex flex-col gap-5">
-          {/* Product image */}
-          <div
-            className="w-full rounded-xl bg-[#f7f7f7] border border-[#f0f0f0] flex items-center justify-center overflow-hidden"
-            style={{ height: 200 }}
-          >
-            {product.image ? (
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-full object-contain p-6"
-              />
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <InventoryOutlinedIcon style={{ fontSize: 52, color: "#ddd" }} />
-                <span style={{ ...INTER, fontSize: 11, color: "#bbb" }}>No Image</span>
-              </div>
-            )}
-          </div>
-
-          {/* Info grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: "Product Name", value: product.name,     full: true },
-              { label: "Brand",        value: product.brand             },
-              { label: "Category",     value: product.category          },
-              { label: "Stock Count",  value: product.stockCount        },
-              ...(product.specs ? [{ label: "Specs", value: product.specs, full: true }] : []),
-            ].map(({ label, value, full }) => (
-              <div key={label} className={full ? "col-span-2" : ""}>
-                <p
-                  className="mb-1"
-                  style={{ ...INTER, fontSize: 10, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.08em" }}
-                >
-                  {label}
-                </p>
-                <p style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#111" }}>
-                  {value ?? "—"}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Pricing block */}
-          <div
-            className="rounded-xl p-4 flex flex-col gap-2.5"
-            style={{ backgroundColor: "#f9f9f9", border: "1px solid #ebebeb" }}
-          >
-            <p style={{ ...SORA, fontSize: 11, fontWeight: 800, color: "#111", letterSpacing: "0.08em" }}>
-              PRICING
-            </p>
-            {[
-              { label: "Base Price",    value: fmt(product.basePrice)     },
-              { label: "Selling Price", value: fmt(product.sellingPrice), accent: true  },
-              { label: "Discount",      value: fmt(product.discountPrice) },
-            ].map(({ label, value, accent }) => (
-              <div key={label} className="flex items-center justify-between">
-                <span style={{ ...INTER, fontSize: 12, color: "#888" }}>{label}</span>
-                <span
-                  style={{
-                    ...INTER,
-                    fontSize: 13,
-                    fontWeight: 700,
-                    color: accent ? "#e53935" : "#111",
-                  }}
-                >
-                  {value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
 // LIST VIEW ROW
 // ══════════════════════════════════════════════════════════════════════════════
 function ProductListRow({ product, onView, onEdit, onDelete }) {
@@ -209,7 +108,7 @@ function ProductListRow({ product, onView, onEdit, onDelete }) {
       {/* Thumbnail */}
       <td style={{ padding: "11px 16px", width: 56 }}>
         <div
-          className="flex items-center justify-center rounded-lg overflow-hidden flex-shrink-0"
+          className="flex items-center justify-center rounded-lg overflow-hidden shrink-0"
           style={{ width: 44, height: 44, backgroundColor: "#f5f5f5", border: "1px solid #ebebeb" }}
         >
           {product.image ? (
@@ -242,7 +141,7 @@ function ProductListRow({ product, onView, onEdit, onDelete }) {
       <td style={{ padding: "11px 16px" }}>
         <div className="flex items-center gap-1.5">
           <span
-            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            className="w-1.5 h-1.5 rounded-full shrink-0"
             style={{ backgroundColor: inStock ? "#16a34a" : "#ef4444" }}
           />
           <span style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#111" }}>
@@ -301,7 +200,6 @@ const Products = () => {
   const [viewMode,     setViewMode]     = useState("grid"); // "grid" | "list"
   const [page,         setPage]         = useState(1);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [viewTarget,   setViewTarget]   = useState(null);
   const [loading]                       = useState(false);
 
   /* Category list — derived once from products */
@@ -329,7 +227,6 @@ const Products = () => {
   const handleViewMode = (m) => { setViewMode(m);    setPage(1); };
 
   /* Callbacks */
-  const handleView   = useCallback((p) => setViewTarget(p),   []);
   const handleEdit   = useCallback((p) => console.log("Edit:", p.id), []);
   const handleDelete = useCallback((p) => setDeleteTarget(p), []);
   const handleDeleteConfirm = useCallback((p) => {
@@ -337,6 +234,7 @@ const Products = () => {
     setDeleteTarget(null);
   }, []);
   const navigate = useNavigate();
+  const handleView   = useCallback((p) => navigate(`/admin/products/${p.id}`), [navigate]);
   const handleAddProduct = useCallback(() => navigate("add"), [navigate]);
 
   /* Page number array */
@@ -356,10 +254,6 @@ const Products = () => {
         product={deleteTarget}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTarget(null)}
-      />
-      <ViewModal
-        product={viewTarget}
-        onClose={() => setViewTarget(null)}
       />
 
       {/* ── Toolbar row ── */}
@@ -414,7 +308,7 @@ const Products = () => {
 
         {/* View toggle */}
         <div
-          className="flex items-center rounded-xl overflow-hidden border border-[#e5e7eb] flex-shrink-0"
+          className="flex items-center rounded-xl overflow-hidden border border-[#e5e7eb] shrink-0"
         >
           {[
             { mode: "grid", Icon: GridViewOutlinedIcon  },
@@ -442,7 +336,7 @@ const Products = () => {
         {/* Add Products */}
         <button
           onClick={handleAddProduct}
-          className="flex items-center gap-1.5 text-white transition-all duration-150 hover:bg-[#1558c0] whitespace-nowrap flex-shrink-0"
+          className="flex items-center gap-1.5 text-white transition-all duration-150 hover:bg-[#1558c0] whitespace-nowrap shrink-0"
           style={{
             ...SORA,
             fontSize: 13,

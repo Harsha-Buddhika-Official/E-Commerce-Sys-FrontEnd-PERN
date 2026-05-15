@@ -35,7 +35,7 @@ const PriceRow = ({ label, value, accent = false }) => (
 //   onEdit   — (product) => void
 //   onDelete — (product) => void
 
-const AdminProductCard = ({ product, onView, onEdit, onDelete }) => {
+const AdminProductCard = ({ product, onEdit, onDelete }) => {
   const [imgError, setImgError] = useState(false);
 
   const fmt = (amount) =>
@@ -182,7 +182,7 @@ const AdminProductCard = ({ product, onView, onEdit, onDelete }) => {
 
           {/* View — ghost */}
           <button
-            onClick={() => onView?.(product)}
+            // onClick={() => onView?.(product)}
             className="flex items-center gap-1 transition-all duration-150 hover:bg-gray-100"
             style={{
               ...INTER,

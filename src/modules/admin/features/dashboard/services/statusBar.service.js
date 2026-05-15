@@ -1,4 +1,4 @@
-import {getStatusBarData} from "../api/statusBar.api";
+import {getStatusBarData} from "../api/Dashboard.api";
 
 export const fetchStatusBarData = async () => {
   try {

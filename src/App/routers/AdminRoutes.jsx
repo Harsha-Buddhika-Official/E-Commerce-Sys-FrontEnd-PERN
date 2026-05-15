@@ -6,6 +6,7 @@ import Dashboard from "../../modules/admin/pages/Dashboard.jsx";
 import Orders from "../../modules/admin/pages/Orders.jsx";
 import Products from "../../modules/admin/pages/Products.jsx";
 import AddProductPage from "../../modules/admin/pages/AddProduct.jsx";
+import ProductInfo from "../../modules/admin/pages/ProductInfo.jsx";
 
 export default function AdminRoutes() {
   return (
@@ -19,6 +20,7 @@ export default function AdminRoutes() {
           <Route path="/orders"    element={<Orders />} />
           <Route path="/products"  element={<Products />} />
           <Route path="/products/add" element={<AddProductPage />} />
+          <Route path="/products/:id" element={<ProductInfo />} />
         </Route>
       </Route>
 
