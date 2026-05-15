@@ -9,6 +9,7 @@ import CampaignOutlinedIcon     from "@mui/icons-material/CampaignOutlined";
 import AssessmentOutlinedIcon   from "@mui/icons-material/AssessmentOutlined";
 import SettingsOutlinedIcon     from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon       from "@mui/icons-material/LogoutOutlined";
+import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
 import { logout } from "../features/auth/hooks/useAuth";
 import Ozone_Logo from "../../../assets/Ozone_Logo.png"
 
@@ -39,6 +40,8 @@ const NAV_GROUPS = [
     group: "SYSTEM",
     items: [
       { id: "settings",  label: "Settings",  icon: <SettingsOutlinedIcon style={{ fontSize: 20 }} /> },
+      { id: "Admin Management",  label: "Admin Management",  icon: <SupervisorAccountOutlinedIcon style={{ fontSize: 20 }} /> },
+
     ],
   },
 ];
@@ -53,6 +56,7 @@ const ROUTE_MAP = {
   promotions: "/admin/promotions",
   reports:    "/admin/reports",
   settings:   "/admin/settings",
+  "Admin Management": "/admin/admin-management",
 };
 
 // ─── AdminSidebar ─────────────────────────────────────────────────────────────

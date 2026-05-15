@@ -1,7 +1,6 @@
 import {
   DASHBOARD_LOW_STOCK_ITEMS,
   DASHBOARD_RECENT_ORDERS,
-  DASHBOARD_STATS,
 } from "./dashboardMockData";
 
 const API_DELAY_MS = 250;
@@ -11,11 +10,6 @@ const wait = (ms) => new Promise((resolve) => {
 });
 
 const cloneData = (data) => JSON.parse(JSON.stringify(data));
-
-export async function getDashboardStats() {
-  await wait(API_DELAY_MS);
-  return cloneData(DASHBOARD_STATS);
-}
 
 export async function getRecentOrders() {
   await wait(API_DELAY_MS);
@@ -28,14 +22,12 @@ export async function getLowStockItems() {
 }
 
 export async function getDashboardData() {
-  const [stats, recentOrders, lowStockItems] = await Promise.all([
-    getDashboardStats(),
+  const [recentOrders, lowStockItems] = await Promise.all([
     getRecentOrders(),
     getLowStockItems(),
   ]);
 
   return {
-    stats,
     recentOrders,
     lowStockItems,
   };

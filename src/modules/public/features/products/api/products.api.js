@@ -23,3 +23,6 @@ export const getFilteredProducts = (categoryId, filters) =>
 //product details
 export const getProductDetails = (productId) =>
   API.get(`/products/${productId}`);
+
+export const getProductByName = (name) =>
+  API.get(`/products/search`);

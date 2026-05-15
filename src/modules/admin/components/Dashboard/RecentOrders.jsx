@@ -118,10 +118,9 @@ const RecentOrders = ({
         >
           {/* ── Explicit column widths via <colgroup> for reliable gaps ── */}
           <colgroup>
-            <col style={{ width: COLUMNS[0].w }} />   {/* Order ID  */}
-            <col style={{ width: COLUMNS[1].w }} />   {/* Product — flex */}
-            <col style={{ width: COLUMNS[2].w }} />   {/* Amount   */}
-            <col style={{ width: COLUMNS[3].w }} />   {/* Status   */}
+            {COLUMNS.map((col) => (
+              <col key={col.key} style={{ width: col.w }} />
+            ))}
           </colgroup>
 
           {/* Head */}

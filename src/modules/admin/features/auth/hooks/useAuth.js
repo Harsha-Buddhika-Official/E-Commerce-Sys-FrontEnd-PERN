@@ -13,13 +13,11 @@ export const useAutoLogout = () => {
         const timeout = expiryTime - Date.now();
 
         if (timeout <= 0) {
-            console.alert("⏰ Token has expired.");
             logout(navigate);
             return;
         }
 
         const timer = setTimeout(() => {
-            console.alert("⏰ Token has expired.");
             logout(navigate);
         }, timeout);
 

@@ -20,6 +20,15 @@ import { mockProducts }          from "../features/products/mockProducts";
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
+const LIST_COLUMNS = [
+  { key: "thumb", width: "6%" },
+  { key: "name", width: "28%" },
+  { key: "category", width: "14%" },
+  { key: "stock", width: "10%" },
+  { key: "price", width: "16%" },
+  { key: "actions", width: "26%" },
+];
+
 // ─── Pagination config ────────────────────────────────────────────────────────
 const GRID_PER_PAGE = 10;
 const LIST_PER_PAGE = 12;
@@ -483,12 +492,9 @@ const Products = () => {
               style={{ tableLayout: "fixed", minWidth: 700 }}
             >
               <colgroup>
-                <col style={{ width: "6%"  }} />  {/* thumb     */}
-                <col style={{ width: "28%" }} />  {/* name      */}
-                <col style={{ width: "14%" }} />  {/* category  */}
-                <col style={{ width: "10%" }} />  {/* stock     */}
-                <col style={{ width: "16%" }} />  {/* price     */}
-                <col style={{ width: "26%" }} />  {/* actions   */}
+                {LIST_COLUMNS.map((col) => (
+                  <col key={col.key} style={{ width: col.width }} />
+                ))}
               </colgroup>
               <thead>
                 <tr className="border-b border-[#f0f0f0]">

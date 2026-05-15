@@ -18,23 +18,12 @@ const ICON_PRESETS = {
   inventory: { icon: <Inventory2OutlinedIcon    style={{ fontSize: 22 }} />, bg: "#fce7f3", color: "#ec4899" },
 };
 
-// ─── AdminStatCard ────────────────────────────────────────────────────────────
-// Props:
-//   title         — e.g. "Total Revenue"
-//   value         — e.g. "LKR 1,40,689.00"
-//   change        — number  e.g. 8.5  (positive = up, negative = down, 0 = flat)
-//   changeLabel   — e.g. "Up from last month" / "Down from last week"
-//   preset        — "revenue" | "orders" | "customers" | "inventory"
-//   customIcon    — optional JSX to override preset icon
-//   iconBg        — optional hex to override preset icon background colour
-//   iconColor     — optional hex to override preset icon colour
-
 const StatCard = ({
-  title        = "Total Revenue",
-  value        = "LKR 1,40,689.00",
-  change       = 8.5,
-  changeLabel  = "Up from last month",
-  preset       = "revenue",
+  title        = "",
+  value        = "",
+  change       = 0,
+  changeLabel  = "",
+  preset       = "",
   customIcon   = null,
   iconBg       = null,
   iconColor    = null,
