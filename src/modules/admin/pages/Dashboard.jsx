@@ -1,16 +1,12 @@
-import { useEffect, useState } from "react";
 import StatCard  from "../components/Dashboard/StatCard";
 import RecentOrders   from "../components/Dashboard/RecentOrders";
 import LowStockAlert  from "../components/Dashboard/LowStockAlert";
-import { getDashboardData } from "../features/dashboard/api/dashboardService";
 import { useStatusBar } from "../features/dashboard/hooks/useStatusBar";
 import { buildDashboardStats } from "../features/dashboard/utils/dashboardStats";
 import { useStock } from "../features/dashboard/hooks/useStock";
 
 // ─── AdminDashboard ───────────────────────────────────────────────────────────
 const AdminDashboard = () => {
-  const [recentOrders, setRecentOrders] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const {
     totalRevenueThisMonth,
     comparedRevenuePercentage,
@@ -41,31 +37,6 @@ const AdminDashboard = () => {
     shippedOrders,
   });
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadDashboardData = async () => {
-      try {
-        const data = await getDashboardData();
-        if (!isMounted) return;
-
-        setRecentOrders(data.recentOrders);
-      } catch (error) {
-        console.error("Failed to load dashboard data:", error);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadDashboardData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   const handleViewOrder = (orderId) => console.log("View order:", orderId);
 
   return (
@@ -78,7 +49,7 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {(isLoading || statusLoading || lowStockLoading) && (
+      {(statusLoading || lowStockLoading) && (
         <p className="text-sm text-gray-500 mb-6">Loading dashboard data...</p>
       )}
 
@@ -91,10 +62,7 @@ const AdminDashboard = () => {
 
         {/* Recent Orders — takes up 2/3 of the row */}
         <div className="flex-1 min-w-0">
-          <RecentOrders
-            orders={recentOrders}
-            onViewOrder={handleViewOrder}
-          />
+          <RecentOrders onViewOrder={handleViewOrder} />
         </div>
 
         {/* Low Stock Alert — fixed width sidebar panel */}
