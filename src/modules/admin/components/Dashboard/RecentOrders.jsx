@@ -3,6 +3,7 @@ import OpenInNewOutlinedIcon  from "@mui/icons-material/OpenInNewOutlined";
 import KeyboardArrowLeftIcon  from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
+import { useOrders } from "../../features/orders/hooks/useOrders";
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
@@ -29,13 +30,6 @@ function StatusBadge({ status }) {
   );
 }
 
-// ─── Mock data (used when no orders prop is passed) ───────────────────────────
-const MOCK_ORDERS = Array.from({ length: 32 }, (_, i) => ({
-  id:      `#${4231 + i}`,
-  product: ["RTX 4080 Super 16GB", "Intel Core i9-14900K", "Samsung 990 Pro 2TB", "G.Skill Trident Z5 32GB", "ASUS ROG B650-E"][i % 5],
-  amount:  [351000, 189900, 62900, 38900, 99900][i % 5],
-  status:  ["Paid", "Paid", "Pending", "Processing", "Paid", "Cancelled", "Paid", "Paid"][i % 8],
-}));
 
 const ROWS_PER_PAGE  = 10;
 const STATUS_FILTERS = ["All", "Paid", "Pending", "Processing", "Cancelled"];
@@ -44,18 +38,19 @@ const STATUS_FILTERS = ["All", "Paid", "Pending", "Processing", "Cancelled"];
 // table-layout:fixed is REQUIRED — without it browsers ignore colgroup widths
 // and let content stretch columns freely (the gap problem in the screenshot).
 const COLUMNS = [
-  { key: "id",      label: "Order ID",     w: "20%"  },
-  { key: "product", label: "Product",      w: "40%"  },
-  { key: "amount",  label: "Total Amount", w: "22%"  },
-  { key: "status",  label: "Status",       w: "18%"  },
+  { key: "id",       label: "Order ID",     w: "18%" },
+  { key: "product",  label: "Product",      w: "36%" },
+  { key: "quantity", label: "Quantity",     w: "10%" },
+  { key: "amount",   label: "Total Amount", w: "20%" },
+  { key: "status",   label: "Status",       w: "16%" },
 ];
 
 // ─── RecentOrders ─────────────────────────────────────────────────────────────
 const RecentOrders = ({
-  orders      = MOCK_ORDERS,
   onViewOrder = () => {},
   title       = "RECENT ORDERS",
 }) => {
+  const { orders, loading, error } = useOrders();
   const [page,         setPage]         = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
 
@@ -74,6 +69,30 @@ const RecentOrders = ({
     if (end - start < max - 1) start = Math.max(1, end - max + 1);
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
+
+  // Handle loading state
+  if (loading) {
+    return (
+      <div
+        className="w-full bg-white rounded-2xl overflow-hidden flex items-center justify-center"
+        style={{ border: "1px solid #f0f0f0", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", minHeight: 400 }}
+      >
+        <p style={{ ...INTER, fontSize: 15, color: "#999" }}>Loading orders...</p>
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (error) {
+    return (
+      <div
+        className="w-full bg-white rounded-2xl overflow-hidden flex items-center justify-center"
+        style={{ border: "1px solid #f0f0f0", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", minHeight: 400 }}
+      >
+        <p style={{ ...INTER, fontSize: 15, color: "#dc2626" }}>Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -153,7 +172,7 @@ const RecentOrders = ({
             {pageOrders.length === 0 ? (
               <tr>
                 <td
-                  colSpan={4}
+                  colSpan={5}
                   className="text-center text-gray-400"
                   style={{ ...INTER, fontSize: 15, padding: "64px 24px" }}
                 >
@@ -187,10 +206,17 @@ const RecentOrders = ({
                     </span>
                   </td>
 
+                  {/* Quantity */}
+                  <td style={{ paddingTop: 14, paddingBottom: 14, paddingLeft: 20, paddingRight: 20, textAlign: "center" }}>
+                    <span style={{ ...INTER, fontSize: 15, fontWeight: 500, color: "#111" }}>
+                      {order.quantity}
+                    </span>
+                  </td>
+
                   {/* Amount */}
                   <td style={{ paddingTop: 14, paddingBottom: 14, paddingLeft: 20, paddingRight: 20 }}>
                     <span style={{ ...INTER, fontSize: 15, fontWeight: 500, color: "#111" }}>
-                      Rs {order.amount.toLocaleString()}
+                      Rs {order.totalAmount.toLocaleString()}
                     </span>
                   </td>
 
