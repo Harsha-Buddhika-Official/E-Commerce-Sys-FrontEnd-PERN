@@ -26,25 +26,16 @@ const PRESETS = {
 //   iconColor  — optional override for icon colour
 //   onClick    — optional click handler (e.g. filter table by this status)
 
-const OrderStatCard = ({
-  label     = "Pending",
-  count     = 0,
-  preset    = "pending",
-  iconBg    = null,
-  iconColor = null,
-  onClick   = null,
-}) => {
+const OrderStatCard = ({label,count,preset,iconBg,iconColor,}) => {
   const p            = PRESETS[preset] || PRESETS.pending;
   const resolvedBg   = iconBg    || p.bg;
   const resolvedClr  = iconColor || p.color;
 
   return (
     <div
-      onClick={onClick}
       className={`
         bg-white rounded-2xl flex items-center justify-between px-5 py-5 w-full
         transition-all duration-150
-        ${onClick ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.08)]" : ""}
       `}
       style={{
         border: "1px solid #f0f0f0",

@@ -1,4 +1,4 @@
-import { fetchOrders } from "../api/order.api";
+import { fetchAllOrders } from "../api/order.api";
 
 /**
  * Transform raw API data to table format
@@ -26,7 +26,7 @@ const transformOrderData = (rawOrders) => {
 
 export const getOrderDetails = async () => {
   try {
-    const response = await fetchOrders();
+    const response = await fetchAllOrders();
     // If this is an Axios response, the real payload lives at response.data
     const payload = response && typeof response === "object" && "data" in response
       ? response.data

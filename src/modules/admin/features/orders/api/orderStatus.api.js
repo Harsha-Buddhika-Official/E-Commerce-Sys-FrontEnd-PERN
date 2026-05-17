@@ -1,12 +1,11 @@
 import API from "../../../../../api/client";
 
-export const fetchOrderStats = () => API.get("/orders/admin/order-status-count");
-export const fetchAllOrders = () => API.get("/orders/admin/all");
-export const fetchOrderDetail = async (orderId) => {
-  if (!orderId) throw new Error("orderId is required");
-  const res = await API.get(`/orders/admin/${orderId}`);
-  return res.data;
-};
+/**
+ * Update order status for admin.
+ * POST /orders/admin/state/:id with body { newStatus }
+ * @param {string|number} orderId
+ * @param {string} newStatus
+ */
 export const updateOrderStatus = async (orderId, newStatus) => {
   if (!orderId) throw new Error("orderId is required");
   if (!newStatus) throw new Error("newStatus is required");

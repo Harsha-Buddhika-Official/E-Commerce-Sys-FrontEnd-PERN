@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import OpenInNewOutlinedIcon  from "@mui/icons-material/OpenInNewOutlined";
 import KeyboardArrowLeftIcon  from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
@@ -11,11 +12,12 @@ const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_STYLE = {
-  Paid:       { bg: "#dcfce7", color: "#16a34a" },
   Pending:    { bg: "#fef9c3", color: "#ca8a04" },
-  Completed:  { bg: "#dbeafe", color: "#1d4ed8" },
+  Paid:       { bg: "#dcfce7", color: "#16a34a" },
+  Processing: { bg: "#dbeafe", color: "#1d4ed8" },
+  Shipped:    { bg: "#fef3c7", color: "#d97706" },
+  Delivered:  { bg: "#d1fae5", color: "#059669" },
   Cancelled:  { bg: "#fee2e2", color: "#dc2626" },
-  Refunded:   { bg: "#f3e8ff", color: "#7c3aed" },
 };
 
 function StatusBadge({ status }) {
@@ -30,31 +32,23 @@ function StatusBadge({ status }) {
   );
 }
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-const MOCK_ORDERS = Array.from({ length: 48 }, (_, i) => ({
-  id:      `#${4231 + i}`,
-  product: ["RTX 4080 Super 16GB", "Intel Core i9-14900K", "Samsung 990 Pro 2TB", "G.Skill Trident Z5 32GB", "ASUS ROG B650-E"][i % 5],
-  email:   ["customer@example.com", "john.doe@gmail.com", "alice@company.lk", "buyer@email.com"][i % 4],
-  date:    ["May 1", "May 2", "May 3", "Apr 30", "Apr 28"][i % 5],
-  amount:  [351000, 189900, 62900, 38900, 99900][i % 5],
-  status:  ["Paid", "Paid", "Pending", "Completed", "Paid", "Cancelled", "Paid", "Paid"][i % 8],
-}));
-
-// ─── Column definitions — 6 cols matching screenshot ─────────────────────────
+// ─── Column definitions — 8 cols with quantity and price at purchase ────────
 const COLUMNS = [
-  { key: "id",      label: "Order ID",       w: "14%" },
-  { key: "product", label: "Product",        w: "22%" },
-  { key: "email",   label: "Customer email", w: "22%" },
-  { key: "date",    label: "Date",           w: "10%" },
-  { key: "amount",  label: "Total Amount",   w: "16%" },
-  { key: "status",  label: "Status",         w: "16%" },
+  { key: "id",               label: "Order ID",          w: "11%" },
+  { key: "product",          label: "Product",           w: "18%" },
+  { key: "email",            label: "Customer email",    w: "18%" },
+  { key: "date",             label: "Date",              w: "10%" },
+  { key: "quantity",         label: "Quantity",          w: "8%" },
+  { key: "priceAtPurchase",  label: "Price @ Purchase",  w: "12%" },
+  { key: "amount",           label: "Total Amount",      w: "12%" },
+  { key: "status",           label: "Status",            w: "11%" },
 ];
 
-const STATUS_FILTERS = ["All", "Recent", "Pending", "Completed", "Cancelled"];
+const STATUS_FILTERS = ["All", "Pending", "Paid", "Processing", "Shipped", "Delivered", "Cancelled"];
 const ROWS_PER_PAGE  = 16;
 
 // ─── Grid card for grid-view mode ─────────────────────────────────────────────
-function OrderCard({ order, selected, onClick, onViewOrder }) {
+function OrderCard({ order, selected, onClick }) {
   const s = STATUS_STYLE[order.status] || STATUS_STYLE.Pending;
   return (
     <div
@@ -67,13 +61,12 @@ function OrderCard({ order, selected, onClick, onViewOrder }) {
       }}
     >
       <div className="flex items-center justify-between">
-        <button
-          onClick={(e) => { e.stopPropagation(); onViewOrder(order.id); }}
-          className="bg-transparent border-none cursor-pointer p-0 hover:underline"
+        <span
+          className="font-bold"
           style={{ ...INTER, fontSize: 13, fontWeight: 700, color: "#1a73e8" }}
         >
           {order.id}
-        </button>
+        </span>
         <span
           className="inline-flex items-center px-2.5 py-0.5 rounded-full"
           style={{ ...INTER, fontSize: 11, fontWeight: 600, backgroundColor: s.bg, color: s.color }}
@@ -87,11 +80,23 @@ function OrderCard({ order, selected, onClick, onViewOrder }) {
       <p className="truncate" style={{ ...INTER, fontSize: 12, fontWeight: 400, color: "#888" }}>
         {order.email}
       </p>
-      <div className="flex items-center justify-between mt-1">
-        <span style={{ ...INTER, fontSize: 12, color: "#aaa" }}>{order.date}</span>
-        <span style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#111" }}>
-          Rs {order.amount.toLocaleString()}
-        </span>
+      <div className="flex items-center justify-between text-xs text-gray-500 mt-1">
+        <span>{order.date}</span>
+        <span>Qty: {order.quantity}</span>
+      </div>
+      <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
+        <div className="flex flex-col gap-0.5">
+          <span style={{ ...INTER, fontSize: 10, color: "#aaa" }}>Unit Price</span>
+          <span style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#333" }}>
+            Rs {order.priceAtPurchase.toLocaleString()}
+          </span>
+        </div>
+        <div className="flex flex-col gap-0.5 text-right">
+          <span style={{ ...INTER, fontSize: 10, color: "#aaa" }}>Total</span>
+          <span style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#111" }}>
+            Rs {order.amount.toLocaleString()}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -99,11 +104,9 @@ function OrderCard({ order, selected, onClick, onViewOrder }) {
 
 // ─── OrdersTable ──────────────────────────────────────────────────────────────
 // Props:
-//   orders       — array of order objects (defaults to mock data)
-//   onViewOrder  — (orderId) => void
+//   orders — array of order objects
 const OrdersTable = ({
-  orders      = MOCK_ORDERS,
-  onViewOrder = () => {},
+  orders = [],
 }) => {
   const [page,          setPage]          = useState(1);
   const [activeFilter,  setActiveFilter]  = useState("All");
@@ -111,20 +114,50 @@ const OrdersTable = ({
   const [selectedRow,   setSelectedRow]   = useState(null);
   const [viewMode,      setViewMode]      = useState("list"); // "list" | "grid"
 
-  // Filter + search
-  const filtered = orders.filter((o) => {
-    const matchFilter =
-      activeFilter === "All"     ? true :
-      activeFilter === "Recent"  ? true : // treat Recent as All for demo
-      o.status === activeFilter;
+  // Group orders by order id (collapse multiple items per order into one row)
+  const groupedMap = orders.reduce((acc, o) => {
+    const key = String(o.id);
+    if (!acc[key]) {
+      acc[key] = {
+        id: key,
+        product: o.product,
+        email: o.email,
+        date: o.date,
+        quantity: Number(o.quantity) || 0,
+        priceAtPurchase: Number(o.priceAtPurchase) || 0,
+        amount: Number(o.amount) || 0,
+        status: o.status,
+        itemCount: 1,
+        products: [o.product],
+      };
+    } else {
+      acc[key].quantity += Number(o.quantity) || 0;
+      acc[key].amount += Number(o.amount) || 0;
+      acc[key].itemCount += 1;
+      if (!acc[key].products.includes(o.product)) acc[key].products.push(o.product);
+      // keep most recent date (string comparison works for ISO-like strings)
+      if (o.date && acc[key].date && new Date(o.date) > new Date(acc[key].date)) {
+        acc[key].date = o.date;
+      }
+    }
+    return acc;
+  }, {});
 
+  const grouped = Object.values(groupedMap).map((g) => ({
+    ...g,
+    // Display product summary: first product + " + N more" when multiple
+    product: g.products.length > 1 ? `${g.products[0]} (+${g.products.length - 1} more)` : g.products[0],
+  }));
+
+  // Filter + search (operate on grouped rows)
+  const filtered = grouped.filter((o) => {
+    const matchFilter = activeFilter === "All" ? true : o.status === activeFilter;
     const q = search.toLowerCase();
     const matchSearch =
       !q ||
-      o.id.toLowerCase().includes(q)      ||
+      o.id.toLowerCase().includes(q) ||
       o.product.toLowerCase().includes(q) ||
       o.email.toLowerCase().includes(q);
-
     return matchFilter && matchSearch;
   });
 
@@ -142,6 +175,13 @@ const OrdersTable = ({
     let end     = Math.min(totalPages, start + max - 1);
     if (end - start < max - 1) start = Math.max(1, end - max + 1);
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  const navigate = useNavigate();
+
+  const navigateToOrder = (orderId) => {
+    const rawId = String(orderId).replace(/^#/, "");
+    navigate(`/admin/orders/${rawId}`);
   };
 
   return (
@@ -243,7 +283,7 @@ const OrdersTable = ({
                 {COLUMNS.map((col) => (
                   <th
                     key={col.key}
-                    className="text-left"
+                    className={col.key === "quantity" ? "text-center" : "text-left"}
                     style={{
                       ...INTER,
                       fontSize: 14,
@@ -263,7 +303,7 @@ const OrdersTable = ({
               {pageOrders.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={8}
                     className="text-center text-gray-400 py-16"
                     style={{ ...INTER, fontSize: 14 }}
                   >
@@ -276,20 +316,19 @@ const OrdersTable = ({
                   return (
                     <tr
                       key={`${order.id}-${idx}`}
-                      onClick={() => setSelectedRow(isSelected ? null : order.id)}
-                      className="border-b border-[#f5f5f5] cursor-pointer transition-colors duration-100"
+                      onClick={() => navigateToOrder(order.id)}
+                      className="border-b border-[#f5f5f5] cursor-pointer transition-colors duration-100 hover:bg-gray-50"
                       style={{ backgroundColor: isSelected ? "#eff6ff" : "transparent" }}
                     >
                       {/* Order ID */}
                       <td style={{ padding: "13px 16px", overflow: "hidden" }}>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); onViewOrder(order.id); }}
-                          className="flex items-center gap-1 bg-transparent border-none cursor-pointer p-0 hover:underline"
+                        <span
+                          className="flex items-center gap-1"
                           style={{ ...INTER, fontSize: 14, fontWeight: 600, color: "#1a73e8" }}
                         >
                           {order.id}
                           <OpenInNewOutlinedIcon style={{ fontSize: 12, opacity: 0.6 }} />
-                        </button>
+                        </span>
                       </td>
 
                       {/* Product */}
@@ -310,6 +349,20 @@ const OrdersTable = ({
                       <td style={{ padding: "13px 16px" }}>
                         <span style={{ ...INTER, fontSize: 14, fontWeight: 400, color: "#555" }}>
                           {order.date}
+                        </span>
+                      </td>
+
+                      {/* Quantity */}
+                      <td style={{ padding: "13px 16px", textAlign: "center" }}>
+                        <span style={{ ...INTER, fontSize: 14, fontWeight: 500, color: "#333" }}>
+                          {order.quantity}
+                        </span>
+                      </td>
+
+                      {/* Price at Purchase */}
+                      <td style={{ padding: "13px 16px" }}>
+                        <span style={{ ...INTER, fontSize: 14, fontWeight: 400, color: "#555" }}>
+                          Rs {order.priceAtPurchase.toLocaleString()}
                         </span>
                       </td>
 
@@ -349,8 +402,7 @@ const OrdersTable = ({
                   key={`${order.id}-${idx}`}
                   order={order}
                   selected={selectedRow === order.id}
-                  onClick={() => setSelectedRow(selectedRow === order.id ? null : order.id)}
-                  onViewOrder={onViewOrder}
+                  onClick={() => navigateToOrder(order.id)}
                 />
               ))}
             </div>
