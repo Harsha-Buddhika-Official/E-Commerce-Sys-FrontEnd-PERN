@@ -8,10 +8,11 @@ import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
  *
  * @param {Array}    products  - Array of product objects
  * @param {Boolean}  loading   - Whether data is being fetched
+ * @param {Function} onView    - Passed to each ProductCard
  * @param {Function} onEdit    - Passed to each ProductCard
  * @param {Function} onDelete  - Passed to each ProductCard
  */
-const ProductsGrid = ({ products = [], loading = false, onEdit, onDelete }) => {
+const ProductsGrid = ({ products = [], loading = false, onView, onEdit, onDelete }) => {
   if (loading) return <GridSkeleton />;
 
   if (products.length === 0) return <EmptyState />;
@@ -22,6 +23,7 @@ const ProductsGrid = ({ products = [], loading = false, onEdit, onDelete }) => {
         <ProductCard
           key={product.id}
           product={product}
+          onView={onView}
           onEdit={onEdit}
           onDelete={onDelete}
         />

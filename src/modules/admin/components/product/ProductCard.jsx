@@ -35,7 +35,7 @@ const PriceRow = ({ label, value, accent = false }) => (
 //   onEdit   — (product) => void
 //   onDelete — (product) => void
 
-const AdminProductCard = ({ product, onEdit, onDelete }) => {
+const AdminProductCard = ({ product, onView, onEdit, onDelete }) => {
   const [imgError, setImgError] = useState(false);
 
   const fmt = (amount) =>
@@ -90,7 +90,7 @@ const AdminProductCard = ({ product, onEdit, onDelete }) => {
           }}
         >
           <span
-            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            className="w-1.5 h-1.5 rounded-full shrink-0"
             style={{
               backgroundColor: inStock
                 ? isLowStock ? "#f97316" : "#16a34a"
@@ -182,7 +182,8 @@ const AdminProductCard = ({ product, onEdit, onDelete }) => {
 
           {/* View — ghost */}
           <button
-            // onClick={() => onView?.(product)}
+            onClick={() => onView?.(product)}
+            type="button"
             className="flex items-center gap-1 transition-all duration-150 hover:bg-gray-100"
             style={{
               ...INTER,
