@@ -14,7 +14,7 @@ import KeyboardArrowLeftIcon     from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon    from "@mui/icons-material/KeyboardArrowRight";
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import ProductsGrid              from "../components/product/ProductsGrid";
-import { mockProducts }          from "../features/products/mockProducts";
+import { useProducts }           from "../features/products/hooks/useProducts";
 
 // ─── Font constants — leaf elements only, never on wrapper divs ───────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
@@ -194,13 +194,15 @@ function ActionBtn({ icon, label, variant = "ghost", onClick }) {
 // PRODUCTS PAGE
 // ══════════════════════════════════════════════════════════════════════════════
 const Products = () => {
-  const [products,     setProducts]     = useState(mockProducts);
+  const { products: apiProducts, loading, error } = useProducts();
   const [searchQuery,  setSearchQuery]  = useState("");
   const [category,     setCategory]     = useState("All");
   const [viewMode,     setViewMode]     = useState("grid"); // "grid" | "list"
   const [page,         setPage]         = useState(1);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [loading]                       = useState(false);
+
+  // Use API products directly
+  const products = apiProducts;
 
   /* Category list — derived once from products */
   const categories = useMemo(() => deriveCategories(products), [products]);
@@ -230,8 +232,11 @@ const Products = () => {
   const handleEdit   = useCallback((p) => console.log("Edit:", p.id), []);
   const handleDelete = useCallback((p) => setDeleteTarget(p), []);
   const handleDeleteConfirm = useCallback((p) => {
-    setProducts((prev) => prev.filter((item) => item.id !== p.id));
+    // TODO: Call API to delete product, then refresh list
+    console.log("Delete product:", p.id);
     setDeleteTarget(null);
+    // After backend deletion, refresh the products list
+    // refresh();
   }, []);
   const navigate = useNavigate();
   const handleView   = useCallback((p) => navigate(`/admin/products/${p.id}`), [navigate]);
@@ -248,6 +253,18 @@ const Products = () => {
 
   return (
     <main className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
+
+      {/* Error banner */}
+      {error && (
+        <div
+          className="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 flex items-center gap-3"
+        >
+          <WarningAmberOutlinedIcon style={{ fontSize: 20, color: "#dc2626" }} />
+          <p style={{ ...INTER, fontSize: 13, color: "#991b1b", fontWeight: 500 }}>
+            {error}
+          </p>
+        </div>
+      )}
 
       {/* Modals */}
       <DeleteModal

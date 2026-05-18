@@ -174,7 +174,7 @@ const AdminProductCard = ({ product, onEdit, onDelete }) => {
         >
           <PriceRow label="Base"     value={fmt(product.basePrice)}     />
           <PriceRow label="Selling"  value={fmt(product.sellingPrice)}  accent />
-          <PriceRow label="Discount" value={fmt(product.discountPrice)} />
+          <PriceRow label="Discount" value={fmt(product.discountedPrice)} />
         </div>
 
         {/* Action buttons */}

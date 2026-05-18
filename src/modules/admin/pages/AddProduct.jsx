@@ -1,10 +1,12 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import AddIcon                 from "@mui/icons-material/Add";
 import RemoveIcon              from "@mui/icons-material/Remove";
 import KeyboardArrowDownIcon   from "@mui/icons-material/KeyboardArrowDown";
 import CloseIcon               from "@mui/icons-material/Close";
 import InventoryOutlinedIcon   from "@mui/icons-material/InventoryOutlined";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
+import ArrowBackOutlinedIcon   from "@mui/icons-material/ArrowBackOutlined";
 
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
@@ -389,6 +391,7 @@ function StepTwo({ data, onChange, onUpload, onCancel }) {
 // ROOT
 // ──────────────────────────────────────────────────────────────────────────────
 const AddProductPage = ({ onCancel = () => {}, onSuccess = () => {} }) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [product, setProduct] = useState({
     images: [], name: "", description: "", brand: "",
@@ -415,7 +418,16 @@ const AddProductPage = ({ onCancel = () => {}, onSuccess = () => {} }) => {
     <div style={{ height: "100%", overflowY: "auto", background: "#f4f6fb", padding: "28px 28px 40px" }}>
 
       {/* ── Header ── */}
-      <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ display: "flex", alignItems: "center", marginBottom: 24, gap: 16 }}>
+        {/* Back button */}
+        <button
+          onClick={() => navigate("/admin/products")}
+          className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-all cursor-pointer"
+          style={{ flexShrink: 0, borderColor: "#e5e7eb" }}
+        >
+          <ArrowBackOutlinedIcon style={{ fontSize: 18 }} />
+        </button>
+
         <div>
           <h1 style={{ ...SORA, fontSize: 21, fontWeight: 900, color: "#111827", margin: 0, letterSpacing: "-0.3px" }}>
             {step === 1 ? "Add Product" : "Add Product Attributes"}
