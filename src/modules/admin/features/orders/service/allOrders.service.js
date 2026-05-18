@@ -33,20 +33,28 @@ export const getAllOrders = async () => {
   try {
     const response = await fetchAllOrders();
 
-    // Validate response structure
-    if (!response?.data) {
-      throw new Error("Invalid API response: missing response.data");
+    // Normalize response shapes to an orders array.
+    // `fetchAllOrders` returns Axios `res.data`. The backend may return:
+    // - an array directly `[...]`
+    // - `{ data: [...] }`
+    // - `{ success: true, data: [...] }`
+    // Support these variants to be resilient to API shape changes.
+    const payload = response?.data ?? response;
+
+    let orders;
+    if (Array.isArray(payload)) {
+      orders = payload;
+    } else if (payload?.success !== undefined) {
+      if (!payload.success) throw new Error(payload.message || "API request failed");
+      orders = payload.data;
+    } else if (payload?.data && Array.isArray(payload.data)) {
+      orders = payload.data;
+    } else {
+      console.error("Unexpected orders payload:", payload);
+      throw new Error("Invalid API response: expected an array of orders");
     }
 
-    const orders = response.data.data;
-
-    if (!Array.isArray(orders)) {
-      throw new Error(
-        "Invalid API response: expected response.data.data to be an array"
-      );
-    }
-
-    if (orders.length === 0) {
+    if (!Array.isArray(orders) || orders.length === 0) {
       console.warn("No orders found in API response");
       return [];
     }

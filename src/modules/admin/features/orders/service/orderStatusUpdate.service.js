@@ -1,4 +1,4 @@
-import { updateOrderStatus as apiUpdate } from "../api/orderStatus.api";
+import { updateOrderStatus as apiUpdate } from "../api/order.api";
 
 const ALLOWED_STATUSES = [
   "pending",
