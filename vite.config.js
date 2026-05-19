@@ -9,6 +9,13 @@ export default defineConfig({
     tailwindcss()
   ],
   server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
     hmr: {
       protocol: 'ws',
       host: 'localhost',

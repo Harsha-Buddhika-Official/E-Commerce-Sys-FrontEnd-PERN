@@ -43,6 +43,7 @@ const ProductSpecs = ({ specs }) => (
 );
 
 const ProductCard = ({
+  product,
   image,
   title,
   specs,
@@ -99,7 +100,7 @@ const ProductCard = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onAddToCart();
+              onAddToCart(product?.product_id ?? product?.id);
             }}
             className="p-0 bg-transparent border-none cursor-pointer hover:opacity-70 transition-opacity flex items-center justify-center"
           >

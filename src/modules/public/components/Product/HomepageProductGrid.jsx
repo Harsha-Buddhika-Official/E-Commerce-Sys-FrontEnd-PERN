@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { addProductToServer } from "../../features/cart/cart.mock";
 import ProductCard from "./ProductCard.jsx";
 
 const formatProductTag = (tag) => {
@@ -18,6 +19,7 @@ const HomepageProductGrid = ({
   onAddToCart
 }) => {
   const navigate = useNavigate();
+  // server-backed add-to-cart
 
   if (loading)
     return (
@@ -47,11 +49,14 @@ const HomepageProductGrid = ({
     }
   };
 
-  const handleAddToCart = (productId) => {
+  const handleAddToCart = (productOrId) => {
+    const id = productOrId?.product_id ?? productOrId?.id ?? productOrId;
+    if (!id) return;
+
     if (onAddToCart) {
-      onAddToCart(productId);
+      onAddToCart(productOrId);
     } else {
-      alert("Added to cart!");
+      addProductToServer(id).catch((e) => console.error(e));
     }
   };
 
@@ -81,6 +86,7 @@ const HomepageProductGrid = ({
                 <ProductCard
                   key={product.product_id}
                   id={product.product_id}
+                  product={product}
                   image={primaryImage?.image_url || "/placeholder.png"}
                   title={product.name}
                   specs={specs}
@@ -95,7 +101,7 @@ const HomepageProductGrid = ({
                   badge={formatProductTag(product.product_tag)}
                   category={product.category_name}
                   onCardClick={() => handleProductClick(product.product_id)}
-                  onAddToCart={() => handleAddToCart(product.product_id)}
+                  onAddToCart={handleAddToCart}
                 />
               );
             })}

@@ -4,22 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import CartItem from "./CartItem";
-
-// ─── Demo initial state ───────────────────────────────────────────────────────
-const INITIAL_ITEMS = [
-  {
-    id: 1,
-    name: "HAVIT H2002D Gaming series-Gaming Headphone Black",
-    price: 10000,
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "HAVIT H2002D Gaming series-Gaming Headphone Black",
-    price: 10000,
-    quantity: 1,
-  },
-];
+import { useCart } from "../../features/cart/hooks/useCart.js";
 
 // ─── Cart Drawer ──────────────────────────────────────────────────────────────
 /**
@@ -39,25 +24,15 @@ export default function Cart({ open: openProp, onClose: onCloseProp }) {
   const open = isControlled ? openProp : internalOpen;
   const handleClose = isControlled ? onCloseProp : () => setInternalOpen(false);
 
-  const [items, setItems] = useState(INITIAL_ITEMS);
-
-  const increase = (id) =>
-    setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, quantity: i.quantity + 1 } : i))
-    );
-
-  const decrease = (id) =>
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id === id ? { ...i, quantity: Math.max(1, i.quantity - 1) } : i
-      )
-    );
-
-  const remove = (id) => setItems((prev) => prev.filter((i) => i.id !== id));
-
-  const clearAll = () => setItems([]);
-
-  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const {
+    items,
+    total,
+    loading,
+    increase,
+    decrease,
+    remove,
+    clearAll,
+  } = useCart();
 
   return (
     <>
@@ -66,7 +41,7 @@ export default function Cart({ open: openProp, onClose: onCloseProp }) {
         <div className="fixed top-4 right-4 z-50">
           <IconButton
             onClick={() => setInternalOpen(true)}
-            className="!w-12 !h-12 !bg-gray-950 !text-white !rounded-xl shadow-xl hover:!bg-gray-800"
+            className="w-12! h-12! bg-gray-950! text-white! rounded-xl! shadow-xl hover:bg-gray-800!"
           >
             <ShoppingCartOutlinedIcon />
           </IconButton>
@@ -100,7 +75,7 @@ export default function Cart({ open: openProp, onClose: onCloseProp }) {
           <IconButton
             onClick={handleClose}
             size="small"
-            className="!bg-gray-300 !rounded-lg !text-gray-700 hover:!bg-gray-950 hover:!text-white transition-all duration-200"
+            className="bg-gray-300! rounded-lg! text-gray-700! hover:bg-gray-950! hover:text-white! transition-all duration-200"
           >
             <CloseIcon fontSize="small" />
           </IconButton>
@@ -108,7 +83,14 @@ export default function Cart({ open: openProp, onClose: onCloseProp }) {
 
         {/* Items list */}
         <div className="flex-1 overflow-y-auto px-2.5 pb-2 flex flex-col gap-1.5 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-          {items.length === 0 ? (
+          {loading && items.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center gap-4 text-gray-400 mt-20">
+              <ShoppingCartOutlinedIcon sx={{ fontSize: 56, color: "#d1d5db" }} />
+              <div className="text-[15px] font-semibold text-gray-600">
+                Loading cart...
+              </div>
+            </div>
+          ) : items.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-4 text-gray-400 mt-20">
               <ShoppingCartOutlinedIcon sx={{ fontSize: 56, color: "#d1d5db" }} />
               <div className="text-[15px] font-semibold text-gray-600">

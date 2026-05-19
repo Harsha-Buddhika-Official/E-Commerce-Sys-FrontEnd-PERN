@@ -12,9 +12,9 @@ const ProductGrid = ({ products, onProductClick, onAddToCart }) => {
     }
   };
 
-  const handleAddToCart = (productId) => {
+  const handleAddToCart = (productOrId) => {
     if (onAddToCart) {
-      onAddToCart(productId);
+      onAddToCart(productOrId);
     } else {
       alert("Added to cart!");
     }
@@ -29,6 +29,7 @@ const ProductGrid = ({ products, onProductClick, onAddToCart }) => {
           <ProductCard
             key={product.product_id}
             id={product.product_id}
+            product={product}
             image={primaryImage?.image_url || "/placeholder.png"}
             title={product.name}
             specs={specs}
@@ -36,7 +37,7 @@ const ProductGrid = ({ products, onProductClick, onAddToCart }) => {
             inStock={product.stock_quantity > 0}
             category={product.category_name}
             onCardClick={() => handleProductClick(product.product_id)}
-            onAddToCart={() => handleAddToCart(product.product_id)}
+            onAddToCart={handleAddToCart}
           />
         );
       })}

@@ -8,6 +8,8 @@ import {
 } from "@mui/icons-material";
 import { useProductDetail } from "../features/products/hooks/useProductDetail";
 import { formatAttributeName } from "../../../utils/formatAttributeName";
+import { removeFromCart, addProductToServer } from "../features/cart/cart.mock";
+import { useCart } from "../features/cart/hooks/useCart.js";
 
 const FALLBACK_IMAGE = "https://placehold.co/480x380/efefef/333333?text=No+Image";
 
@@ -23,7 +25,7 @@ const formatCurrency = (value) => {
 export default function ProductInfoPage() {
   const { product, loading, error } = useProductDetail();
   const [activeImg, setActiveImg] = useState(0);
-  const [wished, setWished] = useState(false);
+  const { items: cartItems } = useCart();
   const [shareTooltip, setShareTooltip] = useState("Share");
 
   const productImages = useMemo(() => {
@@ -56,9 +58,8 @@ export default function ProductInfoPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
-    setActiveImg(0);
-  }, [product?.product_id]);
+  const inCart = !!product?.product_id && cartItems.some((item) => item.product_id === product.product_id);
+
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}${window.location.pathname}?product=${product?.slug || product?.product_id || ""}`;
@@ -68,6 +69,8 @@ export default function ProductInfoPage() {
       setTimeout(() => setShareTooltip("Share"), 2000);
     }
   };
+
+  // useCart handles cart state; addProductToServer posts to API and mirrors response.
 
   const prevImg = () => setActiveImg((p) => (p === 0 ? productImages.length - 1 : p - 1));
   const nextImg = () => setActiveImg((p) => (p === productImages.length - 1 ? 0 : p + 1));
@@ -95,13 +98,13 @@ export default function ProductInfoPage() {
       className="min-h-screen bg-zinc-100 py-6 px-4 md:px-8"
       style={{ fontFamily: "'Sora', 'Segoe UI', sans-serif" }}
     >
-      <div className="mx-auto max-w-[1200px] overflow-hidden rounded-xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.1)] md:flex">
+      <div className="mx-auto max-w-300 overflow-hidden rounded-xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.1)] md:flex">
         <div className="relative flex w-full flex-col items-center justify-center gap-4 border-zinc-200 bg-zinc-50 p-6 md:w-1/2 md:border-r">
-          <div className="relative w-full max-w-[460px]">
+          <div className="relative w-full max-w-115">
             <img
               src={productImages[activeImg]}
               alt={product?.name || "Product"}
-              className="block aspect-[4/3] h-auto w-full rounded-md bg-white object-contain shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-300"
+              className="block aspect-4/3 h-auto w-full rounded-md bg-white object-contain shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-300"
             />
             <button
               type="button"
@@ -185,10 +188,12 @@ export default function ProductInfoPage() {
           <div className="mt-2 flex flex-wrap items-center gap-3">
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
+                if (!product) return;
+                await addProductToServer(product.product_id ?? product.id);
                 window.location.href = "/checkout";
               }}
-              className="flex min-w-[150px] flex-1 items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+              className="flex min-w-37.5 flex-1 items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
             >
               <ShoppingCart fontSize="small" />
               BUY NOW
@@ -196,10 +201,17 @@ export default function ProductInfoPage() {
 
             <button
               type="button"
-              title={wished ? "Added to cart!" : "Add to cart"}
-              onClick={() => setWished((prev) => !prev)}
+              title={inCart ? "Remove from cart" : "Add to cart"}
+              onClick={async () => {
+                if (!product) return;
+                if (inCart) {
+                  removeFromCart(product.product_id);
+                } else {
+                  await addProductToServer(product.product_id ?? product.id);
+                }
+              }}
               className={`rounded-md border-2 p-2 transition-colors ${
-                wished
+                inCart
                   ? "border-red-600 text-red-600"
                   : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
               }`}
@@ -233,7 +245,7 @@ export default function ProductInfoPage() {
         </div>
       </div>
 
-      <div className="mx-auto mt-6 max-w-[1200px] overflow-hidden rounded-xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
+      <div className="mx-auto mt-6 max-w-300 overflow-hidden rounded-xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
         <div className="bg-zinc-800 px-6 py-3">
           <h2 className="m-0 text-base font-bold uppercase tracking-wide text-white">Specifications</h2>
           <p className="mt-1 text-xs text-zinc-400">{product?.name} Features</p>
@@ -247,7 +259,7 @@ export default function ProductInfoPage() {
                 i % 2 === 0 ? "bg-zinc-50" : "bg-white"
               }`}
             >
-              <span className="min-w-[150px] text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+              <span className="min-w-37.5 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
                 {spec.label}
               </span>
               <span className="text-[13px] font-medium text-zinc-800">{spec.value}</span>

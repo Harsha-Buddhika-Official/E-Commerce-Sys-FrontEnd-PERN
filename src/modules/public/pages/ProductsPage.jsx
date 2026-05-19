@@ -5,6 +5,7 @@ import ProductGrid from "../components/Product/ProductGrid.jsx";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useProductFilter } from "../features/products/hooks/useProductFilter.js";
+import { addProductToServer } from "../features/cart/cart.mock";
 
 const PRODUCTS_PER_PAGE = 16;
 
@@ -40,7 +41,11 @@ export default function ProductsPage() {
   const currentProducts = products.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
 
   const handleProductClick = (productId) => navigate(`/product/${productId}`);
-  const handleAddToCart    = (id) => console.log("Added to cart:", id);
+  const handleAddToCart = (productOrId) => {
+    const id = productOrId?.product_id ?? productOrId?.id ?? productOrId;
+    if (!id) return;
+    addProductToServer(id).catch((e) => console.error(e));
+  };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
