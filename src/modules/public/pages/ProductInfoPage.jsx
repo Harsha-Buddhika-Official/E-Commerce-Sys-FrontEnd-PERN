@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ShoppingCart,
   Share,
@@ -24,6 +25,7 @@ const formatCurrency = (value) => {
 
 export default function ProductInfoPage() {
   const { product, loading, error } = useProductDetail();
+  const navigate = useNavigate();
   const [activeImg, setActiveImg] = useState(0);
   const { items: cartItems } = useCart();
   const [shareTooltip, setShareTooltip] = useState("Share");
@@ -191,7 +193,7 @@ export default function ProductInfoPage() {
               onClick={async () => {
                 if (!product) return;
                 await addProductToServer(product.product_id ?? product.id);
-                window.location.href = "/checkout";
+                navigate("/cart");
               }}
               className="flex min-w-37.5 flex-1 items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
             >

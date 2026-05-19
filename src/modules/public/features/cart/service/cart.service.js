@@ -81,6 +81,18 @@ const emitUpdate = () => {
   }
 };
 
+const emitAddSuccess = () => {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("cart:item-added", {
+        detail: {
+          message: "Product added to your cart",
+        },
+      })
+    );
+  }
+};
+
 export const fetchCart = async () => {
   const response = await getCart();
   return normalizeCart(unwrapResponse(response));
@@ -95,6 +107,7 @@ export const addProductToServer = async (productId, quantity = 1) => {
   });
 
   const cart = normalizeCart(unwrapResponse(response));
+  emitAddSuccess();
   emitUpdate();
   return cart;
 };
