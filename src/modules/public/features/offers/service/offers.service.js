@@ -23,10 +23,14 @@ const normalizeOffer = (offer) => {
   const discountValue = toNumber(offer.discount_value);
   const discountType = offer.discount_type || "percentage";
 
-  // Extract first product from embedded products array
-  const firstProduct = Array.isArray(offer.products)
-    ? offer.products[0]
-    : null;
+  // Extract product information: API may return an array or a single product object
+  const firstProduct = (() => {
+    const p = offer?.products;
+    if (!p) return null;
+    if (Array.isArray(p)) return p[0] ?? null;
+    if (typeof p === "object") return p;
+    return null;
+  })();
 
   // Use selling_price as originalPrice (struck-through price)
   const originalPrice = firstProduct
@@ -50,7 +54,7 @@ const normalizeOffer = (offer) => {
     discountedPrice = originalPrice * (1 - discountPercent / 100);
   } else if (discountType === "fixed") {
     discountedPrice = Math.max(0, originalPrice - discountValue);
-    discountPercent = Math.round((discountValue / originalPrice) * 100);
+    discountPercent = originalPrice > 0 ? Math.round((discountValue / originalPrice) * 100) : 0;
   }
 
   return {

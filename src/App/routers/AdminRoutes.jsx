@@ -8,6 +8,8 @@ import OrderDetailPage from "../../modules/admin/pages/OrderDetailPage.jsx";
 import Products from "../../modules/admin/pages/Products.jsx";
 import AddProductPage from "../../modules/admin/pages/AddProduct.jsx";
 import ProductInfoPage from "../../modules/admin/pages/ProductInfoPage.jsx";
+import PromotionsPage from "../../modules/admin/pages/PromotionPage.jsx";
+import PromotionDetailPage from "../../modules/admin/pages/PromotinDetailPage.jsx";
 
 export default function AdminRoutes() {
   return (
@@ -23,6 +25,8 @@ export default function AdminRoutes() {
           <Route path="/products"  element={<Products />} />
           <Route path="/products/add" element={<AddProductPage />} />
           <Route path="/products/:id" element={<ProductInfoPage />} />
+          <Route path="/promotions" element={<PromotionsPage />} />
+          <Route path="/promotions/:id" element={<PromotionDetailPage />} />
         </Route>
       </Route>
 
