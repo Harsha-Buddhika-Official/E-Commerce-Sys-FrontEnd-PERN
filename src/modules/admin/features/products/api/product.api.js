@@ -1,4 +1,5 @@
 import API from "../../../../../api/client";
+import { handleApiError } from "../../../../../utils/apiError";
 
 /**
  * Fetch all products with limited details from admin endpoint
@@ -8,12 +9,41 @@ export const fetchAllProductsLimited = async () => {
   try {
     const res = await API.get("/products/admin/limited-details");
     return res.data; // Already unwrapped by client interceptor
-  } catch (e) {
-    const error = new Error(e.response?.data?.message || "Failed to fetch products");
-    error.originalError = e;
-    error.status = e.response?.status;
-    error.body = e.response?.data;
-    throw error;
+  } catch (error) {
+    throw handleApiError(
+      error,
+      "Failed to fetch products"
+    );
   }
 };
 
+export const fetchProductDetail = async (productId) => {
+  if (!productId) {
+    throw new Error("Product ID is required");
+  }
+
+  try {
+    const res = await API.get(`/products/admin/products/${productId}`);
+    return res.data;
+  } catch (error) {
+    throw handleApiError(
+      error,
+      "Failed to fetch product details"
+    );
+  }
+};
+
+export const deleteProduct = async (productId) => {
+  if (!productId) {
+    throw new Error("Product ID is required");
+  }
+  try {
+    const res = await API.delete(`/products/admin/delete/${productId}`);
+    return res.data;
+  } catch (error) {
+    throw handleApiError(
+      error,
+      "Failed to delete product"
+    );
+  }
+};

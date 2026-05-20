@@ -1,4 +1,4 @@
-import { fetchProductDetail } from "../api/productDetail.api";
+import { fetchProductDetail } from "../api/product.api";
 
 /**
  * Fetch a single product's detailed admin view payload.
