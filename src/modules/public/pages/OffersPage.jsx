@@ -2,7 +2,6 @@ import OfferCard from "../components/Offer/OfferCard";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useOffers } from "../features/offers/hooks/useOffers";
 import { addProductToServer } from "../features/cart/cart.mock";
-import { useNavigate } from "react-router-dom";
 
 // ─── Font constants (page-level text only) ────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
@@ -11,7 +10,6 @@ const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 // ─── OffersPage ───────────────────────────────────────────────────────────────
 const OffersPage = () => {
   const { offers, loading, error } = useOffers();
-  const navigate = useNavigate();
 
   const handleAddToCart = async (offer) => {
     // Use productId from the embedded product, not offer.id
@@ -20,8 +18,12 @@ const OffersPage = () => {
         console.log(`[Offers] Adding to cart: Product ID ${offer.productId} - ${offer.title}`);
         const result = await addProductToServer(offer.productId);
         console.log(`[Offers] Add to cart success:`, result);
-        // Navigate to cart after successful add
-        navigate("/cart");
+        // Dispatch event to show success notification
+        window.dispatchEvent(
+          new CustomEvent("cart:item-added", {
+            detail: { message: `${offer.title} added to cart` },
+          })
+        );
       } catch (error) {
         console.error(`[Offers] Add to cart failed:`, error);
       }
@@ -121,20 +123,33 @@ const OffersPage = () => {
                 />
               ))
             ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-gray-400 text-sm">No offers found for this filter.</p>
+              <div className="col-span-full text-center py-16">
+                <p
+                  className="text-gray-400 mb-2"
+                  style={{ ...SORA, fontSize: 24, fontWeight: 700 }}
+                >
+                  No offers these days 😴
+                </p>
+                <p
+                  className="text-gray-400"
+                  style={{ ...INTER, fontSize: 13, fontWeight: 400 }}
+                >
+                  Check back soon for amazing deals on your favorite PC components!
+                </p>
               </div>
             )}
           </div>
         )}
 
         {/* ── Footer disclaimer ── */}
-        <div className="flex items-center gap-2 mt-10 px-5 py-3.5 bg-white border border-[#e6e6e6] rounded-xl text-gray-400">
-          <InfoOutlinedIcon style={{ fontSize: 16, color: "#ccc", flexShrink: 0 }} />
-          <span style={{ ...INTER, fontSize: 12, fontWeight: 500 }}>
-            Prices are subject to change without prior notice. All offers are valid while stocks last.
-          </span>
-        </div>
+        {!loading && !error && offers.length > 0 && (
+          <div className="flex items-center gap-2 mt-10 px-5 py-3.5 bg-white border border-[#e6e6e6] rounded-xl text-gray-400">
+            <InfoOutlinedIcon style={{ fontSize: 16, color: "#ccc", flexShrink: 0 }} />
+            <span style={{ ...INTER, fontSize: 12, fontWeight: 500 }}>
+              Prices are subject to change without prior notice. All offers are valid while stocks last.
+            </span>
+          </div>
+        )}
 
       </div>
     </div>

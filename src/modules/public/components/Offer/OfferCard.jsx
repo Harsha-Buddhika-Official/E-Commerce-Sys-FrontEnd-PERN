@@ -21,11 +21,12 @@ const TAG_ICON = {
 // ─── Countdown helper ─────────────────────────────────────────────────────────
 function calcTime(targetDate) {
   const diff = new Date(targetDate) - new Date();
-  if (diff <= 0) return { d: 0, h: 0, m: 0 };
+  if (diff <= 0) return { d: 0, h: 0, m: 0, s: 0 };
   return {
     d: Math.floor(diff / 86400000),
     h: Math.floor((diff % 86400000) / 3600000),
     m: Math.floor((diff % 3600000) / 60000),
+    s: Math.floor((diff % 60000) / 1000),
   };
 }
 
@@ -189,6 +190,8 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
             <TimeUnit value={timeLeft.h} label="Hrs" />
             <span className="font-black text-gray-300 mb-3" style={{ ...SORA, fontSize: 13 }}>:</span>
             <TimeUnit value={timeLeft.m} label="Min" />
+            <span className="font-black text-gray-300 mb-3" style={{ ...SORA, fontSize: 13 }}>:</span>
+            <TimeUnit value={timeLeft.s} label="Sec" />
           </div>
         </div>
 

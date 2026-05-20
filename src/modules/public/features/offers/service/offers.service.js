@@ -30,7 +30,7 @@ const normalizeOffer = (offer) => {
 
   // Use selling_price as originalPrice (struck-through price)
   const originalPrice = firstProduct
-    ? toNumber(firstProduct.selling_price)
+    ? toNumber(firstProduct.discounted_price)
     : 100000; // fallback
 
   // Get primary image from product images
