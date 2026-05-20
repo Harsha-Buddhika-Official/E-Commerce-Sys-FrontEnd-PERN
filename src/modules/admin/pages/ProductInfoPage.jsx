@@ -18,6 +18,7 @@ import TagOutlinedIcon                from "@mui/icons-material/TagOutlined";
 import LinkOutlinedIcon               from "@mui/icons-material/LinkOutlined";
 import BrokenImageOutlinedIcon        from "@mui/icons-material/BrokenImageOutlined";
 import { useProductDetail }           from "../features/products/hooks/useProductDetail";
+import { useDeleteProduct }           from "../features/products/hooks/useDeleteProduct";
 
 // ─── Font constants — leaf elements only, never on wrapper divs ───────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
@@ -190,6 +191,7 @@ const ProductInfoPage = ({
   }, [primaryIdx, routeProductId]);
 
   const productData = resolvedProduct;
+  const { deleting, error: deleteError, deleteProduct } = useDeleteProduct();
 
   if (!routeProductId) {
     return (
@@ -257,8 +259,16 @@ const ProductInfoPage = ({
       {/* Delete modal */}
       {showDelete && (
         <DeleteModal
-          name={productData.name}
-          onConfirm={() => { setShowDelete(false); onDelete(productData); }}
+          name={productData?.name}
+          onConfirm={async () => {
+            try {
+              await deleteProduct(routeProductId);
+              setShowDelete(false);
+              navigate("/admin/products");
+            } catch (err) {
+              window.alert(err?.message || "Failed to delete product");
+            }
+          }}
           onCancel={() => setShowDelete(false)}
         />
       )}

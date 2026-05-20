@@ -15,6 +15,7 @@ import KeyboardArrowRightIcon    from "@mui/icons-material/KeyboardArrowRight";
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import ProductsGrid              from "../components/product/ProductsGrid";
 import { useProducts }           from "../features/products/hooks/useProducts";
+import { useDeleteProduct }      from "../features/products/hooks/useDeleteProduct";
 
 // ─── Font constants — leaf elements only, never on wrapper divs ───────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
@@ -194,7 +195,8 @@ function ActionBtn({ icon, label, variant = "ghost", onClick }) {
 // PRODUCTS PAGE
 // ══════════════════════════════════════════════════════════════════════════════
 const Products = () => {
-  const { products: apiProducts, loading, error } = useProducts();
+  const { products: apiProducts, loading, error, refresh } = useProducts();
+  const { deleting, error: deleteError, deleteProduct } = useDeleteProduct();
   const [searchQuery,  setSearchQuery]  = useState("");
   const [category,     setCategory]     = useState("All");
   const [viewMode,     setViewMode]     = useState("grid"); // "grid" | "list"
@@ -231,13 +233,17 @@ const Products = () => {
   /* Callbacks */
   const handleEdit   = useCallback((p) => console.log("Edit:", p.id), []);
   const handleDelete = useCallback((p) => setDeleteTarget(p), []);
-  const handleDeleteConfirm = useCallback((p) => {
-    // TODO: Call API to delete product, then refresh list
-    console.log("Delete product:", p.id);
-    setDeleteTarget(null);
-    // After backend deletion, refresh the products list
-    // refresh();
-  }, []);
+  const handleDeleteConfirm = useCallback(async (p) => {
+    try {
+      await deleteProduct(p.id);
+      setDeleteTarget(null);
+      // refresh product list after successful deletion
+      refresh && refresh();
+    } catch (err) {
+      // simple user feedback for now
+      window.alert(err?.message || "Failed to delete product");
+    }
+  }, [deleteProduct, refresh]);
   const navigate = useNavigate();
   const handleView   = useCallback((p) => navigate(`/admin/products/${p.id}`), [navigate]);
   const handleAddProduct = useCallback(() => navigate("add"), [navigate]);
