@@ -1,101 +1,33 @@
 import OfferCard from "../components/Offer/OfferCard";
-import { useState } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { useOffers } from "../features/offers/hooks/useOffers";
+import { addProductToServer } from "../features/cart/cart.mock";
+import { useNavigate } from "react-router-dom";
 
 // ─── Font constants (page-level text only) ────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
-// ─── Offers data ──────────────────────────────────────────────────────────────
-// Replace with an API call / service import when ready.
-const OFFERS = [
-  {
-    id: 1, tag: "Flash Deal", tagColor: "red",
-    title: "Intel Core i9-14900K", category: "Processors",
-    originalPrice: 189900, discountedPrice: 159900, discountPercent: 16,
-    badge: "Best Seller",
-    image: "https://placehold.co/280x200/f5f5f5/252525?text=i9-14900K",
-    specs: ["24 Cores / 32 Threads", "Up to 6.0 GHz Boost", "36MB Cache", "LGA1700 Socket"],
-    validUntil: "2026-09-30", inStock: true,
-  },
-  {
-    id: 2, tag: "Bundle Deal", tagColor: "black",
-    title: "RTX 4070 Super 12GB", category: "Graphics Cards",
-    originalPrice: 299900, discountedPrice: 269900, discountPercent: 10,
-    badge: "Hot",
-    image: "https://placehold.co/280x200/f5f5f5/252525?text=RTX+4070S",
-    specs: ["12GB GDDR6X", "DLSS 3.5", "4K Ready", "2560 CUDA Cores"],
-    validUntil: "2026-10-15", inStock: true,
-  },
-  {
-    id: 3, tag: "Clearance", tagColor: "red",
-    title: "Samsung 990 Pro 2TB NVMe", category: "Storage",
-    originalPrice: 79900, discountedPrice: 62900, discountPercent: 21,
-    badge: "Limited Stock",
-    image: "https://placehold.co/280x200/f5f5f5/252525?text=990+Pro",
-    specs: ["2TB Capacity", "7,450 MB/s Read", "PCIe 4.0 x4", "M.2 2280"],
-    validUntil: "2026-09-20", inStock: true,
-  },
-  {
-    id: 4, tag: "Flash Deal", tagColor: "red",
-    title: "G.Skill Trident Z5 RGB 32GB", category: "Memory",
-    originalPrice: 49900, discountedPrice: 38900, discountPercent: 22,
-    badge: null,
-    image: "https://placehold.co/280x200/f5f5f5/252525?text=Trident+Z5",
-    specs: ["32GB (2x16GB)", "DDR5-6000", "CL30 Latency", "Intel XMP 3.0"],
-    validUntil: "2026-09-25", inStock: true,
-  },
-  {
-    id: 5, tag: "Bundle Deal", tagColor: "black",
-    title: "ASUS ROG Strix B650-E", category: "Motherboards",
-    originalPrice: 119900, discountedPrice: 99900, discountPercent: 17,
-    badge: "New",
-    image: "https://placehold.co/280x200/f5f5f5/252525?text=B650-E",
-    specs: ["AM5 Socket", "DDR5 Support", "PCIe 5.0", "WiFi 6E"],
-    validUntil: "2026-10-01", inStock: false,
-  },
-  {
-    id: 6, tag: "Clearance", tagColor: "red",
-    title: "Corsair RM1000x 1000W", category: "Power Supply",
-    originalPrice: 69900, discountedPrice: 54900, discountPercent: 21,
-    badge: null,
-    image: "https://placehold.co/280x200/f5f5f5/252525?text=RM1000x",
-    specs: ["1000W Output", "80+ Gold", "Fully Modular", "135mm Fan"],
-    validUntil: "2026-09-28", inStock: true,
-  },
-  {
-    id: 7, tag: "Flash Deal", tagColor: "red",
-    title: 'LG 27GP850-B 27" QHD', category: "Monitors",
-    originalPrice: 139900, discountedPrice: 114900, discountPercent: 18,
-    badge: "Best Seller",
-    image: "https://placehold.co/280x200/f5f5f5/252525?text=LG+27GP850",
-    specs: ['27" QHD 2560×1440', "165Hz Refresh", "1ms Response", "Nano IPS"],
-    validUntil: "2026-10-10", inStock: true,
-  },
-  {
-    id: 8, tag: "Bundle Deal", tagColor: "black",
-    title: "Noctua NH-D15 CPU Cooler", category: "Cooling",
-    originalPrice: 34900, discountedPrice: 28900, discountPercent: 17,
-    badge: null,
-    image: "https://placehold.co/280x200/f5f5f5/252525?text=NH-D15",
-    specs: ["Dual Tower Design", "NF-A15 Fans", "280W TDP", "LGA1700 Ready"],
-    validUntil: "2026-10-05", inStock: true,
-  },
-];
-
-const FILTERS = ["All", "Flash Deal", "Bundle Deal", "Clearance"];
-
 // ─── OffersPage ───────────────────────────────────────────────────────────────
 const OffersPage = () => {
-  const [activeFilter, setActiveFilter] = useState("All");
+  const { offers, loading, error } = useOffers();
+  const navigate = useNavigate();
 
-  const filtered =
-    activeFilter === "All"
-      ? OFFERS
-      : OFFERS.filter((o) => o.tag === activeFilter);
-
-  const handleAddToCart = (offer) => {
-    console.log("Added to cart:", offer.id, offer.title);
+  const handleAddToCart = async (offer) => {
+    // Use productId from the embedded product, not offer.id
+    if (offer?.productId) {
+      try {
+        console.log(`[Offers] Adding to cart: Product ID ${offer.productId} - ${offer.title}`);
+        const result = await addProductToServer(offer.productId);
+        console.log(`[Offers] Add to cart success:`, result);
+        // Navigate to cart after successful add
+        navigate("/cart");
+      } catch (error) {
+        console.error(`[Offers] Add to cart failed:`, error);
+      }
+    } else {
+      console.warn(`[Offers] No product ID found for offer:`, offer);
+    }
   };
 
   return (
@@ -135,9 +67,9 @@ const OffersPage = () => {
         </div>
 
         {/* ── Filter tabs ── */}
-        <div className="flex items-center gap-2.5 mb-7 flex-wrap">
+        {/* <div className="flex items-center gap-2.5 mb-7 flex-wrap">
           {FILTERS.map((f) => {
-            const count    = f === "All" ? OFFERS.length : OFFERS.filter((o) => o.tag === f).length;
+            const count    = f === "All" ? offers.length : offers.filter((o) => o.tag === f).length;
             const isActive = activeFilter === f;
             return (
               <button
@@ -161,18 +93,40 @@ const OffersPage = () => {
               </button>
             );
           })}
-        </div>
+        </div> */}
+
+        {/* ── Loading state ── */}
+        {loading && (
+          <div className="text-center py-12">
+            <p className="text-gray-400 text-sm">Loading offers...</p>
+          </div>
+        )}
+
+        {/* ── Error state ── */}
+        {error && (
+          <div className="text-center py-12">
+            <p className="text-red-500 text-sm">Failed to load offers: {error}</p>
+          </div>
+        )}
 
         {/* ── Offers grid ── */}
-        <div className="offers-grid grid gap-5">
-          {filtered.map((offer) => (
-            <OfferCard
-              key={offer.id}
-              offer={offer}
-              onAddToCart={handleAddToCart}
-            />
-          ))}
-        </div>
+        {!loading && !error && (
+          <div className="offers-grid grid gap-5">
+            {offers.length > 0 ? (
+              offers.map((offer) => (
+                <OfferCard
+                  key={offer.id}
+                  offer={offer}
+                  onAddToCart={handleAddToCart}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-400 text-sm">No offers found for this filter.</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── Footer disclaimer ── */}
         <div className="flex items-center gap-2 mt-10 px-5 py-3.5 bg-white border border-[#e6e6e6] rounded-xl text-gray-400">

@@ -16,7 +16,7 @@ const normalizeCartItem = (item) => ({
   productId: item.product_id ?? item.productId ?? null,
   product_id: item.product_id ?? item.productId ?? null,
   name: item.product_name ?? item.name ?? "",
-  price: toNumber(item.current_price ?? item.price_at_add ?? item.price),
+  price: toNumber( item.price_at_add ?? item.current_price ?? item.price),
   quantity: Math.max(1, Math.trunc(toNumber(item.quantity) || 1)),
   image: item.image_url ?? item.image ?? "",
   slug: item.product_slug ?? item.slug ?? "",

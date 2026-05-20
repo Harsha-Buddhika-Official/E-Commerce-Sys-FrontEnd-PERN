@@ -3,6 +3,7 @@ import LocalOfferOutlinedIcon   from "@mui/icons-material/LocalOfferOutlined";
 import BoltOutlinedIcon         from "@mui/icons-material/BoltOutlined";
 import Inventory2OutlinedIcon   from "@mui/icons-material/Inventory2Outlined";
 import AccessTimeOutlinedIcon   from "@mui/icons-material/AccessTimeOutlined";
+import { useState, useEffect } from "react";
 
 // ─── Font constants ───────────────────────────────────────────────────────────
 // Applied ONLY on leaf elements via style prop — never on wrapper divs,
@@ -52,7 +53,17 @@ function TimeUnit({ value, label }) {
 //   onAddToCart: (offer) => void   — optional callback
 
 const OfferCard = ({ offer, onAddToCart = () => {} }) => {
-  const { d, h, m } = calcTime(offer.validUntil);
+  const [timeLeft, setTimeLeft] = useState(() => calcTime(offer.validUntil));
+  
+  useEffect(() => {
+    // Update countdown every second
+    const interval = setInterval(() => {
+      setTimeLeft(calcTime(offer.validUntil));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [offer.validUntil]);
+
   const savings = offer.originalPrice - offer.discountedPrice;
   const isRed   = offer.tagColor === "red";
 
@@ -173,21 +184,24 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
             Ends in
           </span>
           <div className="flex items-center gap-1.5">
-            <TimeUnit value={d} label="Days" />
+            <TimeUnit value={timeLeft.d} label="Days" />
             <span className="font-black text-gray-300 mb-3" style={{ ...SORA, fontSize: 13 }}>:</span>
-            <TimeUnit value={h} label="Hrs" />
+            <TimeUnit value={timeLeft.h} label="Hrs" />
             <span className="font-black text-gray-300 mb-3" style={{ ...SORA, fontSize: 13 }}>:</span>
-            <TimeUnit value={m} label="Min" />
+            <TimeUnit value={timeLeft.m} label="Min" />
           </div>
         </div>
 
-        {/* CTA */}
+        {/* CTA — wired to cart API via addProductToServer */}
         <button
           disabled={!offer.inStock}
-          onClick={() => onAddToCart(offer)}
+          onClick={() => {
+            console.log(`[OfferCard] Add to cart clicked for product ${offer.productId}`);
+            onAddToCart(offer);
+          }}
           className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-150
             ${offer.inStock
-              ? "bg-[#111] text-white hover:bg-[#333] cursor-pointer"
+              ? "bg-[#111] text-white hover:bg-[#333] cursor-pointer active:translate-y-0.5"
               : "bg-gray-100 text-gray-400 cursor-not-allowed"
             }`}
           style={{ ...SORA, fontSize: 13, fontWeight: 700, letterSpacing: "0.02em" }}

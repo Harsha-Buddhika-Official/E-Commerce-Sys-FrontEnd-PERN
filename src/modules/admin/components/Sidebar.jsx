@@ -25,13 +25,13 @@ const NAV_GROUPS = [
       { id: "dashboard",  label: "Dashboard",  icon: <DashboardOutlinedIcon    style={{ fontSize: 20 }} /> },
       { id: "orders",     label: "Orders",     icon: <ShoppingCartOutlinedIcon style={{ fontSize: 20 }} /> },
       { id: "products",   label: "Products",   icon: <CategoryOutlinedIcon     style={{ fontSize: 20 }} /> },
-      { id: "customers",  label: "Customers",  icon: <PeopleAltOutlinedIcon    style={{ fontSize: 20 }} /> },
+      // { id: "customers",  label: "Customers",  icon: <PeopleAltOutlinedIcon    style={{ fontSize: 20 }} /> },
     ],
   },
   {
     group: "STORE",
     items: [
-      { id: "inventory",   label: "Inventory",   icon: <Inventory2OutlinedIcon  style={{ fontSize: 20 }} /> },
+      // { id: "inventory",   label: "Inventory",   icon: <Inventory2OutlinedIcon  style={{ fontSize: 20 }} /> },
       { id: "promotions",  label: "Promotions",  icon: <CampaignOutlinedIcon    style={{ fontSize: 20 }} /> },
       { id: "reports",     label: "Reports",     icon: <AssessmentOutlinedIcon  style={{ fontSize: 20 }} /> },
     ],
