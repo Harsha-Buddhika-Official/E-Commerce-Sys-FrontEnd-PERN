@@ -33,13 +33,13 @@ const NAV_GROUPS = [
     items: [
       // { id: "inventory",   label: "Inventory",   icon: <Inventory2OutlinedIcon  style={{ fontSize: 20 }} /> },
       { id: "promotions",  label: "Promotions",  icon: <CampaignOutlinedIcon    style={{ fontSize: 20 }} /> },
-      { id: "reports",     label: "Reports",     icon: <AssessmentOutlinedIcon  style={{ fontSize: 20 }} /> },
+      // { id: "reports",     label: "Reports",     icon: <AssessmentOutlinedIcon  style={{ fontSize: 20 }} /> },
     ],
   },
   {
     group: "SYSTEM",
     items: [
-      { id: "Admin Management",  label: "Admin Management",  icon: <SupervisorAccountOutlinedIcon style={{ fontSize: 20 }} /> },
+      { id: "admin-management",  label: "Admin Management",  icon: <SupervisorAccountOutlinedIcon style={{ fontSize: 20 }} /> },
       { id: "settings",  label: "Settings",  icon: <SettingsOutlinedIcon style={{ fontSize: 20 }} /> },
 
     ],
@@ -56,7 +56,7 @@ const ROUTE_MAP = {
   promotions: "/admin/promotions",
   reports:    "/admin/reports",
   settings:   "/admin/settings",
-  "Admin Management": "/admin/admin-management",
+  "admin-management": "/admin/admin-management",
 };
 
 // ─── AdminSidebar ─────────────────────────────────────────────────────────────

@@ -8,6 +8,8 @@ const PAGE_TITLES = {
   dashboard: "Dashboard",
   orders: "Orders",
   products: "Products",
+  "admin-management": "Admin Management",
+  "admin-create": "Create Admin",
 };
 
 export default function AdminLayout() {
@@ -45,6 +47,11 @@ export default function AdminLayout() {
 
   const activeItem = useMemo(() => {
     const segment = location.pathname.split("/").filter(Boolean).at(-1);
+
+    if (segment === "admin-create") {
+      return "admin-management";
+    }
+
     return segment || "dashboard";
   }, [location.pathname]);
 

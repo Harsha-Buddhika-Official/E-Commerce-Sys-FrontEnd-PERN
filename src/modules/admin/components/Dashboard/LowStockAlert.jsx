@@ -66,8 +66,8 @@ const LowStockAlert = ({
           No low stock items 🎉
         </p>
       ) : (
-        items.map((item) => (
-          <div key={item.id} className="flex items-center gap-3 py-3.5">
+        items.map((item, index) => (
+          <div key={item.id || item.product_id || index} className="flex items-center gap-3 py-3.5">
 
             {/* Left: name + bar */}
             <div className="flex flex-col gap-1.5 flex-1 min-w-0">

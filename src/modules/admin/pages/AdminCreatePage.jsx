@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ArrowBackOutlinedIcon        from "@mui/icons-material/ArrowBackOutlined";
 import SaveOutlinedIcon             from "@mui/icons-material/SaveOutlined";
 import PersonOutlinedIcon           from "@mui/icons-material/PersonOutlined";
@@ -13,6 +14,7 @@ import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettin
 import SupervisorAccountOutlinedIcon  from "@mui/icons-material/SupervisorAccountOutlined";
 import ManageAccountsOutlinedIcon     from "@mui/icons-material/ManageAccountsOutlined";
 import InfoOutlinedIcon               from "@mui/icons-material/InfoOutlined";
+import { useCreateAdmin } from "../features/admin/hooks/useCreateAdmin";
 
 // ─── Font constants ───────────────────────────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
@@ -21,23 +23,23 @@ const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 // ─── Role options ─────────────────────────────────────────────────────────────
 const ROLES = [
   {
-    value: "SUPER_ADMIN",
+    value: "super_admin",
     label: "Super Admin",
     description: "Full system access including admin management",
     icon: <AdminPanelSettingsOutlinedIcon style={{ fontSize: 20 }} />,
     bg: "#fef9c3", color: "#a16207", border: "#fde047", activeBg: "#fefce8",
   },
   {
-    value: "ADMIN",
+    value: "admin",
     label: "Admin",
     description: "Manage products, orders, and customers",
     icon: <SupervisorAccountOutlinedIcon style={{ fontSize: 20 }} />,
     bg: "#dbeafe", color: "#1d4ed8", border: "#93c5fd", activeBg: "#eff6ff",
   },
   {
-    value: "MODERATOR",
-    label: "Moderator",
-    description: "View-only access with limited actions",
+    value: "manager",
+    label: "Manager",
+    description: "Manage selected areas with limited elevated privileges",
     icon: <ManageAccountsOutlinedIcon style={{ fontSize: 20 }} />,
     bg: "#f3e8ff", color: "#7e22ce", border: "#d8b4fe", activeBg: "#faf5ff",
   },
@@ -144,18 +146,25 @@ const getAvatarColor = (name = "") => {
 const getInitials = (name = "") =>
   name.trim().split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase()).join("") || "?";
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ADMIN CREATE PAGE
-// ══════════════════════════════════════════════════════════════════════════════
-export default function AdminCreatePage({ onBack = () => {}, onSuccess = () => {} }) {
+
+export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
+  const navigate = useNavigate();
+  const { createAdmin, loading: apiLoading, error: apiError } = useCreateAdmin();
   const [form, setForm] = useState({
-    name: "", username: "", email: "", password: "", confirm_password: "", role: "ADMIN", is_active: true,
+    name: "", email: "", password: "", confirm_password: "", role: "admin", is_active: true,
   });
   const [showPw,     setShowPw]     = useState(false);
   const [showCPw,    setShowCPw]    = useState(false);
   const [errors,     setErrors]     = useState({});
-  const [saving,     setSaving]     = useState(false);
   const [saved,      setSaved]      = useState(false);
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate("/admin/admin-management");
+    }
+  };
 
   const setField = (key, val) => {
     setForm((p) => ({ ...p, [key]: val }));
@@ -168,8 +177,6 @@ export default function AdminCreatePage({ onBack = () => {}, onSuccess = () => {
   const validate = () => {
     const e = {};
     if (!form.name.trim())                       e.name             = "Full name is required";
-    if (!form.username.trim())                   e.username         = "Username is required";
-    else if (/\s/.test(form.username))           e.username         = "Username cannot contain spaces";
     if (!form.email.trim())                      e.email            = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(form.email))  e.email            = "Enter a valid email";
     if (!form.password)                          e.password         = "Password is required";
@@ -182,13 +189,25 @@ export default function AdminCreatePage({ onBack = () => {}, onSuccess = () => {
   const handleSave = async () => {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
-    setSaving(true);
-    await new Promise((r) => setTimeout(r, 900));
-    const payload = { ...form };
-    delete payload.confirm_password;
-    onSuccess(payload);
-    setSaving(false);
-    setSaved(true);
+    
+    try {
+      const payload = {
+        fullName: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+      };
+      await createAdmin(payload);
+      setSaved(true);
+      if (onSuccess) {
+        onSuccess({ ...form, fullName: form.name });
+      } else {
+        // Standalone page: navigate to admin-management after success
+        navigate("/admin/admin-management");
+      }
+    } catch (err) {
+      setErrors({ api: err.message || "Failed to create admin" });
+    }
   };
 
   const avatarBg = getAvatarColor(form.name);
@@ -201,7 +220,7 @@ export default function AdminCreatePage({ onBack = () => {}, onSuccess = () => {
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <button
-            onClick={onBack}
+            onClick={handleBack}
             className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-all cursor-pointer"
           >
             <ArrowBackOutlinedIcon style={{ fontSize: 18 }} />
@@ -214,11 +233,11 @@ export default function AdminCreatePage({ onBack = () => {}, onSuccess = () => {
 
         <button
           onClick={handleSave}
-          disabled={saving}
+          disabled={apiLoading}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all cursor-pointer disabled:opacity-60"
           style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: saved ? "#16a34a" : "#111", border: "none" }}
         >
-          {saving ? (
+          {apiLoading ? (
             <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating…</>
           ) : saved ? (
             <><CheckCircleOutlinedIcon style={{ fontSize: 16 }} /> Admin Created!</>
@@ -229,11 +248,12 @@ export default function AdminCreatePage({ onBack = () => {}, onSuccess = () => {
       </div>
 
       {/* Validation errors */}
-      {Object.keys(errors).length > 0 && (
+      {(Object.keys(errors).length > 0 || apiError) && (
         <div className="flex items-start gap-3 px-4 py-3 rounded-xl mb-5" style={{ backgroundColor: "#fef2f2", border: "1px solid #fecaca" }}>
           <WarningAmberOutlinedIcon style={{ fontSize: 16, color: "#e53935", flexShrink: 0, marginTop: 1 }} />
           <div>
             <p style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#e53935", marginBottom: 4 }}>Please fix the following errors:</p>
+            {apiError && <p style={{ ...INTER, fontSize: 12, color: "#e53935" }}>• {apiError}</p>}
             {Object.values(errors).map((err, i) => (
               <p key={i} style={{ ...INTER, fontSize: 12, color: "#e53935" }}>• {err}</p>
             ))}
@@ -260,14 +280,6 @@ export default function AdminCreatePage({ onBack = () => {}, onSuccess = () => {
                 placeholder="e.g. Kasun Perera"
                 icon={<PersonOutlinedIcon style={{ fontSize: 16 }} />}
                 error={errors.name}
-              />
-              <TextInput
-                label="Username" required
-                value={form.username}
-                onChange={(v) => setField("username", v.toLowerCase().replace(/\s/g, ""))}
-                placeholder="e.g. kasun_perera"
-                icon={<span style={{ ...INTER, fontSize: 13, fontWeight: 700, color: "inherit" }}>@</span>}
-                error={errors.username}
               />
               <TextInput
                 label="Email Address" required
@@ -387,10 +399,7 @@ export default function AdminCreatePage({ onBack = () => {}, onSuccess = () => {
                 <p style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>
                   {form.name || "Full Name"}
                 </p>
-                <p style={{ ...INTER, fontSize: 12, color: "#bbb", marginTop: 2 }}>
-                  @{form.username || "username"}
-                </p>
-                <p style={{ ...INTER, fontSize: 11, color: "#bbb", marginTop: 1 }}>
+                <p style={{ ...INTER, fontSize: 11, color: "#bbb", marginTop: 3 }}>
                   {form.email || "email@example.com"}
                 </p>
               </div>
@@ -492,11 +501,11 @@ export default function AdminCreatePage({ onBack = () => {}, onSuccess = () => {
           {/* Create button (repeated) */}
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={apiLoading}
             className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-white transition-all cursor-pointer disabled:opacity-60"
             style={{ ...SORA, fontSize: 14, fontWeight: 800, backgroundColor: saved ? "#16a34a" : "#111", border: "none" }}
           >
-            {saving ? (
+            {apiLoading ? (
               <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating Admin…</>
             ) : saved ? (
               <><CheckCircleOutlinedIcon style={{ fontSize: 18 }} /> Admin Created!</>

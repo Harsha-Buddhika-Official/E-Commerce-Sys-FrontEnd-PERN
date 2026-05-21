@@ -10,6 +10,8 @@ import AddProductPage from "../../modules/admin/pages/AddProduct.jsx";
 import ProductInfoPage from "../../modules/admin/pages/ProductInfoPage.jsx";
 import PromotionsPage from "../../modules/admin/pages/PromotionPage.jsx";
 import PromotionDetailPage from "../../modules/admin/pages/PromotinDetailPage.jsx";
+import AdminManagementPage from "../../modules/admin/pages/AdminManagementPage.jsx";
+import AdminCreatePage from "../../modules/admin/pages/AdminCreatePage.jsx";
 
 export default function AdminRoutes() {
   return (
@@ -19,14 +21,16 @@ export default function AdminRoutes() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AdminLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/orders"    element={<Orders />} />
-          <Route path="/orders/:id" element={<OrderDetailPage />} />
-          <Route path="/products"  element={<Products />} />
-          <Route path="/products/add" element={<AddProductPage />} />
-          <Route path="/products/:id" element={<ProductInfoPage />} />
-          <Route path="/promotions" element={<PromotionsPage />} />
-          <Route path="/promotions/:id" element={<PromotionDetailPage />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="orders/:id" element={<OrderDetailPage />} />
+          <Route path="products" element={<Products />} />
+          <Route path="products/add" element={<AddProductPage />} />
+          <Route path="products/:id" element={<ProductInfoPage />} />
+          <Route path="admin-management" element={<AdminManagementPage />} />
+          <Route path="admin-management/admin-create" element={<AdminCreatePage />} />
+          <Route path="promotions" element={<PromotionsPage />} />
+          <Route path="promotions/:id" element={<PromotionDetailPage />} />
         </Route>
       </Route>
 
