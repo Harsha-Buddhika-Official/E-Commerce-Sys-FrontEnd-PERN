@@ -17,7 +17,7 @@ export const fetchAllAdmins = async () => {
             name: a.full_name || a.name || "",
             username: a.username || (a.email ? a.email.split("@")[0] : ""),
             email: a.email || "",
-            role: a.role,
+            role: (a.role).toUpperCase(),
             is_active: Boolean(a.is_active),
             last_login: a.last_login || null,
             created_at: a.created_at || null,

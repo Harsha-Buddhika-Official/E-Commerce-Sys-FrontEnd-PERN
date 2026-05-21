@@ -92,7 +92,12 @@ const AdminSidebar = ({
     setActive(id);
     const route = ROUTE_MAP[id];
     if (route) {
-      navigate(route);
+      navigate(route, {
+        state: {
+          role: adminName,
+          email: adminEmail,
+        },
+      });
     }
     onNavigate(id);
   };
@@ -192,18 +197,6 @@ const AdminSidebar = ({
         <div
           className="flex items-center gap-3 px-4 py-4 border-t border-[#f0f0f0] shrink-0"
         >
-          {/* Avatar — Admin initial */}
-          <div className="shrink-0">
-            <svg width="38" height="38" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="40" cy="40" r="38" stroke="#333" strokeWidth="2" fill="#111" />
-              <circle cx="40" cy="40" r="36" stroke="#888" strokeWidth="2" fill="none" />
-              <path d="M 40 4 A 36 36 0 0 1 72 56" stroke="#e53935" strokeWidth="3" fill="none" strokeLinecap="round" />
-              <circle cx="40" cy="40" r="24" stroke="#555" strokeWidth="1.5" fill="#1a1a1a" />
-              <text x="40" y="45" textAnchor="middle" fill="#fff" fontSize="14" fontWeight="800"
-                fontFamily="'Sora','Segoe UI',sans-serif" letterSpacing="1">{adminName.charAt(0).toUpperCase()}</text>
-              <path d="M 22 34 A 7 7 0 0 0 22 46" stroke="#e53935" strokeWidth="2" fill="none" strokeLinecap="round" />
-            </svg>
-          </div>
 
           {/* Name + email */}
           <div className="flex flex-col gap-0.5 min-w-0">
@@ -211,7 +204,7 @@ const AdminSidebar = ({
               className="text-[#111] leading-tight truncate"
               style={{ ...INTER, fontSize: 13, fontWeight: 700 }}
             >
-              {adminName}
+              {adminName?.replace(/_/g, " ")}
             </p>
             <p
               className="text-gray-400 leading-tight truncate"

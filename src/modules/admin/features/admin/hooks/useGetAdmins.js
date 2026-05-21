@@ -21,7 +21,7 @@ export const useGetAdmins = () => {
     }
     useEffect(() => {
         fetchAdmins();
-    }, []); // Refetch admins when a role update succeeds
+    }, []);
 
     return {
         admins,

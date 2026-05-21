@@ -19,8 +19,7 @@ export const loginAdmin = async (credentials) => {
 
     // Store token for subsequent authenticated requests.
     localStorage.setItem(TOKEN_KEY, token);
-    console.log(token);
-
+    
     return {
         token,
         admin: response?.data?.admin ?? response?.data?.data?.admin ?? null,

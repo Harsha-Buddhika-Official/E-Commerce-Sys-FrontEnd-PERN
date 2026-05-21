@@ -16,6 +16,8 @@ export default function AdminLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notifications, setNotifications] = useState([]);
+  const adminRole = location.state?.role ?? "super_admin";
+  const adminEmail = location.state?.email ?? "admin@example.com";
 
   useEffect(() => {
     let mounted = true;
@@ -26,7 +28,7 @@ export default function AdminLayout() {
         if (mounted) {
           setNotifications(data);
         }
-      } catch (error) {
+      } catch {
         if (mounted) {
           setNotifications([]);
         }
@@ -70,8 +72,8 @@ export default function AdminLayout() {
           onLogout={() => console.log("Logout")}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
-          adminName="Super Admin"
-          adminEmail="admin@example.com"
+          adminName={adminRole}
+          adminEmail={adminEmail}
         />
 
         <div className="flex-1 min-w-0 overflow-hidden">
