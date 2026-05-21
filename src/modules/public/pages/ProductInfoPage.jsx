@@ -9,7 +9,7 @@ import {
 } from "@mui/icons-material";
 import { useProductDetail } from "../features/products/hooks/useProductDetail";
 import { formatAttributeName } from "../../../utils/formatAttributeName";
-import { removeFromCart, addProductToServer } from "../features/cart/cart.mock";
+import { removeFromCart, addProductToServer } from "../features/cart/service/cart.service.js";
 import { useCart } from "../features/cart/hooks/useCart.js";
 
 const FALLBACK_IMAGE = "https://placehold.co/480x380/efefef/333333?text=No+Image";

@@ -5,7 +5,7 @@ import ProductGrid from "../components/Product/ProductGrid.jsx";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useProductFilter } from "../features/products/hooks/useProductFilter.js";
-import { addProductToServer } from "../features/cart/cart.mock";
+import { addProductToServer } from "../features/cart/service/cart.service.js";
 
 const PRODUCTS_PER_PAGE = 16;
 

@@ -1,7 +1,7 @@
 import OfferCard from "../components/Offer/OfferCard";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useOffers } from "../features/offers/hooks/useOffers";
-import { addProductToServer } from "../features/cart/cart.mock";
+import { addProductToServer } from "../features/cart/service/cart.service.js";
 
 // ─── Font constants (page-level text only) ────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };

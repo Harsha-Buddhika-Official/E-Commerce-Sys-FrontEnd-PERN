@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { addProductToServer } from "../../features/cart/cart.mock";
+import { addProductToServer } from "../../features/cart/service/cart.service.js";
 import ProductCard from "./ProductCard.jsx";
 
 const formatProductTag = (tag) => {
