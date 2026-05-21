@@ -54,16 +54,19 @@ function TimeUnit({ value, label }) {
 //   onAddToCart: (offer) => void   — optional callback
 
 const OfferCard = ({ offer, onAddToCart = () => {} }) => {
-  const [timeLeft, setTimeLeft] = useState(() => calcTime(offer.validUntil));
+  const countdownTarget = offer.countdownTarget || offer.validUntil;
+  const countdownLabel = offer.countdownLabel || (offer.offerState === "upcoming" ? "Starts In" : "Ends In");
+  const isUpcoming = offer.offerState === "upcoming";
+  const [timeLeft, setTimeLeft] = useState(() => calcTime(countdownTarget));
   
   useEffect(() => {
     // Update countdown every second
     const interval = setInterval(() => {
-      setTimeLeft(calcTime(offer.validUntil));
+      setTimeLeft(calcTime(countdownTarget));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [offer.validUntil]);
+  }, [countdownTarget]);
 
   const savings = offer.originalPrice - offer.discountedPrice;
   const isRed   = offer.tagColor === "red";
@@ -100,11 +103,11 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
         {/* Stock pill */}
         <div
           className={`absolute bottom-2.5 right-2.5 flex items-center gap-1.5 bg-white border border-[#ccc] rounded-full px-3 py-[3px]
-            ${offer.inStock ? "text-green-700" : "text-red-500"}`}
+            ${isUpcoming ? "text-blue-700" : offer.inStock ? "text-green-700" : "text-red-500"}`}
           style={{ ...INTER, fontSize: 10, fontWeight: 600 }}
         >
-          <span className={`w-[6px] h-[6px] rounded-full flex-shrink-0 ${offer.inStock ? "bg-green-600" : "bg-red-500"}`} />
-          {offer.inStock ? "In Stock" : "Out of Stock"}
+          <span className={`w-[6px] h-[6px] rounded-full flex-shrink-0 ${isUpcoming ? "bg-blue-600" : offer.inStock ? "bg-green-600" : "bg-red-500"}`} />
+          {isUpcoming ? "Coming Soon" : offer.inStock ? "In Stock" : "Out of Stock"}
         </div>
       </div>
 
@@ -182,7 +185,7 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
             className="text-gray-400 uppercase tracking-wider flex-shrink-0"
             style={{ ...INTER, fontSize: 10, fontWeight: 700 }}
           >
-            Ends in
+            {countdownLabel}
           </span>
           <div className="flex items-center gap-1.5">
             <TimeUnit value={timeLeft.d} label="Days" />
@@ -203,14 +206,14 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
             onAddToCart(offer);
           }}
           className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-150
-            ${offer.inStock
+            ${offer.inStock && !isUpcoming
               ? "bg-[#111] text-white hover:bg-[#333] cursor-pointer active:translate-y-0.5"
               : "bg-gray-100 text-gray-400 cursor-not-allowed"
             }`}
           style={{ ...SORA, fontSize: 13, fontWeight: 700, letterSpacing: "0.02em" }}
         >
           <ShoppingCartOutlinedIcon style={{ fontSize: 17 }} />
-          {offer.inStock ? "Add to Cart" : "Out of Stock"}
+          {isUpcoming ? "Coming Soon" : offer.inStock ? "Add to Cart" : "Out of Stock"}
         </button>
 
       </div>

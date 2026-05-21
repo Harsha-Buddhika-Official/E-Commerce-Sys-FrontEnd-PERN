@@ -1,5 +1,6 @@
 import OfferCard from "../components/Offer/OfferCard";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { useState } from "react";
 import { useOffers } from "../features/offers/hooks/useOffers";
 import { addProductToServer } from "../features/cart/service/cart.service.js";
 
@@ -9,7 +10,13 @@ const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
 // ─── OffersPage ───────────────────────────────────────────────────────────────
 const OffersPage = () => {
-  const { offers, loading, error } = useOffers();
+  const [activeTab, setActiveTab] = useState("active");
+  const { offers, loading, error } = useOffers(activeTab);
+
+  const tabs = [
+    { key: "active", label: "Active Offers" },
+    { key: "upcoming", label: "Upcoming Offers" },
+  ];
 
   const handleAddToCart = async (offer) => {
     // Use productId from the embedded product, not offer.id
@@ -69,14 +76,13 @@ const OffersPage = () => {
         </div>
 
         {/* ── Filter tabs ── */}
-        {/* <div className="flex items-center gap-2.5 mb-7 flex-wrap">
-          {FILTERS.map((f) => {
-            const count    = f === "All" ? offers.length : offers.filter((o) => o.tag === f).length;
-            const isActive = activeFilter === f;
+        <div className="flex items-center justify-center gap-2.5 mb-7 flex-wrap">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.key;
             return (
               <button
-                key={f}
-                onClick={() => setActiveFilter(f)}
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
                 className={`flex items-center gap-2 px-5 py-2 rounded-full border-[1.5px] transition-all duration-150
                   ${isActive
                     ? "bg-[#111] border-[#111] text-white"
@@ -84,18 +90,11 @@ const OffersPage = () => {
                   }`}
                 style={{ ...SORA, fontSize: 13, fontWeight: 600 }}
               >
-                {f}
-                <span
-                  className={`inline-flex items-center justify-center w-5 h-5 rounded-full
-                    ${isActive ? "bg-white/20 text-white" : "bg-gray-100 text-gray-500"}`}
-                  style={{ ...SORA, fontSize: 10, fontWeight: 700 }}
-                >
-                  {count}
-                </span>
+                {tab.label}
               </button>
             );
           })}
-        </div> */}
+        </div>
 
         {/* ── Loading state ── */}
         {loading && (
@@ -128,13 +127,15 @@ const OffersPage = () => {
                   className="text-gray-400 mb-2"
                   style={{ ...SORA, fontSize: 24, fontWeight: 700 }}
                 >
-                  No offers these days 😴
+                  {activeTab === "upcoming" ? "No upcoming offers right now 😴" : "No active offers right now 😴"}
                 </p>
                 <p
                   className="text-gray-400"
                   style={{ ...INTER, fontSize: 13, fontWeight: 400 }}
                 >
-                  Check back soon for amazing deals on your favorite PC components!
+                  {activeTab === "upcoming"
+                    ? "Check back soon for scheduled deals on your favorite PC components!"
+                    : "Check back soon for amazing deals on your favorite PC components!"}
                 </p>
               </div>
             )}

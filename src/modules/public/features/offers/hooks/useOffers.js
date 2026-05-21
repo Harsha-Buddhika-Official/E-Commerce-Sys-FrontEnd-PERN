@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchAllOffers } from "../service/offers.service.js";
+import {
+  fetchActiveOffers,
+  fetchAllOffers,
+  fetchUpcomingOffers,
+} from "../service/offers.service.js";
 
 const INITIAL_STATE = {
   offers: [],
@@ -7,14 +11,20 @@ const INITIAL_STATE = {
   error: null,
 };
 
-export const useOffers = () => {
+export const useOffers = (mode = "all") => {
   const [state, setState] = useState(INITIAL_STATE);
+
+  const loadOffers = useCallback(async () => {
+    if (mode === "active") return fetchActiveOffers();
+    if (mode === "upcoming") return fetchUpcomingOffers();
+    return fetchAllOffers();
+  }, [mode]);
 
   const refresh = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
-      const offers = await fetchAllOffers();
+      const offers = await loadOffers();
       setState({
         offers,
         loading: false,
@@ -29,14 +39,14 @@ export const useOffers = () => {
       }));
       return [];
     }
-  }, []);
+  }, [loadOffers]);
 
   useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
       try {
-        const offers = await fetchAllOffers();
+        const offers = await loadOffers();
         if (!cancelled) {
           setState({
             offers,
@@ -60,7 +70,7 @@ export const useOffers = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [loadOffers]);
 
   return {
     ...state,

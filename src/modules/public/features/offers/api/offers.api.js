@@ -6,6 +6,9 @@ export const getAllOffers = () =>
 export const getActiveOffers = () =>
   API.get("/offers/active");
 
+export const getUpcomingOffers = () =>
+  API.get("/offers/upcoming");
+
 export const getOfferById = (id) =>
   API.get(`/offers/${id}`);
 

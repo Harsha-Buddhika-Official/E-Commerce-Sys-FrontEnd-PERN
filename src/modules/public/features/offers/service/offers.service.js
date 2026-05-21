@@ -2,6 +2,8 @@ import {
   getAllOffers,
   getOfferById,
   getOfferProducts,
+  getActiveOffers,
+  getUpcomingOffers,
 } from "../api/offers.api.js";
 
 const toNumber = (value) => {
@@ -9,19 +11,14 @@ const toNumber = (value) => {
   return Number.isFinite(numeric) ? numeric : 0;
 };
 
-const parseDate = (dateStr) => {
-  if (!dateStr) return null;
-  const date = new Date(dateStr);
-  return Number.isFinite(date.getTime()) ? date : null;
-};
-
 /**
  * Normalize a single offer to UI shape
  * Products are embedded in the offer response
  */
-const normalizeOffer = (offer) => {
+const normalizeOffer = (offer, source = "all") => {
   const discountValue = toNumber(offer.discount_value);
   const discountType = offer.discount_type || "percentage";
+  const isUpcoming = source === "upcoming";
 
   // Extract product information: API may return an array or a single product object
   const firstProduct = (() => {
@@ -72,8 +69,11 @@ const normalizeOffer = (offer) => {
     badge: offer.badge || null,
     image,
     specs: Array.isArray(offer.specs) ? offer.specs : [],
-    validUntil: offer.end_date || "",
-    inStock: firstProduct?.is_active !== false && offer.is_active !== false,
+    validUntil: isUpcoming ? (offer.start_date || "") : (offer.end_date || ""),
+    countdownLabel: isUpcoming ? "Starts In" : "Ends In",
+    countdownTarget: isUpcoming ? (offer.start_date || "") : (offer.end_date || ""),
+    offerState: isUpcoming ? "upcoming" : (offer.is_active !== false ? "active" : "inactive"),
+    inStock: isUpcoming ? false : (firstProduct?.is_active !== false && offer.is_active !== false),
     isActive: offer.is_active !== false,
     startDate: offer.start_date || "",
     endDate: offer.end_date || "",
@@ -99,6 +99,32 @@ export const fetchAllOffers = async () => {
     return offers.map(normalizeOffer);
   } catch (error) {
     console.error("Failed to fetch all offers:", error);
+    return [];
+  }
+};
+
+export const fetchActiveOffers = async () => {
+  try {
+    const response = await getActiveOffers();
+    const offers = Array.isArray(unwrapResponse(response))
+      ? unwrapResponse(response)
+      : [];
+    return offers.map((offer) => normalizeOffer(offer, "active"));
+  } catch (error) {
+    console.error("Failed to fetch active offers:", error);
+    return [];
+  }
+};
+
+export const fetchUpcomingOffers = async () => {
+  try {
+    const response = await getUpcomingOffers();
+    const offers = Array.isArray(unwrapResponse(response))
+      ? unwrapResponse(response)
+      : [];
+    return offers.map((offer) => normalizeOffer(offer, "upcoming"));
+  } catch (error) {
+    console.error("Failed to fetch upcoming offers:", error);
     return [];
   }
 };
