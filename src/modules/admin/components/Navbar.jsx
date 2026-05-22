@@ -96,9 +96,9 @@ const Navbar = ({
         >
           {currentTime}
         </span>
-        <NotificationOverlay notifications={notifications} />
+        {/* notification tempary disabled */}
+        {/* <NotificationOverlay notifications={notifications} /> */}
       </div>
-
     </nav>
   );
 };

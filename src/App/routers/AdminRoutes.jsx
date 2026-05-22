@@ -8,9 +8,11 @@ import OrderDetailPage from "../../modules/admin/pages/OrderDetailPage.jsx";
 import Products from "../../modules/admin/pages/Products.jsx";
 import AddProductPage from "../../modules/admin/pages/AddProduct.jsx";
 import ProductInfoPage from "../../modules/admin/pages/ProductInfoPage.jsx";
+import BrandsManagement from "../../modules/admin/pages/BrandsManagement.jsx";
+import BrandCreatePage from "../../modules/admin/pages/BrandCreatePage.jsx";
 import PromotionsPage from "../../modules/admin/pages/PromotionPage.jsx";
 import PromotionDetailPage from "../../modules/admin/pages/PromotinDetailPage.jsx";
-import AdminManagementPage from "../../modules/admin/pages/AdminManagementPage.jsx";
+import AdminManagement from "../../modules/admin/pages/AdminManagement.jsx";
 import AdminCreatePage from "../../modules/admin/pages/AdminCreatePage.jsx";
 
 export default function AdminRoutes() {
@@ -27,7 +29,9 @@ export default function AdminRoutes() {
           <Route path="products" element={<Products />} />
           <Route path="products/add" element={<AddProductPage />} />
           <Route path="products/:id" element={<ProductInfoPage />} />
-          <Route path="admin-management" element={<AdminManagementPage />} />
+          <Route path="brands" element={<BrandsManagement />} />
+          <Route path="brands/create" element={<BrandCreatePage />} />
+          <Route path="admin-management" element={<AdminManagement />} />
           <Route path="admin-management/admin-create" element={<AdminCreatePage />} />
           <Route path="promotions" element={<PromotionsPage />} />
           <Route path="promotions/:id" element={<PromotionDetailPage />} />

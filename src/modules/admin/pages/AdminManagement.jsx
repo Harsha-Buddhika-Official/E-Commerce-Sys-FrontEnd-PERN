@@ -6,8 +6,8 @@ import CloseOutlinedIcon         from "@mui/icons-material/CloseOutlined";
 import FilterListOutlinedIcon         from "@mui/icons-material/FilterListOutlined";
 import PersonOffOutlinedIcon          from "@mui/icons-material/PersonOffOutlined";
 import CircularProgress          from "@mui/material/CircularProgress";
-import { useGetAdmins } from "../features/admin/hooks/useGetAdmins";
-import { useDeleteAdmin } from "../features/admin/hooks/useDeleteAdmin";
+import { useGetAdmins } from "../features/admin/hooks/useGetAdmins.js";
+import { useDeleteAdmin } from "../features/admin/hooks/useDeleteAdmin.js";
 import StatusRow from "../components/admin/StatusRow.jsx";
 import AdminGrid from "../components/admin/AdminGrid.jsx";
  
@@ -66,7 +66,7 @@ function FilterChip({ label, active, onClick, count }) {
 
 const CURRENT_ADMIN_ID = 1; // simulate logged-in admin
 
-export default function AdminManagementPage({ onCreateNew } = {}) {
+export default function AdminManagement({ onCreateNew } = {}) {
   const { admins, loading, error, refresh } = useGetAdmins();
   const { deleteAdmin } = useDeleteAdmin();
   const navigate = useNavigate();

@@ -201,9 +201,7 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
       setSaved(true);
       if (onSuccess) {
         onSuccess({ ...form, fullName: form.name });
-      } else {
-        // Standalone page: navigate to admin-management after success
-        navigate("/admin/admin-management");
+        handleBack();
       }
     } catch (err) {
       setErrors({ api: err.message || "Failed to create admin" });
@@ -231,20 +229,6 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
           </div>
         </div>
 
-        <button
-          onClick={handleSave}
-          disabled={apiLoading}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all cursor-pointer disabled:opacity-60"
-          style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: saved ? "#16a34a" : "#111", border: "none" }}
-        >
-          {apiLoading ? (
-            <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating…</>
-          ) : saved ? (
-            <><CheckCircleOutlinedIcon style={{ fontSize: 16 }} /> Admin Created!</>
-          ) : (
-            <><SaveOutlinedIcon style={{ fontSize: 16 }} /> Create Admin</>
-          )}
-        </button>
       </div>
 
       {/* Validation errors */}
@@ -498,7 +482,6 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
             </div>
           </SectionCard>
 
-          {/* Create button (repeated) */}
           <button
             onClick={handleSave}
             disabled={apiLoading}
@@ -513,6 +496,7 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
               <><SaveOutlinedIcon style={{ fontSize: 18 }} /> Create Admin</>
             )}
           </button>
+
         </div>
       </div>
     </div>

@@ -8,6 +8,8 @@ const PAGE_TITLES = {
   dashboard: "Dashboard",
   orders: "Orders",
   products: "Products",
+  brands: "Brand Management",
+  create: "Create Brand",
   "admin-management": "Admin Management",
   "admin-create": "Create Admin",
 };
@@ -52,6 +54,10 @@ export default function AdminLayout() {
 
     if (segment === "admin-create") {
       return "admin-management";
+    }
+
+    if (segment === "create" && location.pathname.includes("/brands/")) {
+      return "brands";
     }
 
     return segment || "dashboard";
