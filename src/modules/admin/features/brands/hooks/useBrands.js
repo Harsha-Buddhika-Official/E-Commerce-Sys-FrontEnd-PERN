@@ -6,7 +6,7 @@ export const useBrands = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
+    
         const loadBrands = async () => {
             try {
                 const fetchedBrands = await fetchBrands();
@@ -25,8 +25,9 @@ export const useBrands = () => {
                 setLoading(false);
             }
         };
+    useEffect(() => {
         loadBrands();
     }, []);
 
-    return { brands, loading, error };
+    return { brands, loading, error, refresh: loadBrands };
 };

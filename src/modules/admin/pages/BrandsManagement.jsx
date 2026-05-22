@@ -1,70 +1,18 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddOutlinedIcon           from "@mui/icons-material/AddOutlined";
-import CloseOutlinedIcon         from "@mui/icons-material/CloseOutlined";
-import SaveOutlinedIcon          from "@mui/icons-material/SaveOutlined";
-import LabelOutlinedIcon         from "@mui/icons-material/LabelOutlined";
-import ImageOutlinedIcon         from "@mui/icons-material/ImageOutlined";
-import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
-import CheckCircleOutlinedIcon   from "@mui/icons-material/CheckCircleOutlined";
 import StorefrontOutlinedIcon    from "@mui/icons-material/StorefrontOutlined";
-import BrokenImageOutlinedIcon   from "@mui/icons-material/BrokenImageOutlined";
-import ToggleOnIcon              from "@mui/icons-material/ToggleOn";
-import ToggleOffIcon             from "@mui/icons-material/ToggleOff";
 import BrandCard from "../components/brand/BrandCard.jsx";
 import { useBrands } from "../features/brands/hooks/useBrands.js";
+import { useDeleteBrand } from "../features/brands/hooks/useDeleteBrand.js";
 
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
-// ─── Field label ──────────────────────────────────────────────────────────────
-function FieldLabel({ children, required }) {
-  return (
-    <p style={{ ...INTER, fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>
-      {children}{required && <span style={{ color: "#e53935" }}> *</span>}
-    </p>
-  );
-}
-
-// ─── Text input ───────────────────────────────────────────────────────────────
-function TextInput({ value, onChange, placeholder, icon, mono, readOnly, error }) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <div className="relative flex items-center">
-      {icon && (
-        <div className="absolute left-3 pointer-events-none" style={{ color: focused ? "#111" : "#bbb" }}>
-          {icon}
-        </div>
-      )}
-      <input
-        value={value}
-        onChange={(e) => onChange?.(e.target.value)}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        className="w-full outline-none transition-all"
-        style={{
-          ...INTER,
-          fontSize: 13,
-          fontWeight: 600,
-          color: readOnly ? "#aaa" : "#111",
-          fontFamily: mono ? "'Courier New', monospace" : INTER.fontFamily,
-          padding: `10px 14px 10px ${icon ? "36px" : "14px"}`,
-          borderRadius: 12,
-          border: `1.5px solid ${error ? "#e53935" : focused ? "#111" : "#ebebeb"}`,
-          backgroundColor: readOnly ? "#f5f5f5" : focused ? "#fff" : "#f9f9f9",
-          cursor: readOnly ? "not-allowed" : "text",
-        }}
-        onFocus={() => !readOnly && setFocused(true)}
-        onBlur={() => setFocused(false)}
-      />
-    </div>
-  );
-}
-
 // BRAND MANAGEMENT PAGE
 export default function BrandManagementPage() {
   const navigate = useNavigate();
-  const { brands, loading, error } = useBrands();
+  const { brands, loading, error, refresh } = useBrands();
+  const { deleteBrand } = useDeleteBrand();
 
   const activeCount = brands.reduce((count, brand) => count + (brand.is_active ? 1 : 0), 0);
   const inactiveCount = brands.length - activeCount;
@@ -89,6 +37,15 @@ export default function BrandManagementPage() {
         </div>
       </div>
     );
+  }
+
+  const handleDelete = async (brandId) => {
+    try {
+      await deleteBrand(brandId);
+      await refresh();
+    } catch (err) {
+      alert(`Failed to delete brand. ${err.message}`);
+    }
   }
 
   return (
@@ -144,7 +101,7 @@ export default function BrandManagementPage() {
             <BrandCard
               key={brand.brand_id}
               brand={brand}
-              // onDelete={handleDelete}
+              onDelete={handleDelete}
             />
           ))}
         </div>

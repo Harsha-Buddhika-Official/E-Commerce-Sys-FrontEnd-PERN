@@ -16,28 +16,6 @@ const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
 
-
-// ─── Stat card ────────────────────────────────────────────────────────────────
-function StatCard({ label, value, icon, bg, color }) {
-  return (
-    <div
-      className="bg-white rounded-2xl p-5 flex items-center gap-4"
-      style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
-    >
-      <div
-        className="flex items-center justify-center w-11 h-11 rounded-xl flex-shrink-0"
-        style={{ backgroundColor: bg }}
-      >
-        <span style={{ color }}>{icon}</span>
-      </div>
-      <div>
-        <p style={{ ...INTER, fontSize: 11, fontWeight: 600, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.07em" }}>{label}</p>
-        <p style={{ ...SORA, fontSize: 22, fontWeight: 900, color: "#111" }}>{value}</p>
-      </div>
-    </div>
-  );
-}
-
 // ─── Filter chip ──────────────────────────────────────────────────────────────
 function FilterChip({ label, active, onClick, count }) {
   return (
@@ -64,7 +42,7 @@ function FilterChip({ label, active, onClick, count }) {
   );
 }
 
-const CURRENT_ADMIN_ID = 1; // simulate logged-in admin
+ 
 
 export default function AdminManagement({ onCreateNew } = {}) {
   const { admins, loading, error, refresh } = useGetAdmins();
@@ -274,7 +252,7 @@ export default function AdminManagement({ onCreateNew } = {}) {
 
       {/* ── Admin grid ── */}
       {filtered.length > 0 ? (
-        <AdminGrid admins={filtered} currentAdminId={CURRENT_ADMIN_ID} onDelete={handleDelete} />
+        <AdminGrid admins={filtered} onDelete={handleDelete} />
       ) : (
         /* Empty state */
         <div

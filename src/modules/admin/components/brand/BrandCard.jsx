@@ -80,7 +80,7 @@ export default function BrandCard({ brand, onDelete }) {
       {showDelete && (
         <DeleteModal
           brand={brand}
-          onConfirm={(b) => { setShowDelete(false); onDelete(b); }}
+          onConfirm={(b) => { setShowDelete(false); onDelete(b.brand_id); }}
           onCancel={() => setShowDelete(false)}
         />
       )}

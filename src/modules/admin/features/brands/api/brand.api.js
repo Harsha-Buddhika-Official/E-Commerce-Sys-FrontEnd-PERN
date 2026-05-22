@@ -6,7 +6,7 @@ export const getBrands = async () => {
     const res = await API.get("/brands");
     return res.data;
   } catch (err) {
-    handleApiError(err);
+    handleApiError(err, "Failed to fetch brands");
     throw err;
   }
 };
@@ -16,7 +16,17 @@ export const createBrand = async (brandData) => {
     const res = await API.post("/brands", brandData);
     return res.data;
   }catch(err){
-    handleApiError(err);
+    handleApiError(err, "Failed to create brand");
     throw err;
   }
 };
+
+export const deleteBrand = async (brandId) => {
+  try{
+    const res = await API.delete(`/brands/${brandId}`);
+    return res.data;
+  } catch (err) {
+    handleApiError(err, "Failed to delete brand");
+    throw err;
+  }
+}
