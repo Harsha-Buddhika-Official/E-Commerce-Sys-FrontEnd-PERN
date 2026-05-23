@@ -162,7 +162,7 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
     if (onBack) {
       onBack();
     } else {
-      navigate("/admin/admin-management");
+      navigate("/admin/admin");
     }
   };
 

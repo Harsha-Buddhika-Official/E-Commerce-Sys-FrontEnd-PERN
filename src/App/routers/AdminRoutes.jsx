@@ -14,6 +14,7 @@ import PromotionsPage from "../../modules/admin/pages/PromotionPage.jsx";
 import PromotionDetailPage from "../../modules/admin/pages/PromotinDetailPage.jsx";
 import AdminManagement from "../../modules/admin/pages/AdminManagement.jsx";
 import AdminCreatePage from "../../modules/admin/pages/AdminCreatePage.jsx";
+import AttributesPage from "../../modules/admin/pages/AttributesPage.jsx";
 
 export default function AdminRoutes() {
   return (
@@ -31,10 +32,11 @@ export default function AdminRoutes() {
           <Route path="products/:id" element={<ProductInfoPage />} />
           <Route path="brands" element={<BrandsManagement />} />
           <Route path="brands/create" element={<BrandCreatePage />} />
-          <Route path="admin-management" element={<AdminManagement />} />
-          <Route path="admin-management/admin-create" element={<AdminCreatePage />} />
+          <Route path="admin" element={<AdminManagement />} />
+          <Route path="admin/create" element={<AdminCreatePage />} />
           <Route path="promotions" element={<PromotionsPage />} />
           <Route path="promotions/:id" element={<PromotionDetailPage />} />
+          <Route path="attributes" element={<AttributesPage />} />
         </Route>
       </Route>
 

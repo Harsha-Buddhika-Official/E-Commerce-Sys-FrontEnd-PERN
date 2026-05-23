@@ -4,10 +4,7 @@ import DashboardOutlinedIcon    from "@mui/icons-material/DashboardOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import CategoryOutlinedIcon     from "@mui/icons-material/CategoryOutlined";
 import StorefrontOutlinedIcon   from "@mui/icons-material/StorefrontOutlined";
-import PeopleAltOutlinedIcon    from "@mui/icons-material/PeopleAltOutlined";
-import Inventory2OutlinedIcon   from "@mui/icons-material/Inventory2Outlined";
 import CampaignOutlinedIcon     from "@mui/icons-material/CampaignOutlined";
-import AssessmentOutlinedIcon   from "@mui/icons-material/AssessmentOutlined";
 import SettingsOutlinedIcon     from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon       from "@mui/icons-material/LogoutOutlined";
 import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
@@ -27,6 +24,7 @@ const NAV_GROUPS = [
       { id: "orders",     label: "Orders",     icon: <ShoppingCartOutlinedIcon style={{ fontSize: 20 }} /> },
       { id: "products",   label: "Products",   icon: <CategoryOutlinedIcon     style={{ fontSize: 20 }} /> },
       { id: "brands",     label: "Brand Management", icon: <StorefrontOutlinedIcon style={{ fontSize: 20 }} /> },
+      { id: "attributes",     label: "Attribute Management", icon: <StorefrontOutlinedIcon style={{ fontSize: 20 }} /> },
       // { id: "customers",  label: "Customers",  icon: <PeopleAltOutlinedIcon    style={{ fontSize: 20 }} /> },
     ],
   },
@@ -41,7 +39,7 @@ const NAV_GROUPS = [
   {
     group: "SYSTEM",
     items: [
-      { id: "admin-management",  label: "Admin Management",  icon: <SupervisorAccountOutlinedIcon style={{ fontSize: 20 }} /> },
+      { id: "admin",  label: "Admin Management",  icon: <SupervisorAccountOutlinedIcon style={{ fontSize: 20 }} /> },
       { id: "settings",  label: "Settings",  icon: <SettingsOutlinedIcon style={{ fontSize: 20 }} /> },
 
     ],
@@ -59,7 +57,8 @@ const ROUTE_MAP = {
   promotions: "/admin/promotions",
   reports:    "/admin/reports",
   settings:   "/admin/settings",
-  "admin-management": "/admin/admin-management",
+  admin:      "/admin/admin",
+  attributes: "/admin/attributes"
 };
 
 // ─── AdminSidebar ─────────────────────────────────────────────────────────────

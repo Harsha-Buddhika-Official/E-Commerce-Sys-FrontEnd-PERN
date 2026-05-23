@@ -64,7 +64,7 @@ export default function AdminManagement({ onCreateNew } = {}) {
       return;
     }
 
-    navigate("/admin/admin-management/admin-create");
+    navigate("/admin/admin/create");
   }, [navigate, onCreateNew]);
 
   // ── Filter counts ──────────────────────────────────────────────────────────
