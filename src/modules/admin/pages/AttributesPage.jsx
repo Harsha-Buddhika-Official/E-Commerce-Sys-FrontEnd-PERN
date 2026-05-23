@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AddOutlinedIcon           from "@mui/icons-material/AddOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import CloseIcon                 from "@mui/icons-material/CloseOutlined";
@@ -6,6 +6,9 @@ import SearchOutlinedIcon        from "@mui/icons-material/SearchOutlined";
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import TagOutlinedIcon           from "@mui/icons-material/TagOutlined";
 import TuneOutlinedIcon          from "@mui/icons-material/TuneOutlined";
+import { useAttributesCatalog }  from "../features/attributes/hooks/useAttributesCatalog";
+import { useCreateAttributes } from "../features/attributes/hooks/useCreateAttributes";
+import { useDeleteAttributes } from "../features/attributes/hooks/useDeleteAttributes"
 
 // ─── Font constants ───────────────────────────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
@@ -13,34 +16,6 @@ const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
 const slugify = (str) =>
   str.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
-// ─── Mock data ────────────────────────────────────────────────────────────────
-const MOCK_CATEGORIES = [
-  { category_id: 1, name: "Laptop"      },
-  { category_id: 2, name: "Processor"   },
-  { category_id: 3, name: "GPU"         },
-  { category_id: 4, name: "Memory"      },
-  { category_id: 5, name: "Storage"     },
-  { category_id: 6, name: "Monitor"     },
-  { category_id: 7, name: "Motherboard" },
-  { category_id: 8, name: "Consoles"    },
-];
-
-const MOCK_ATTRIBUTES = [
-  { attribute_id: 1,  name: "Processor",        category_id: 1, values: [{ attribute_value_id: 101, value: "Intel Core i5-1335U", slug: "intel-core-i5-1335u" }, { attribute_value_id: 102, value: "Intel Core i7-13620H", slug: "intel-core-i7-13620h" }, { attribute_value_id: 103, value: "AMD Ryzen 7 7745HX", slug: "amd-ryzen-7-7745hx" }] },
-  { attribute_id: 2,  name: "RAM",              category_id: 1, values: [{ attribute_value_id: 110, value: "8GB DDR5", slug: "8gb-ddr5" }, { attribute_value_id: 111, value: "16GB DDR5", slug: "16gb-ddr5" }, { attribute_value_id: 112, value: "32GB DDR5", slug: "32gb-ddr5" }] },
-  { attribute_id: 3,  name: "Storage",          category_id: 1, values: [{ attribute_value_id: 120, value: "512GB NVMe SSD", slug: "512gb-nvme-ssd" }, { attribute_value_id: 121, value: "1TB NVMe SSD", slug: "1tb-nvme-ssd" }] },
-  { attribute_id: 4,  name: "Display Size",     category_id: 1, values: [{ attribute_value_id: 130, value: "14 inch", slug: "14-inch" }, { attribute_value_id: 131, value: "15.6 inch", slug: "15-6-inch" }, { attribute_value_id: 132, value: "16 inch", slug: "16-inch" }] },
-  { attribute_id: 5,  name: "Core Count",       category_id: 2, values: [{ attribute_value_id: 200, value: "6 Cores", slug: "6-cores" }, { attribute_value_id: 201, value: "8 Cores", slug: "8-cores" }, { attribute_value_id: 202, value: "24 Cores", slug: "24-cores" }] },
-  { attribute_id: 6,  name: "Socket Type",      category_id: 2, values: [{ attribute_value_id: 210, value: "LGA1700", slug: "lga1700" }, { attribute_value_id: 211, value: "AM5", slug: "am5" }] },
-  { attribute_id: 7,  name: "VRAM",             category_id: 3, values: [{ attribute_value_id: 300, value: "8GB GDDR6", slug: "8gb-gddr6" }, { attribute_value_id: 301, value: "12GB GDDR6X", slug: "12gb-gddr6x" }, { attribute_value_id: 302, value: "16GB GDDR6X", slug: "16gb-gddr6x" }] },
-  { attribute_id: 8,  name: "Memory Speed",     category_id: 4, values: [{ attribute_value_id: 400, value: "DDR5-4800", slug: "ddr5-4800" }, { attribute_value_id: 401, value: "DDR5-6000", slug: "ddr5-6000" }] },
-  { attribute_id: 9,  name: "Capacity",         category_id: 5, values: [{ attribute_value_id: 500, value: "500GB", slug: "500gb" }, { attribute_value_id: 501, value: "1TB", slug: "1tb" }, { attribute_value_id: 502, value: "2TB", slug: "2tb" }] },
-  { attribute_id: 10, name: "Refresh Rate",     category_id: 6, values: [{ attribute_value_id: 600, value: "60Hz", slug: "60hz" }, { attribute_value_id: 601, value: "144Hz", slug: "144hz" }, { attribute_value_id: 602, value: "165Hz", slug: "165hz" }, { attribute_value_id: 603, value: "240Hz", slug: "240hz" }] },
-  { attribute_id: 11, name: "Resolution",       category_id: 6, values: [{ attribute_value_id: 610, value: "1920×1080 FHD", slug: "1920x1080-fhd" }, { attribute_value_id: 611, value: "2560×1440 QHD", slug: "2560x1440-qhd" }] },
-  { attribute_id: 12, name: "Chipset",          category_id: 7, values: [{ attribute_value_id: 700, value: "Z790", slug: "z790" }, { attribute_value_id: 701, value: "B650", slug: "b650" }, { attribute_value_id: 702, value: "X670E", slug: "x670e" }] },
-  { attribute_id: 13, name: "Storage Capacity", category_id: 8, values: [{ attribute_value_id: 800, value: "825GB SSD", slug: "825gb-ssd" }] },
-];
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Delete Modal
@@ -71,16 +46,16 @@ function DeleteModal({ message, onConfirm, onCancel }) {
 // ──────────────────────────────────────────────────────────────────────────────
 // Create Attribute Modal
 // ──────────────────────────────────────────────────────────────────────────────
-function CreateAttributeModal({ categories, defaultCategoryId, onSave, onClose }) {
+function CreateAttributeModal({ categories, defaultCategoryId, onSave, onClose, isSaving, saveError }) {
   const [name,       setName]       = useState("");
   const [categoryId, setCategoryId] = useState(defaultCategoryId ? String(defaultCategoryId) : "");
   const [error,      setError]      = useState("");
   const [focused,    setFocused]    = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!name.trim()) { setError("Attribute name is required."); return; }
     if (!categoryId)  { setError("Please select a category."); return; }
-    onSave({ name: name.trim(), category_id: Number(categoryId) });
+    await onSave({ name: name.trim(), category_id: Number(categoryId) });
   };
 
   return (
@@ -157,6 +132,11 @@ function CreateAttributeModal({ categories, defaultCategoryId, onSave, onClose }
               <WarningAmberOutlinedIcon style={{ fontSize: 13 }} /> {error}
             </p>
           )}
+          {saveError && !error && (
+            <p className="flex items-center gap-1.5" style={{ ...INTER, fontSize: 11, color: "#e53935" }}>
+              <WarningAmberOutlinedIcon style={{ fontSize: 13 }} /> {saveError.message || String(saveError)}
+            </p>
+          )}
         </div>
 
         {/* Footer */}
@@ -164,11 +144,11 @@ function CreateAttributeModal({ categories, defaultCategoryId, onSave, onClose }
           <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#555", background: "#fff" }}>
             Cancel
           </button>
-          <button onClick={handleSave} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white cursor-pointer transition-all" style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}
+          <button onClick={handleSave} disabled={isSaving} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white cursor-pointer transition-all disabled:cursor-not-allowed disabled:opacity-70" style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#222"}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#111"}
           >
-            <AddOutlinedIcon style={{ fontSize: 16 }} /> Create Attribute
+            <AddOutlinedIcon style={{ fontSize: 16 }} /> {isSaving ? "Creating..." : "Create Attribute"}
           </button>
         </div>
       </div>
@@ -388,8 +368,12 @@ function CategoryChip({ label, count, active, onClick }) {
 // ATTRIBUTES PAGE
 // ══════════════════════════════════════════════════════════════════════════════
 const AttributesPage = () => {
-  const [attributes, setAttributes] = useState(MOCK_ATTRIBUTES);
-  const [categories]                = useState(MOCK_CATEGORIES);
+  const { categories: apiCategories, attributes: apiAttributes, loading: catalogLoading, error: catalogError, refresh, } = useAttributesCatalog();
+  const { loading: createLoading, error: createError, createAttribute, } = useCreateAttributes();
+  const { loading: deleteLoading, error: deleteError, deleteAttribute, } = useDeleteAttributes()
+
+  const [attributes, setAttributes] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const [activeCategory,    setActiveCategory]    = useState(null);
   const [search,            setSearch]            = useState("");
@@ -397,6 +381,11 @@ const AttributesPage = () => {
   const [createValueFor,    setCreateValueFor]    = useState(null);
   const [deleteAttrTarget,  setDeleteAttrTarget]  = useState(null);
   const [deleteValTarget,   setDeleteValTarget]   = useState(null);
+
+  useEffect(() => {
+    setCategories(apiCategories);
+    setAttributes(apiAttributes);
+  }, [apiCategories, apiAttributes]);
 
   // ── Category stats ────────────────────────────────────────────────────────
   const catStats = useMemo(() => {
@@ -423,13 +412,15 @@ const AttributesPage = () => {
   }, [attributes, activeCategory, search]);
 
   // ── CRUD ──────────────────────────────────────────────────────────────────
-  const handleCreateAttribute = ({ name, category_id }) => {
-    setAttributes((prev) => [...prev, { attribute_id: Date.now(), name, category_id, values: [] }]);
+  const handleCreateAttribute = async ({ name, category_id }) => {
+    await createAttribute({ name, category_id });
+    await refresh();
     setShowCreateAttr(false);
   };
 
-  const handleDeleteAttribute = (attr) => {
-    setAttributes((prev) => prev.filter((a) => a.attribute_id !== attr.attribute_id));
+  const handleDeleteAttribute = async (attr) => {
+    await deleteAttribute(attr.attribute_id);
+    await refresh();
     setDeleteAttrTarget(null);
   };
 
@@ -459,6 +450,37 @@ const AttributesPage = () => {
     ? categories.find((c) => c.category_id === activeCategory)?.name
     : "All";
 
+  if (catalogLoading && categories.length === 0 && attributes.length === 0) {
+    return (
+      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6 flex items-center justify-center">
+        <div className="bg-white rounded-2xl px-6 py-5" style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+          <p style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>Loading attributes catalog…</p>
+          <p style={{ ...INTER, fontSize: 13, color: "#777", marginTop: 4 }}>Fetching categories and attribute definitions from the API.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (catalogError && categories.length === 0 && attributes.length === 0) {
+    return (
+      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6 flex items-center justify-center">
+        <div className="bg-white rounded-2xl px-6 py-5 max-w-md w-full" style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+          <p style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>Failed to load attributes</p>
+          <p style={{ ...INTER, fontSize: 13, color: "#777", marginTop: 4 }}>{catalogError.message || String(catalogError)}</p>
+          <button
+            onClick={refresh}
+            className="mt-4 flex items-center justify-center px-4 py-2.5 rounded-xl text-white cursor-pointer transition-all"
+            style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#222"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#111"}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
 
@@ -469,6 +491,8 @@ const AttributesPage = () => {
           defaultCategoryId={activeCategory}
           onSave={handleCreateAttribute}
           onClose={() => setShowCreateAttr(false)}
+          isSaving={createLoading}
+          saveError={createError}
         />
       )}
       {createValueFor && (
@@ -517,7 +541,7 @@ const AttributesPage = () => {
         {[
           { label: "Total Attributes", value: totalAttrs,  icon: <TuneOutlinedIcon style={{ fontSize: 20 }} />,      bg: "#f5f5f5", color: "#111"    },
           { label: "Total Values",     value: totalValues, icon: <TagOutlinedIcon style={{ fontSize: 20 }} />,        bg: "#dbeafe", color: "#1d4ed8" },
-          { label: "Categories",       value: categories.filter((c) => catStats[c.category_id]).length,
+          { label: "Categories",       value: categories.length,
                                                            icon: <TuneOutlinedIcon style={{ fontSize: 20 }} />,       bg: "#f3e8ff", color: "#7e22ce" },
         ].map(({ label, value, icon, bg, color }) => (
           <div
@@ -580,8 +604,7 @@ const AttributesPage = () => {
             onClick={() => setActiveCategory(null)}
           />
           {categories.map((cat) => {
-            const s = catStats[cat.category_id];
-            if (!s) return null;
+            const s = catStats[cat.category_id] || { count: 0 };
             return (
               <CategoryChip
                 key={cat.category_id}

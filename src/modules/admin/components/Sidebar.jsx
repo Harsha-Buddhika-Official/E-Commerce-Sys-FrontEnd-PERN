@@ -4,6 +4,7 @@ import DashboardOutlinedIcon    from "@mui/icons-material/DashboardOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import CategoryOutlinedIcon     from "@mui/icons-material/CategoryOutlined";
 import StorefrontOutlinedIcon   from "@mui/icons-material/StorefrontOutlined";
+import TuneOutlinedIcon         from "@mui/icons-material/TuneOutlined";
 import CampaignOutlinedIcon     from "@mui/icons-material/CampaignOutlined";
 import SettingsOutlinedIcon     from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon       from "@mui/icons-material/LogoutOutlined";
@@ -24,7 +25,7 @@ const NAV_GROUPS = [
       { id: "orders",     label: "Orders",     icon: <ShoppingCartOutlinedIcon style={{ fontSize: 20 }} /> },
       { id: "products",   label: "Products",   icon: <CategoryOutlinedIcon     style={{ fontSize: 20 }} /> },
       { id: "brands",     label: "Brand Management", icon: <StorefrontOutlinedIcon style={{ fontSize: 20 }} /> },
-      { id: "attributes",     label: "Attribute Management", icon: <StorefrontOutlinedIcon style={{ fontSize: 20 }} /> },
+      { id: "attributes",     label: "Attribute Management", icon: <TuneOutlinedIcon style={{ fontSize: 20 }} /> },
       // { id: "customers",  label: "Customers",  icon: <PeopleAltOutlinedIcon    style={{ fontSize: 20 }} /> },
     ],
   },
