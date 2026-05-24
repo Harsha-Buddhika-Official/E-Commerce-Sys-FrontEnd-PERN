@@ -11,14 +11,15 @@ export const useDeleteAttributes = () => {
         setError(null);
         setSuccess(false);
         try{
-            const deleteAttribute = await deleteAttributesService(id);
+            const deletedAttribute = await deleteAttributesService(id);
             setSuccess(true);
-            return deleteAttribute;
+            return deletedAttribute;
         } catch(err){
-            const message = err.message || "Failed to delete Brand";
+            const message = err.message || "Failed to delete attribute.";
             setError(message)
+            throw err;
         } finally{
-            setLoading(true);
+            setLoading(false);
         }
     }
     return { loading, error, success, deleteAttribute}

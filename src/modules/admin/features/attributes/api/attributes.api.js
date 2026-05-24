@@ -22,7 +22,7 @@ export const createAttribute = async (attributeData) => {
 
 export const deleteAttribute = async(attributeId) => {
   try{
-    const res = await API.delete(`/attributes/${attributeId}`);
+    const res = await API.delete(`/attributes/${attributeId}`);;
     return res.data;
   } catch (err) {
     throw handleApiError(err, "Failed to delete attribute");

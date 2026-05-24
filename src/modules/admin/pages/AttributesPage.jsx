@@ -20,7 +20,7 @@ const slugify = (str) =>
 // ──────────────────────────────────────────────────────────────────────────────
 // Delete Modal
 // ──────────────────────────────────────────────────────────────────────────────
-function DeleteModal({ message, onConfirm, onCancel }) {
+function DeleteModal({ message, onConfirm, onCancel, isDeleting, errorMessage }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="bg-white rounded-2xl p-7 flex flex-col gap-4 w-full" style={{ maxWidth: 380, boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
@@ -32,11 +32,17 @@ function DeleteModal({ message, onConfirm, onCancel }) {
         </div>
         <p style={{ ...INTER, fontSize: 13, color: "#555", lineHeight: 1.7 }}>{message}</p>
         <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#555", background: "#fff" }}>Cancel</button>
-          <button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl text-white cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, background: "#e53935", border: "none" }}
+          {errorMessage && (
+            <p style={{ ...INTER, fontSize: 12, color: "#e53935", lineHeight: 1.5 }}>
+              {errorMessage}
+            </p>
+          )}
+          <button onClick={onCancel} className="flex-1 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#555", background: "#fff" }} disabled={isDeleting}>Cancel</button>
+          <button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl text-white cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed" style={{ ...INTER, fontSize: 13, fontWeight: 700, background: "#e53935", border: "none" }}
+            disabled={isDeleting}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#c62828"}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#e53935"}
-          >Delete</button>
+          >{isDeleting ? "Deleting..." : "Delete"}</button>
         </div>
       </div>
     </div>
@@ -381,6 +387,7 @@ const AttributesPage = () => {
   const [createValueFor,    setCreateValueFor]    = useState(null);
   const [deleteAttrTarget,  setDeleteAttrTarget]  = useState(null);
   const [deleteValTarget,   setDeleteValTarget]   = useState(null);
+  const [deleteModalError,  setDeleteModalError]   = useState("");
 
   useEffect(() => {
     setCategories(apiCategories);
@@ -419,9 +426,14 @@ const AttributesPage = () => {
   };
 
   const handleDeleteAttribute = async (attr) => {
-    await deleteAttribute(attr.attribute_id);
-    await refresh();
-    setDeleteAttrTarget(null);
+    try {
+      setDeleteModalError("");
+      await deleteAttribute(attr.attribute_id);
+      await refresh();
+      setDeleteAttrTarget(null);
+    } catch (err) {
+      setDeleteModalError(err?.message || "Failed to delete attribute.");
+    }
   };
 
   const handleCreateValue = ({ attribute_id, value, slug }) => {
@@ -506,7 +518,9 @@ const AttributesPage = () => {
         <DeleteModal
           message={<>Delete <strong>"{deleteAttrTarget.name}"</strong>? All values and product links will be permanently removed.</>}
           onConfirm={() => handleDeleteAttribute(deleteAttrTarget)}
-          onCancel={() => setDeleteAttrTarget(null)}
+          onCancel={() => { setDeleteModalError(""); setDeleteAttrTarget(null); }}
+          isDeleting={deleteLoading}
+          errorMessage={deleteModalError || (deleteError ? String(deleteError) : "")}
         />
       )}
       {deleteValTarget && (
