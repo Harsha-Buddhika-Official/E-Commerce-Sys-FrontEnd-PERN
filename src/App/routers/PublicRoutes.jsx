@@ -7,6 +7,7 @@ import ProductInfoPage from "../../modules/public/pages/ProductInfoPage.jsx";
 import CartPage from "../../modules/public/pages/CartPage.jsx";
 import ServicesPage from "../../modules/public/pages/ServicesPage.jsx";
 import OffersPage from "../../modules/public/pages/OffersPage.jsx";
+import OfferDetailPage from "../../modules/public/pages/OfferDetailPage.jsx";
 import AboutPage from "../../modules/public/pages/AboutPage.jsx";
 import ContactPage from "../../modules/public/pages/ContactPage.jsx";
 
@@ -23,6 +24,7 @@ export default function PublicRoutes() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/offers" element={<OffersPage />} />
+        <Route path="/offers/:id" element={<OfferDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
       </Routes>

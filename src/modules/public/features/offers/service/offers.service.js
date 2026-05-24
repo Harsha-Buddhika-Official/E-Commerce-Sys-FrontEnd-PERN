@@ -63,6 +63,7 @@ const normalizeOffer = (offer, source = "all") => {
     id: offer.id,
     offerId: offer.id,
     productId: firstProduct?.product_id,
+    products: Array.isArray(offer.products) ? offer.products : [],
     title: offer.title || "",
     displayImage,
     description: offer.description || "",

@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  fetchActiveOffers,
-  fetchAllOffers,
-  fetchUpcomingOffers,
-} from "../service/offers.service.js";
+import { fetchActiveOffers, fetchAllOffers, fetchUpcomingOffers, } from "../service/offers.service.js";
 
 const INITIAL_STATE = {
   offers: [],

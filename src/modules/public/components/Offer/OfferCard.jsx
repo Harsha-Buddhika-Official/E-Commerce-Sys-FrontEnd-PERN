@@ -3,7 +3,9 @@ import LocalOfferOutlinedIcon   from "@mui/icons-material/LocalOfferOutlined";
 import BoltOutlinedIcon         from "@mui/icons-material/BoltOutlined";
 import Inventory2OutlinedIcon   from "@mui/icons-material/Inventory2Outlined";
 import AccessTimeOutlinedIcon   from "@mui/icons-material/AccessTimeOutlined";
+import VisibilityOutlinedIcon   from "@mui/icons-material/VisibilityOutlined";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // ─── Font constants ───────────────────────────────────────────────────────────
 // Applied ONLY on leaf elements via style prop — never on wrapper divs,
@@ -54,6 +56,7 @@ function TimeUnit({ value, label }) {
 //   onAddToCart: (offer) => void   — optional callback
 
 const OfferCard = ({ offer, onAddToCart = () => {} }) => {
+  const navigate = useNavigate();
   const countdownTarget = offer.countdownTarget || offer.validUntil;
   const countdownLabel = offer.countdownLabel || (offer.offerState === "upcoming" ? "Starts In" : "Ends In");
   const isUpcoming = offer.offerState === "upcoming";
@@ -76,7 +79,7 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
 
       {/* ── Tag ribbon (top-left) ── */}
       <div
-        className={`absolute top-3 left-0 z-10 flex items-center gap-1 pl-2.5 pr-3 py-[3px] rounded-r-md text-white uppercase
+        className={`absolute top-3 left-0 z-10 flex items-center gap-1 pl-2.5 pr-3 py-0.75 rounded-r-md text-white uppercase
           ${isRed ? "bg-red-500" : "bg-[#111]"}`}
         style={{ ...SORA, fontSize: 10, fontWeight: 700, letterSpacing: "0.05em" }}
       >
@@ -102,11 +105,11 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
 
         {/* Stock pill */}
         <div
-          className={`absolute bottom-2.5 right-2.5 flex items-center gap-1.5 bg-white border border-[#ccc] rounded-full px-3 py-[3px]
+          className={`absolute bottom-2.5 right-2.5 flex items-center gap-1.5 bg-white border border-[#ccc] rounded-full px-3 py-0.75
             ${isUpcoming ? "text-blue-700" : offer.inStock ? "text-green-700" : "text-red-500"}`}
           style={{ ...INTER, fontSize: 10, fontWeight: 600 }}
         >
-          <span className={`w-[6px] h-[6px] rounded-full flex-shrink-0 ${isUpcoming ? "bg-blue-600" : offer.inStock ? "bg-green-600" : "bg-red-500"}`} />
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isUpcoming ? "bg-blue-600" : offer.inStock ? "bg-green-600" : "bg-red-500"}`} />
           {isUpcoming ? "Coming Soon" : offer.inStock ? "In Stock" : "Out of Stock"}
         </div>
       </div>
@@ -124,7 +127,7 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
           </span>
           {offer.badge && (
             <span
-              className="px-2 py-[2px] rounded-full border border-[#111] text-[#111] uppercase tracking-wider"
+              className="px-2 py-0.5 rounded-full border border-[#111] text-[#111] uppercase tracking-wider"
               style={{ ...INTER, fontSize: 9, fontWeight: 700 }}
             >
               {offer.badge}
@@ -148,7 +151,7 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
               className="flex items-center gap-1.5 text-gray-500"
               style={{ ...INTER, fontSize: 11, fontWeight: 500 }}
             >
-              <span className="w-1 h-1 rounded-full bg-gray-300 flex-shrink-0" />
+              <span className="w-1 h-1 rounded-full shrink-0 bg-gray-300" />
               {s}
             </li>
           ))}
@@ -179,10 +182,10 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
         </div>
 
         {/* Countdown */}
-        <div className="flex items-center gap-2.5 bg-[#f9f9f9] border border-[#ebebeb] rounded-xl px-3 py-2">
+          <div className="flex items-center gap-2.5 bg-[#f9f9f9] border border-[#ebebeb] rounded-xl px-3 py-2">
           <AccessTimeOutlinedIcon style={{ fontSize: 14, color: "#bbb" }} />
           <span
-            className="text-gray-400 uppercase tracking-wider flex-shrink-0"
+            className="text-gray-400 uppercase tracking-wider shrink-0"
             style={{ ...INTER, fontSize: 10, fontWeight: 700 }}
           >
             {countdownLabel}
@@ -199,22 +202,32 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
         </div>
 
         {/* CTA — wired to cart API via addProductToServer */}
-        <button
-          disabled={!offer.inStock}
-          onClick={() => {
-            console.log(`[OfferCard] Add to cart clicked for product ${offer.productId}`);
-            onAddToCart(offer);
-          }}
-          className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-150
-            ${offer.inStock && !isUpcoming
-              ? "bg-[#111] text-white hover:bg-[#333] cursor-pointer active:translate-y-0.5"
-              : "bg-gray-100 text-gray-400 cursor-not-allowed"
-            }`}
-          style={{ ...SORA, fontSize: 13, fontWeight: 700, letterSpacing: "0.02em" }}
-        >
-          <ShoppingCartOutlinedIcon style={{ fontSize: 17 }} />
-          {isUpcoming ? "Coming Soon" : offer.inStock ? "Add to Cart" : "Out of Stock"}
-        </button>
+        <div className="flex flex-col gap-2">
+          <button
+            disabled={!offer.inStock}
+            onClick={() => {
+              console.log(`[OfferCard] Add to cart clicked for product ${offer.productId}`);
+              onAddToCart(offer);
+            }}
+            className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-150
+              ${offer.inStock && !isUpcoming
+                ? "bg-[#111] text-white hover:bg-[#333] cursor-pointer active:translate-y-0.5"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+              }`}
+            style={{ ...SORA, fontSize: 13, fontWeight: 700, letterSpacing: "0.02em" }}
+          >
+            <ShoppingCartOutlinedIcon style={{ fontSize: 17 }} />
+            {isUpcoming ? "Coming Soon" : offer.inStock ? "Add to Cart" : "Out of Stock"}
+          </button>
+
+          <button
+            onClick={() => navigate(`/offers/${offer.id}`)}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[#e5e5e5] bg-white text-[#111] hover:border-[#111] hover:bg-[#f9f9f9] cursor-pointer transition-all duration-150"
+            style={{ ...SORA, fontSize: 13, fontWeight: 700, letterSpacing: "0.02em" }}
+          >
+            <VisibilityOutlinedIcon style={{ fontSize: 17 }} /> View More
+          </button>
+        </div>
 
       </div>
     </div>
