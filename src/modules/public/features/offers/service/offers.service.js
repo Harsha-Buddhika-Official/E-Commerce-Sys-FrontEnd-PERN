@@ -54,11 +54,17 @@ const normalizeOffer = (offer, source = "all") => {
     discountPercent = originalPrice > 0 ? Math.round((discountValue / originalPrice) * 100) : 0;
   }
 
+  let displayImage = offer.banner_image;
+  if(offer.banner_image === null) {
+    displayImage = image;
+  }
+
   return {
     id: offer.id,
     offerId: offer.id,
     productId: firstProduct?.product_id,
     title: offer.title || "",
+    displayImage,
     description: offer.description || "",
     category: firstProduct?.name || "General",
     tag: offer.tag || "Flash Deal",
@@ -67,7 +73,6 @@ const normalizeOffer = (offer, source = "all") => {
     discountedPrice: Math.round(discountedPrice),
     discountPercent,
     badge: offer.badge || null,
-    image,
     specs: Array.isArray(offer.specs) ? offer.specs : [],
     validUntil: isUpcoming ? (offer.start_date || "") : (offer.end_date || ""),
     countdownLabel: isUpcoming ? "Starts In" : "Ends In",

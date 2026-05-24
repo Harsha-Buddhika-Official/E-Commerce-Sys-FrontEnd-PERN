@@ -95,7 +95,7 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
       {/* ── Image area ── */}
       <div className="relative w-full bg-[#fafafa] border-b border-[#f0f0f0]" style={{ paddingTop: "62%" }}>
         <img
-          src={offer.image}
+          src={offer.displayImage}
           alt={offer.title}
           className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-300 hover:scale-105"
         />
