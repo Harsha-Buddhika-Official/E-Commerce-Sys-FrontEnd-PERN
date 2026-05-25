@@ -9,13 +9,12 @@ import TuneOutlinedIcon          from "@mui/icons-material/TuneOutlined";
 import { useAttributesCatalog }  from "../features/attributes/hooks/useAttributesCatalog";
 import { useCreateAttributes } from "../features/attributes/hooks/useCreateAttributes";
 import { useDeleteAttributes } from "../features/attributes/hooks/useDeleteAttributes"
+import { useCreateValue } from "../features/attributes/hooks/useCreateValue";
+import { useDeleteValue } from "../features/attributes/hooks/useDeleteValue";
 
 // ─── Font constants ───────────────────────────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
-
-const slugify = (str) =>
-  str.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Delete Modal
@@ -169,10 +168,19 @@ function CreateValueModal({ attribute, onSave, onClose }) {
   const [value,   setValue]   = useState("");
   const [error,   setError]   = useState("");
   const [focused, setFocused] = useState(false);
+  const { createValue, loading, error: createValueError, createdValue } = useCreateValue();
 
-  const handleSave = () => {
+
+  const handleSave = async () => {
     if (!value.trim()) { setError("Value is required."); return; }
-    onSave({ attribute_id: attribute.attribute_id, value: value.trim(), slug: slugify(value.trim()) });
+
+    const savedValue = await createValue(attribute.attribute_id, { value: value.trim() });
+    onSave?.({
+      attribute_id: attribute.attribute_id,
+      value: savedValue?.value ?? value.trim(),
+      slug: savedValue?.slug,
+    });
+    onClose();
   };
 
   return (
@@ -216,18 +224,15 @@ function CreateValueModal({ attribute, onSave, onClose }) {
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
             />
-            {value && (
-              <div className="flex items-center gap-2 mt-2">
-                <span style={{ ...INTER, fontSize: 11, color: "#bbb" }}>Slug:</span>
-                <span className="px-2 py-0.5 rounded-md" style={{ ...INTER, fontSize: 11, color: "#555", fontFamily: "'Courier New', monospace", backgroundColor: "#f5f5f5" }}>
-                  {slugify(value)}
-                </span>
-              </div>
-            )}
           </div>
           {error && (
             <p className="flex items-center gap-1.5" style={{ ...INTER, fontSize: 11, color: "#e53935" }}>
               <WarningAmberOutlinedIcon style={{ fontSize: 13 }} /> {error}
+            </p>
+          )}
+          {createValueError && !error && (
+            <p className="flex items-center gap-1.5" style={{ ...INTER, fontSize: 11, color: "#e53935" }}>
+              <WarningAmberOutlinedIcon style={{ fontSize: 13 }} /> {createValueError.message || String(createValueError)}
             </p>
           )}
         </div>
@@ -237,11 +242,11 @@ function CreateValueModal({ attribute, onSave, onClose }) {
           <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#555", background: "#fff" }}>
             Cancel
           </button>
-          <button onClick={handleSave} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white cursor-pointer transition-all" style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}
+          <button onClick={handleSave} disabled={loading} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white cursor-pointer transition-all disabled:cursor-not-allowed disabled:opacity-70" style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#222"}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#111"}
           >
-            <AddOutlinedIcon style={{ fontSize: 16 }} /> Add Value
+            <AddOutlinedIcon style={{ fontSize: 16 }} /> {loading ? "Adding..." : "Add Value"}
           </button>
         </div>
       </div>
@@ -376,7 +381,8 @@ function CategoryChip({ label, count, active, onClick }) {
 const AttributesPage = () => {
   const { categories: apiCategories, attributes: apiAttributes, loading: catalogLoading, error: catalogError, refresh, } = useAttributesCatalog();
   const { loading: createLoading, error: createError, createAttribute, } = useCreateAttributes();
-  const { loading: deleteLoading, error: deleteError, deleteAttribute, } = useDeleteAttributes()
+  const { loading: deleteLoading, error: deleteError, deleteAttribute, } = useDeleteAttributes();
+  const { loading: deleteValueLoading, error: deleteValueError, deleteValue, } = useDeleteValue();
 
   const [attributes, setAttributes] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -387,7 +393,8 @@ const AttributesPage = () => {
   const [createValueFor,    setCreateValueFor]    = useState(null);
   const [deleteAttrTarget,  setDeleteAttrTarget]  = useState(null);
   const [deleteValTarget,   setDeleteValTarget]   = useState(null);
-  const [deleteModalError,  setDeleteModalError]   = useState("");
+  const [deleteModalError,  setDeleteModalError]  = useState("");
+  const [deleteValueModalError, setDeleteValueModalError] = useState("");
 
   useEffect(() => {
     setCategories(apiCategories);
@@ -447,15 +454,21 @@ const AttributesPage = () => {
     setCreateValueFor(null);
   };
 
-  const handleDeleteValue = (attribute, val) => {
-    setAttributes((prev) =>
-      prev.map((a) =>
-        a.attribute_id === attribute.attribute_id
-          ? { ...a, values: a.values.filter((v) => v.attribute_value_id !== val.attribute_value_id) }
-          : a
-      )
-    );
-    setDeleteValTarget(null);
+  const handleDeleteValue = async (attribute, val) => {
+    try {
+      setDeleteValueModalError("");
+      await deleteValue(attribute.attribute_id, val.attribute_value_id);
+      setAttributes((prev) =>
+        prev.map((a) =>
+          a.attribute_id === attribute.attribute_id
+            ? { ...a, values: a.values.filter((v) => v.attribute_value_id !== val.attribute_value_id) }
+            : a
+        )
+      );
+      setDeleteValTarget(null);
+    } catch (err) {
+      setDeleteValueModalError(err?.message || "Failed to delete attribute value.");
+    }
   };
 
   const activeCatName = activeCategory
@@ -527,7 +540,9 @@ const AttributesPage = () => {
         <DeleteModal
           message={<>Remove value <strong>"{deleteValTarget.value.value}"</strong> from <strong>{deleteValTarget.attribute.name}</strong>? Products using this value may be affected.</>}
           onConfirm={() => handleDeleteValue(deleteValTarget.attribute, deleteValTarget.value)}
-          onCancel={() => setDeleteValTarget(null)}
+          onCancel={() => { setDeleteValueModalError(""); setDeleteValTarget(null); }}
+          isDeleting={deleteValueLoading}
+          errorMessage={deleteValueModalError || (deleteValueError ? String(deleteValueError) : "")}
         />
       )}
 

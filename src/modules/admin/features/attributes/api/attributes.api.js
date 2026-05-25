@@ -28,3 +28,21 @@ export const deleteAttribute = async(attributeId) => {
     throw handleApiError(err, "Failed to delete attribute");
   }
 }
+
+export const createAttributeValue = async (attributeId, valueData) => {
+  try {
+    const res = await API.post(`/attributes/${attributeId}/value`, valueData);
+    return res.data;
+  } catch (err) {
+    throw handleApiError(err, "Failed to create attribute value");
+  }
+};
+
+export const deleteAttributeValue = async (attributeId, attributeValueId) => {
+  try {
+    const res = await API.delete(`/attributes/${attributeId}/value/${attributeValueId}`);
+    return res.data;
+  } catch (err) {
+    throw handleApiError(err, "Failed to delete attribute value");
+  }
+};

@@ -159,6 +159,7 @@ const PromotionDetailPage = ({
   const isPercent      = resolvedOffer.discount_type === "percentage";
   const linkedProducts = resolvedOffer.products || offer?.products || [];
   const remaining      = daysRemaining(resolvedOffer.end_date, resolvedOffer.start_date);
+  const featuredProduct = linkedProducts?.[0]?.product || linkedProducts?.[0] || null;
 
   return (
     <div className="min-h-screen w-full bg-[#f5f5f5] p-4 md:p-5 lg:p-6">
@@ -351,6 +352,31 @@ const PromotionDetailPage = ({
               ))}
             </div>
           </SectionCard>
+
+          {/* Featured product basic details */}
+          {featuredProduct ? (
+            <SectionCard>
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0 rounded-lg overflow-hidden" style={{ width: 96, height: 72, background: "#f7f7f7", border: "1px solid #f0f0f0" }}>
+                  {featuredProduct.images?.[0]?.image_url ? (
+                    <img src={featuredProduct.images[0].image_url} alt={featuredProduct.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <BrokenImageOutlinedIcon style={{ fontSize: 28, color: "#ddd" }} />
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 700 }}>Featured Product</p>
+                  <h3 style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111", lineHeight: 1.2, marginTop: 4 }}>
+                    {featuredProduct.name}
+                  </h3>
+                  <p style={{ ...INTER, fontSize: 12, color: "#777", marginTop: 6 }}>ID: #{featuredProduct.id ?? featuredProduct.product_id ?? "—"}</p>
+                </div>
+              </div>
+            </SectionCard>
+          ) : null}
+
         </div>
 
         {/* ══ RIGHT PANEL ══ */}

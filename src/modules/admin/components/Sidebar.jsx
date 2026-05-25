@@ -41,7 +41,7 @@ const NAV_GROUPS = [
     group: "SYSTEM",
     items: [
       { id: "admin",  label: "Admin Management",  icon: <SupervisorAccountOutlinedIcon style={{ fontSize: 20 }} /> },
-      { id: "settings",  label: "Settings",  icon: <SettingsOutlinedIcon style={{ fontSize: 20 }} /> },
+      // { id: "settings",  label: "Settings",  icon: <SettingsOutlinedIcon style={{ fontSize: 20 }} /> },
 
     ],
   },

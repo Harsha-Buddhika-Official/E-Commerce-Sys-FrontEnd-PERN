@@ -95,6 +95,46 @@ export const updateOffer = async (offerId, payload) => {
 };
 
 /**
+ * Toggle an offer's active status
+ * PUT /api/offers/admin/:id/toggle-active
+ */
+export const toggleOfferActive = async (offerId) => {
+  if (!offerId) {
+    throw new Error("Offer ID is required");
+  }
+  try {
+    const res = await API.put(`/offers/admin/${offerId}/toggle-active`);
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to toggle offer status");
+  }
+};
+
+/**
+ * Set an offer's active status explicitly
+ * PUT /api/offers/admin/activation/:id
+ * Body: { is_active: "true" | "false" }
+ */
+export const setOfferActivation = async (offerId, isActive) => {
+  if (!offerId) {
+    throw new Error("Offer ID is required");
+  }
+
+  // Backend expects the is_active value as a string: "true" or "false"
+  if (typeof isActive !== "boolean") {
+    throw new Error("isActive must be a boolean");
+  }
+
+  try {
+    const payload = { is_active: isActive ? "true" : "false" };
+    const res = await API.put(`/offers/admin/activation/${offerId}`, payload);
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to set offer activation");
+  }
+};
+
+/**
  * Delete an offer
  * DELETE /api/offers/admin/:id
  */

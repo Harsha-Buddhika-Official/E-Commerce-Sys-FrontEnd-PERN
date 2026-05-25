@@ -13,6 +13,7 @@ import { useCreateOffer }        from "../features/offers/hooks/useCreateOffer";
 import { useOfferProducts }      from "../features/offers/hooks/useOfferProducts";
 import { useUpdateOffer }        from "../features/offers/hooks/useUpdateOffer";
 import { useDeleteOffer }        from "../features/offers/hooks/useDeleteOffer";
+import { useToggleOffer }        from "../features/offers/hooks/useToggleOffer";
 
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
@@ -70,6 +71,7 @@ const PromotionsPage = () => {
   const { attaching, error: attachError, attachProduct } = useOfferProducts();
   const { updating, error: updateError, updateOffer } = useUpdateOffer();
   const { deleting, error: deleteError, deleteOffer } = useDeleteOffer();
+  const { toggleOfferActive } = useToggleOffer();
 
   // Filters
   const [search,       setSearch]       = useState("");
@@ -142,9 +144,9 @@ const PromotionsPage = () => {
     }
   };
 
-  const handleToggle = async (offer, newIsActive) => {
+  const handleToggle = async (offer) => {
     try {
-      await updateOffer(offer.id, { is_active: newIsActive });
+      await toggleOfferActive(offer.id, !offer.is_active);
       refresh();
     } catch (err) {
       window.alert(err?.message || "Failed to toggle offer status");
