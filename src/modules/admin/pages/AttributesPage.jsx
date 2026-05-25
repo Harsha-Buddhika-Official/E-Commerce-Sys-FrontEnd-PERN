@@ -6,10 +6,9 @@ import SearchOutlinedIcon        from "@mui/icons-material/SearchOutlined";
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import TagOutlinedIcon           from "@mui/icons-material/TagOutlined";
 import TuneOutlinedIcon          from "@mui/icons-material/TuneOutlined";
+import AttributeCreateOverlay    from "../overlay/AttributeCreateOverlay";
 import { useAttributesCatalog }  from "../features/attributes/hooks/useAttributesCatalog";
-import { useCreateAttributes } from "../features/attributes/hooks/useCreateAttributes";
 import { useDeleteAttributes } from "../features/attributes/hooks/useDeleteAttributes"
-import { useCreateValue } from "../features/attributes/hooks/useCreateValue";
 import { useDeleteValue } from "../features/attributes/hooks/useDeleteValue";
 
 // ─── Font constants ───────────────────────────────────────────────────────────
@@ -24,7 +23,7 @@ function DeleteModal({ message, onConfirm, onCancel, isDeleting, errorMessage })
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="bg-white rounded-2xl p-7 flex flex-col gap-4 w-full" style={{ maxWidth: 380, boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-50 flex-shrink-0">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-50 shrink-0">
             <WarningAmberOutlinedIcon style={{ fontSize: 20, color: "#e53935" }} />
           </div>
           <h3 style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>Confirm Delete</h3>
@@ -42,119 +41,6 @@ function DeleteModal({ message, onConfirm, onCancel, isDeleting, errorMessage })
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#c62828"}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#e53935"}
           >{isDeleting ? "Deleting..." : "Delete"}</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Create Attribute Modal
-// ──────────────────────────────────────────────────────────────────────────────
-function CreateAttributeModal({ categories, defaultCategoryId, onSave, onClose, isSaving, saveError }) {
-  const [name,       setName]       = useState("");
-  const [categoryId, setCategoryId] = useState(defaultCategoryId ? String(defaultCategoryId) : "");
-  const [error,      setError]      = useState("");
-  const [focused,    setFocused]    = useState(false);
-
-  const handleSave = async () => {
-    if (!name.trim()) { setError("Attribute name is required."); return; }
-    if (!categoryId)  { setError("Please select a category."); return; }
-    await onSave({ name: name.trim(), category_id: Number(categoryId) });
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl w-full overflow-hidden" style={{ maxWidth: 440, boxShadow: "0 16px 48px rgba(0,0,0,0.18)", border: "1px solid #ebebeb" }}>
-
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid #f0f0f0" }}>
-          <div>
-            <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Attributes / Create</p>
-            <h2 style={{ ...SORA, fontSize: 16, fontWeight: 800, color: "#111" }}>New Attribute</h2>
-          </div>
-          <button onClick={onClose} className="flex items-center justify-center w-8 h-8 rounded-xl border border-gray-200 bg-transparent cursor-pointer transition-all hover:bg-gray-50" style={{ color: "#888" }}>
-            <CloseIcon style={{ fontSize: 17 }} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="px-6 py-5 flex flex-col gap-4">
-          {/* Name */}
-          <div>
-            <p style={{ ...INTER, fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>
-              Attribute Name <span style={{ color: "#e53935" }}>*</span>
-            </p>
-            <input
-              autoFocus
-              type="text"
-              value={name}
-              onChange={(e) => { setName(e.target.value); setError(""); }}
-              placeholder="e.g. Processor, RAM, Color…"
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              className="w-full outline-none transition-all"
-              style={{
-                ...INTER, fontSize: 13, fontWeight: 600, color: "#111",
-                padding: "10px 14px",
-                borderRadius: 12,
-                border: `1.5px solid ${focused ? "#111" : "#ebebeb"}`,
-                backgroundColor: focused ? "#fff" : "#f9f9f9",
-              }}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-            />
-          </div>
-
-          {/* Category */}
-          <div>
-            <p style={{ ...INTER, fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>
-              Category <span style={{ color: "#e53935" }}>*</span>
-            </p>
-            <select
-              value={categoryId}
-              onChange={(e) => { setCategoryId(e.target.value); setError(""); }}
-              className="w-full appearance-none outline-none cursor-pointer transition-all"
-              style={{
-                ...INTER, fontSize: 13, fontWeight: 600,
-                color: categoryId ? "#111" : "#bbb",
-                padding: "10px 14px",
-                borderRadius: 12,
-                border: "1.5px solid #ebebeb",
-                backgroundColor: "#f9f9f9",
-              }}
-              onFocus={(e) => { e.target.style.borderColor = "#111"; e.target.style.backgroundColor = "#fff"; }}
-              onBlur={(e)  => { e.target.style.borderColor = "#ebebeb"; e.target.style.backgroundColor = "#f9f9f9"; }}
-            >
-              <option value="" disabled>Select a category…</option>
-              {categories.map((c) => (
-                <option key={c.category_id} value={c.category_id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
-
-          {error && (
-            <p className="flex items-center gap-1.5" style={{ ...INTER, fontSize: 11, color: "#e53935" }}>
-              <WarningAmberOutlinedIcon style={{ fontSize: 13 }} /> {error}
-            </p>
-          )}
-          {saveError && !error && (
-            <p className="flex items-center gap-1.5" style={{ ...INTER, fontSize: 11, color: "#e53935" }}>
-              <WarningAmberOutlinedIcon style={{ fontSize: 13 }} /> {saveError.message || String(saveError)}
-            </p>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex gap-3 px-6 pb-5">
-          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#555", background: "#fff" }}>
-            Cancel
-          </button>
-          <button onClick={handleSave} disabled={isSaving} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white cursor-pointer transition-all disabled:cursor-not-allowed disabled:opacity-70" style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#222"}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#111"}
-          >
-            <AddOutlinedIcon style={{ fontSize: 16 }} /> {isSaving ? "Creating..." : "Create Attribute"}
-          </button>
         </div>
       </div>
     </div>
@@ -266,7 +152,7 @@ function AttributeCard({ attribute, onDeleteAttribute, onAddValue, onDeleteValue
       {/* Card header */}
       <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid #f5f5f5" }}>
         <div className="flex items-center gap-3 min-w-0">
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl flex-shrink-0" style={{ backgroundColor: "#111" }}>
+          <div className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0" style={{ backgroundColor: "#111" }}>
             <TagOutlinedIcon style={{ fontSize: 16, color: "#fff" }} />
           </div>
           <div className="min-w-0">
@@ -277,7 +163,7 @@ function AttributeCard({ attribute, onDeleteAttribute, onAddValue, onDeleteValue
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => onAddValue(attribute)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-all"
@@ -324,7 +210,7 @@ function AttributeCard({ attribute, onDeleteAttribute, onAddValue, onDeleteValue
                 </span>
                 <button
                   onClick={() => onDeleteValue(attribute, val)}
-                  className="flex items-center justify-center w-4 h-4 rounded-full cursor-pointer border-none transition-all flex-shrink-0"
+                  className="flex items-center justify-center w-4 h-4 rounded-full cursor-pointer border-none transition-all shrink-0"
                   style={{ backgroundColor: "transparent", color: "#ccc" }}
                   onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#fee2e2"; e.currentTarget.style.color = "#e53935"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#ccc"; }}
@@ -347,7 +233,7 @@ function CategoryChip({ label, count, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-4 py-2 rounded-xl border flex-shrink-0 cursor-pointer transition-all"
+      className="flex items-center gap-2 px-4 py-2 rounded-xl border shrink-0 cursor-pointer transition-all"
       style={{
         ...INTER,
         fontSize: 12,
@@ -361,7 +247,7 @@ function CategoryChip({ label, count, active, onClick }) {
     >
       {label}
       <span
-        className="flex items-center justify-center min-w-[20px] h-5 rounded-full px-1"
+      className="flex items-center justify-center min-w-5 h-5 rounded-full px-1"
         style={{
           fontSize: 10,
           fontWeight: 800,
@@ -380,7 +266,6 @@ function CategoryChip({ label, count, active, onClick }) {
 // ══════════════════════════════════════════════════════════════════════════════
 const AttributesPage = () => {
   const { categories: apiCategories, attributes: apiAttributes, loading: catalogLoading, error: catalogError, refresh, } = useAttributesCatalog();
-  const { loading: createLoading, error: createError, createAttribute, } = useCreateAttributes();
   const { loading: deleteLoading, error: deleteError, deleteAttribute, } = useDeleteAttributes();
   const { loading: deleteValueLoading, error: deleteValueError, deleteValue, } = useDeleteValue();
 
@@ -426,8 +311,7 @@ const AttributesPage = () => {
   }, [attributes, activeCategory, search]);
 
   // ── CRUD ──────────────────────────────────────────────────────────────────
-  const handleCreateAttribute = async ({ name, category_id }) => {
-    await createAttribute({ name, category_id });
+  const handleCreateAttribute = async () => {
     await refresh();
     setShowCreateAttr(false);
   };
@@ -511,13 +395,11 @@ const AttributesPage = () => {
 
       {/* ── Modals ── */}
       {showCreateAttr && (
-        <CreateAttributeModal
+        <AttributeCreateOverlay
           categories={categories}
           defaultCategoryId={activeCategory}
-          onSave={handleCreateAttribute}
+          onCreated={handleCreateAttribute}
           onClose={() => setShowCreateAttr(false)}
-          isSaving={createLoading}
-          saveError={createError}
         />
       )}
       {createValueFor && (
@@ -578,7 +460,7 @@ const AttributesPage = () => {
             className="bg-white rounded-2xl p-5 flex items-center gap-4"
             style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
           >
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl flex-shrink-0" style={{ backgroundColor: bg, color }}>
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl shrink-0" style={{ backgroundColor: bg, color }}>
               {icon}
             </div>
             <div>

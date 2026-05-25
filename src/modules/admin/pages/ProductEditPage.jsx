@@ -86,7 +86,7 @@ function SectionCard({ children, className = "" }) {
 function SectionTitle({ icon, children }) {
   return (
     <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-[#f0f0f0]">
-      <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
+      <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
         {icon}
       </div>
       <span style={{ ...SORA, fontSize: 14, fontWeight: 800, color: "#111", letterSpacing: "0.02em" }}>
@@ -202,7 +202,7 @@ function ToggleSwitch({ label, checked, onChange, description }) {
       </div>
       <button
         onClick={() => onChange(!checked)}
-        className="relative flex-shrink-0 transition-all cursor-pointer"
+        className="relative shrink-0 transition-all cursor-pointer"
         style={{
           width: 44,
           height: 24,
@@ -241,7 +241,7 @@ function ImageRow({ img, index, isOnly, onRemove, onSetPrimary, onUpdateField })
       </div>
 
       {/* Preview */}
-      <div className="flex items-center justify-center rounded-xl overflow-hidden flex-shrink-0 border border-[#ebebeb] bg-white" style={{ width: 56, height: 56 }}>
+      <div className="flex items-center justify-center rounded-xl overflow-hidden shrink-0 border border-[#ebebeb] bg-white" style={{ width: 56, height: 56 }}>
         {!previewErr && img.image_url ? (
           <img src={img.image_url} alt={img.alt_text} className="w-full h-full object-contain p-1" onError={() => setPreviewErr(true)} />
         ) : (
@@ -272,7 +272,7 @@ function ImageRow({ img, index, isOnly, onRemove, onSetPrimary, onUpdateField })
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col items-end gap-2 flex-shrink-0 pt-1">
+      <div className="flex flex-col items-end gap-2 shrink-0 pt-1">
         {img.is_primary ? (
           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ ...INTER, fontSize: 9, fontWeight: 700, backgroundColor: "#111", color: "#fff" }}>
             <StarOutlinedIcon style={{ fontSize: 10 }} /> Primary
@@ -303,7 +303,7 @@ function ImageRow({ img, index, isOnly, onRemove, onSetPrimary, onUpdateField })
 function AttributeRow({ attr, index, isOnly, onRemove, onUpdateField }) {
   return (
     <div className="flex items-center gap-3 p-3 rounded-xl" style={{ backgroundColor: "#f9f9f9", border: "1.5px solid #f0f0f0" }}>
-      <div className="flex items-center justify-center flex-shrink-0 cursor-grab" style={{ color: "#ccc" }}>
+      <div className="flex items-center justify-center shrink-0 cursor-grab" style={{ color: "#ccc" }}>
         <DragIndicatorOutlinedIcon style={{ fontSize: 18 }} />
       </div>
 
@@ -339,7 +339,7 @@ function AttributeRow({ attr, index, isOnly, onRemove, onUpdateField }) {
       {!isOnly && (
         <button
           onClick={() => onRemove(index)}
-          className="flex items-center justify-center w-7 h-7 rounded-lg cursor-pointer hover:bg-red-50 transition-all border-none flex-shrink-0"
+          className="flex items-center justify-center w-7 h-7 rounded-lg cursor-pointer hover:bg-red-50 transition-all border-none shrink-0"
           style={{ backgroundColor: "#fef2f2", color: "#e53935", marginTop: 18 }}
         >
           <DeleteOutlineOutlinedIcon style={{ fontSize: 15 }} />

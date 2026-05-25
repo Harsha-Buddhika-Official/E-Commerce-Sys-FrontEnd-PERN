@@ -35,7 +35,7 @@ function DeleteModal({ brand, onConfirm, onCancel }) {
         style={{ maxWidth: 380, boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
       >
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-50 flex-shrink-0">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-50 shrink-0">
             <WarningAmberOutlinedIcon style={{ fontSize: 20, color: "#e53935" }} />
           </div>
           <h3 style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>Delete Brand</h3>
@@ -116,7 +116,7 @@ export default function BrandCard({ brand, onDelete }) {
             {brand.name}
           </p>
           <span
-            className="flex items-center gap-1.5 flex-shrink-0 px-2.5 py-1 rounded-full"
+            className="flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-full"
             style={{
               ...INTER,
               fontSize: 10,
@@ -127,7 +127,7 @@ export default function BrandCard({ brand, onDelete }) {
             }}
           >
             <span
-              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+              className="w-1.5 h-1.5 rounded-full shrink-0"
               style={{ backgroundColor: brand.is_active ? "#16a34a" : "#e53935" }}
             />
             {brand.is_active ? "Active" : "Inactive"}

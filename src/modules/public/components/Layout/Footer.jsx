@@ -81,7 +81,7 @@ const Footer = ({
           </div>
 
           {/* RIGHT — Contact heading + social icons */}
-          <div className="flex flex-col items-start sm:items-end gap-2 flex-shrink-0">
+          <div className="flex flex-col items-start sm:items-end gap-2 shrink-0">
             <h3 className="font-semibold text-[15px] text-white" style={INTER}>
               Contact
             </h3>

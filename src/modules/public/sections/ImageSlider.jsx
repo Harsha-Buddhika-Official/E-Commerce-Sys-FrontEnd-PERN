@@ -35,7 +35,7 @@ export default function ImageSlider() {
             key={index}
             src={slide}
             alt={`Slide ${index + 1}`}
-            className="w-full h-full object-cover object-center flex-shrink-0"
+            className="w-full h-full object-cover object-center shrink-0"
           />
         ))}
       </div>

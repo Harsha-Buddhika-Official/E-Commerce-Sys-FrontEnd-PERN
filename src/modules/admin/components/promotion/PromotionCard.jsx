@@ -78,7 +78,7 @@ const PromotionCard = ({ offer, onView, onEdit, onDelete, onToggle }) => {
           className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full"
           style={{ ...INTER, fontSize: 11, fontWeight: 700, backgroundColor: status.bg, color: status.color, border: `1px solid ${status.border}` }}
         >
-          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: status.color }} />
+          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: status.color }} />
           {status.label}
         </div>
 
@@ -172,7 +172,7 @@ const PromotionCard = ({ offer, onView, onEdit, onDelete, onToggle }) => {
           {/* Toggle */}
           <button
             onClick={() => onToggle?.(offer, !offer.is_active)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border cursor-pointer transition-all hover:opacity-80 flex-shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border cursor-pointer transition-all hover:opacity-80 shrink-0"
             style={{
               backgroundColor: offer.is_active ? "#f0fdf4" : "#fef2f2",
               borderColor:     offer.is_active ? "#bbf7d0" : "#fecaca",

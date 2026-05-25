@@ -69,7 +69,7 @@ function SectionCard({ children, className = "" }) {
 function SectionTitle({ icon, children }) {
   return (
     <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-[#f0f0f0]">
-      <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
+      <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
         {icon}
       </div>
       <span style={{ ...SORA, fontSize: 14, fontWeight: 800, color: "#111", letterSpacing: "0.02em" }}>
@@ -90,7 +90,7 @@ function InfoRow({ label, value, accent = false, copyable = false, mono = false 
           {value ?? "—"}
         </span>
         {copyable && (
-          <button onClick={copy} className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-transparent border-none cursor-pointer text-gray-300 hover:text-gray-600 transition-colors">
+          <button onClick={copy} className="shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-transparent border-none cursor-pointer text-gray-300 hover:text-gray-600 transition-colors">
             {copied ? <CheckCircleOutlinedIcon style={{ fontSize: 14, color: "#16a34a" }} /> : <ContentCopyOutlinedIcon style={{ fontSize: 13 }} />}
           </button>
         )}
@@ -150,7 +150,7 @@ function DeleteModal({ name, onConfirm, onCancel }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="bg-white rounded-2xl p-7 flex flex-col gap-4 w-full" style={{ maxWidth: 380, boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-50 flex-shrink-0">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-50 shrink-0">
             <WarningAmberOutlinedIcon style={{ fontSize: 20, color: "#e53935" }} />
           </div>
           <h3 style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>Delete Product</h3>
@@ -305,7 +305,7 @@ const ProductInfoPage = ({
             <div className="flex flex-col md:flex-row gap-7">
 
               {/* Image gallery */}
-              <div className="flex flex-col gap-3 flex-shrink-0">
+              <div className="flex flex-col gap-3 shrink-0">
                 {/* Main image */}
                 <div
                   className="flex items-center justify-center rounded-2xl overflow-hidden border border-[#f0f0f0] bg-[#f7f7f7]"
@@ -357,7 +357,7 @@ const ProductInfoPage = ({
                     className="flex items-center gap-1.5 px-3 py-1 rounded-full"
                     style={{ ...INTER, fontSize: 11, fontWeight: 700, backgroundColor: stockCfg.bg, color: stockCfg.color, border: `1px solid ${stockCfg.border}` }}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: stockCfg.color }} />
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: stockCfg.color }} />
                     {stockCfg.label}
                   </span>
 
@@ -490,7 +490,7 @@ const ProductInfoPage = ({
                     onClick={() => { setActiveImg(idx); setImgErr(false); }}
                   >
                     {/* Thumb */}
-                    <div className="flex items-center justify-center rounded-lg overflow-hidden flex-shrink-0 bg-white border border-[#ebebeb]" style={{ width: 52, height: 52 }}>
+                    <div className="flex items-center justify-center rounded-lg overflow-hidden shrink-0 bg-white border border-[#ebebeb]" style={{ width: 52, height: 52 }}>
                       <img src={img.image_url} alt={img.alt_text} className="w-full h-full object-contain p-1" onError={(e) => { e.target.style.display = "none"; }} />
                     </div>
                     {/* Info */}
@@ -499,7 +499,7 @@ const ProductInfoPage = ({
                       <p className="truncate mt-0.5" style={{ ...INTER, fontSize: 11, color: "#bbb", fontFamily: "'Courier New', monospace" }}>{img.image_url}</p>
                     </div>
                     {/* Badges */}
-                    <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
                       {img.is_primary && (
                         <span className="px-2 py-0.5 rounded-full" style={{ ...INTER, fontSize: 9, fontWeight: 700, backgroundColor: "#dbeafe", color: "#1d4ed8" }}>Primary</span>
                       )}

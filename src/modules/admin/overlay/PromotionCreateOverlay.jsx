@@ -12,7 +12,9 @@ import InventoryOutlinedIcon      from "@mui/icons-material/InventoryOutlined";
 import CloseOutlinedIcon          from "@mui/icons-material/CloseOutlined";
 import CheckOutlinedIcon          from "@mui/icons-material/CheckOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import { useLimitedData } from "../../features/products/hooks/useLimitedData";
+import { useLimitedData } from "../features/products/hooks/useLimitedData";
+import { useCreateOffer } from "../features/offers/hooks/useCreateOffer";
+import { useOfferProducts } from "../features/offers/hooks/useOfferProducts";
 
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
@@ -25,7 +27,6 @@ const toDateInput = (iso) => {
   return new Date(iso).toISOString().slice(0, 16);
 };
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
 function FieldLabel({ children, required }) {
   return (
     <p className="mb-1.5" style={{ ...INTER, fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.07em" }}>
@@ -65,13 +66,11 @@ function TextInput({ value, onChange, placeholder, type = "text" }) {
   );
 }
 
-// ─── Product dropdown ─────────────────────────────────────────────────────────
-function ProductDropdown({ value, onChange, error, products = [] }) {
+function ProductDropdown({ value, onChange, error, products = [], disabled = false }) {
   const [open,    setOpen]    = useState(false);
   const [search,  setSearch]  = useState("");
   const ref = useRef(null);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
     document.addEventListener("mousedown", handler);
@@ -97,28 +96,28 @@ function ProductDropdown({ value, onChange, error, products = [] }) {
 
   return (
     <div ref={ref} className="relative">
-      {/* Trigger */}
       <button
         type="button"
-        onClick={() => setOpen((p) => !p)}
-        className="w-full flex items-center gap-3 text-left transition-all cursor-pointer"
+        onClick={() => { if (disabled) return; setOpen((p) => !p); }}
+        disabled={disabled}
+        className="w-full flex items-center gap-3 text-left transition-all"
         style={{
           padding: "10px 14px",
           borderRadius: open ? "12px 12px 0 0" : 12,
           border: `1.5px solid ${error ? "#e53935" : open ? "#111" : "#ebebeb"}`,
           backgroundColor: open ? "#fff" : "#f9f9f9",
           outline: "none",
+          cursor: disabled ? "not-allowed" : "pointer",
+          opacity: disabled ? 0.85 : 1,
         }}
       >
-        {/* Icon */}
         <div
-          className="flex items-center justify-center w-7 h-7 rounded-lg flex-shrink-0"
+          className="flex items-center justify-center w-7 h-7 rounded-lg shrink-0"
           style={{ backgroundColor: selected ? "#111" : "#f0f0f0" }}
         >
           <InventoryOutlinedIcon style={{ fontSize: 14, color: selected ? "#fff" : "#aaa" }} />
         </div>
 
-        {/* Label */}
         <div className="flex-1 min-w-0">
           {selected ? (
             <div>
@@ -136,17 +135,16 @@ function ProductDropdown({ value, onChange, error, products = [] }) {
           )}
         </div>
 
-        {/* Right controls */}
-        <div className="flex items-center gap-1 flex-shrink-0">
-          {selected && (
-            <div
-              onClick={handleClear}
-              className="flex items-center justify-center w-5 h-5 rounded-md cursor-pointer hover:bg-gray-100 transition-all"
-              style={{ color: "#bbb" }}
-            >
-              <CloseOutlinedIcon style={{ fontSize: 13 }} />
-            </div>
-          )}
+        <div className="flex items-center gap-1 shrink-0">
+          {selected && !disabled && (
+              <div
+                onClick={handleClear}
+                className="flex items-center justify-center w-5 h-5 rounded-md cursor-pointer hover:bg-gray-100 transition-all"
+                style={{ color: "#bbb" }}
+              >
+                <CloseOutlinedIcon style={{ fontSize: 13 }} />
+              </div>
+            )}
           <KeyboardArrowDownOutlinedIcon
             style={{
               fontSize: 18,
@@ -158,8 +156,7 @@ function ProductDropdown({ value, onChange, error, products = [] }) {
         </div>
       </button>
 
-      {/* Dropdown panel */}
-      {open && (
+      {open && !disabled && (
         <div
           className="absolute left-0 right-0 z-50 overflow-hidden flex flex-col"
           style={{
@@ -171,8 +168,7 @@ function ProductDropdown({ value, onChange, error, products = [] }) {
             maxHeight: 280,
           }}
         >
-          {/* Search */}
-          <div className="relative flex-shrink-0 px-3 py-2.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
+          <div className="relative px-3 py-2.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
             <SearchOutlinedIcon style={{ position: "absolute", left: 22, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#bbb" }} />
             <input
               autoFocus
@@ -190,7 +186,6 @@ function ProductDropdown({ value, onChange, error, products = [] }) {
             />
           </div>
 
-          {/* List */}
           <div className="overflow-y-auto flex-1">
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-8">
@@ -198,13 +193,13 @@ function ProductDropdown({ value, onChange, error, products = [] }) {
                 <p style={{ ...INTER, fontSize: 12, color: "#ccc", fontWeight: 600 }}>No products found</p>
               </div>
             ) : (
-              filtered.map((product, idx) => {
+                  filtered.map((product, idx) => {
                 const isSelected = product.product_id === value;
                 return (
                   <button
                     key={product.product_id}
-                    type="button"
-                    onClick={() => handleSelect(product)}
+                        type="button"
+                        onClick={() => handleSelect(product)}
                     className="w-full flex items-center gap-3 text-left cursor-pointer transition-all"
                     style={{
                       padding: "10px 14px",
@@ -219,7 +214,6 @@ function ProductDropdown({ value, onChange, error, products = [] }) {
                     onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = "#f9f9f9"; }}
                     onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = "transparent"; }}
                   >
-                    {/* Category pill */}
                     <div className="flex flex-col flex-1 min-w-0 gap-0.5">
                       <p className="truncate" style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#111" }}>
                         {product.name}
@@ -237,10 +231,9 @@ function ProductDropdown({ value, onChange, error, products = [] }) {
                       </div>
                     </div>
 
-                    {/* Check */}
                     {isSelected && (
                       <div
-                        className="flex items-center justify-center w-5 h-5 rounded-full flex-shrink-0"
+                        className="flex items-center justify-center w-5 h-5 rounded-full shrink-0"
                         style={{ backgroundColor: "#111" }}
                       >
                         <CheckOutlinedIcon style={{ fontSize: 12, color: "#fff" }} />
@@ -257,13 +250,10 @@ function ProductDropdown({ value, onChange, error, products = [] }) {
   );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// PROMOTION FORM MODAL
-// ══════════════════════════════════════════════════════════════════════════════
-const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) => {
+const PromotionCreateOverlay = ({ mode = "create", offer = null, onSave, onClose, onCreated }) => {
   const isEdit = mode === "edit";
 
-  const { products: limitedProducts = [], loading: productsLoading } = useLimitedData();
+  const { products: limitedProducts = [] } = useLimitedData();
 
   const [title,         setTitle]         = useState(offer?.title         || "");
   const [description,   setDescription]   = useState(offer?.description   || "");
@@ -277,6 +267,21 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
   const [saving,        setSaving]        = useState(false);
   const [errors,        setErrors]        = useState({});
 
+  const { createOffer } = useCreateOffer();
+  const { attachProduct } = useOfferProducts();
+
+  useEffect(() => {
+    if (isEdit && offer) {
+      if (offer.product_id) {
+        setProductId(offer.product_id);
+      } else if (Array.isArray(offer.products) && offer.products.length > 0) {
+        const first = offer.products[0];
+        if (first && typeof first.product_id !== "undefined") {
+          setProductId(first.product_id);
+        }
+      }
+    }
+  }, [isEdit, offer]);
 
   const validate = () => {
     const e = {};
@@ -306,9 +311,32 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
       banner_image:   bannerImage.trim() || null,
       product_id:     productId,
     };
-    // Delegate creation to parent (onSave) to avoid duplicate API calls
+
     try {
-      await onSave?.(payload);
+      if (isEdit) {
+        // Delegate edits to parent when in edit mode
+        await onSave?.(payload);
+        if (typeof onCreated === "function") onCreated(payload);
+        setSaving(false);
+        return;
+      }
+
+      // Create mode: use local hook to create the offer
+      const created = await createOffer(payload);
+
+      // If a product was chosen, try attaching it
+      if (payload.product_id && created?.id) {
+        try {
+          await attachProduct(created.id, payload.product_id);
+        } catch (err) {
+          console.error("Failed to attach product to offer:", err);
+          // don't block on attachment failure
+        }
+      }
+
+      // Notify caller and close
+      if (typeof onCreated === "function") onCreated(created);
+      else onClose?.();
       setSaving(false);
     } catch (err) {
       setSaving(false);
@@ -322,8 +350,7 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
         className="bg-white rounded-2xl w-full flex flex-col overflow-hidden"
         style={{ maxWidth: 560, maxHeight: "92vh", boxShadow: "0 16px 48px rgba(0,0,0,0.18)", border: "1px solid #ebebeb" }}
       >
-        {/* ── Header ── */}
-        <div className="flex items-center justify-between px-6 py-4 flex-shrink-0" style={{ borderBottom: "1px solid #f0f0f0" }}>
+        <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: "1px solid #f0f0f0" }}>
           <div>
             <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>
               Promotions / {isEdit ? "Edit" : "Create"}
@@ -341,18 +368,13 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
           </button>
         </div>
 
-        {/* ── Scrollable body ── */}
         <div className="overflow-y-auto flex-1 px-6 py-5">
           <div className="flex flex-col gap-5">
-
-            {/* Title */}
             <div>
               <FieldLabel required>Promotion Title</FieldLabel>
               <TextInput value={title} onChange={setTitle} placeholder="e.g. Flash Sale – 20% Off GPUs" />
               <ErrorMsg msg={errors.title} />
             </div>
-
-            {/* Description */}
             <div>
               <FieldLabel>Description</FieldLabel>
               <textarea
@@ -373,7 +395,6 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
               />
             </div>
 
-            {/* ── Product selector ── */}
             <div>
               <FieldLabel required>Product</FieldLabel>
               <ProductDropdown
@@ -382,19 +403,18 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
                   setProductId(id);
                   if (errors.productId) setErrors((e) => { const n = { ...e }; delete n.productId; return n; });
                 }}
-                error={errors.productId}
-                products={limitedProducts}
+                  error={errors.productId}
+                  products={limitedProducts}
+                  disabled={isEdit}
               />
               <ErrorMsg msg={errors.productId} />
             </div>
 
-            {/* Discount type + value */}
             <div>
               <FieldLabel required>Discount</FieldLabel>
               <div className="flex gap-2">
-                {/* Type toggle */}
-                <div className="flex rounded-xl overflow-hidden flex-shrink-0" style={{ border: "1.5px solid #ebebeb" }}>
-                  {["percentage", "fixed"].map((t, i) => (
+                <div className="flex rounded-xl overflow-hidden shrink-0" style={{ border: "1.5px solid #ebebeb" }}>
+                  { ["percentage", "fixed"].map((t, i) => (
                     <button
                       key={t}
                       type="button"
@@ -413,10 +433,9 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
                         : <><AttachMoneyOutlinedIcon style={{ fontSize: 13 }} /> Fixed</>
                       }
                     </button>
-                  ))}
+                  )) }
                 </div>
 
-                {/* Value */}
                 <div className="relative flex-1">
                   <input
                     type="number"
@@ -444,7 +463,6 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
               <ErrorMsg msg={errors.discountValue} />
             </div>
 
-            {/* Date range */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <FieldLabel required>Start Date</FieldLabel>
@@ -486,7 +504,6 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
               </div>
             </div>
 
-            {/* Banner image URL */}
             <div>
               <FieldLabel>Banner Image URL</FieldLabel>
               <TextInput value={bannerImage} onChange={setBannerImage} placeholder="https://…/banner.jpg" />
@@ -497,7 +514,6 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
               )}
             </div>
 
-            {/* Active toggle */}
             <div>
               <FieldLabel>Status</FieldLabel>
               <button
@@ -533,8 +549,7 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
           </div>
         ) }
 
-        {/* ── Footer ── */}
-        <div className="flex items-center gap-3 px-6 py-4 flex-shrink-0" style={{ borderTop: "1px solid #f0f0f0" }}>
+        <div className="flex items-center gap-3 px-6 py-4 shrink-0" style={{ borderTop: "1px solid #f0f0f0" }}>
           <button
             onClick={onClose}
             className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
@@ -562,4 +577,4 @@ const PromotionFormModal = ({ mode = "create", offer = null, onSave, onClose }) 
   );
 };
 
-export default PromotionFormModal;
+export default PromotionCreateOverlay;

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import MenuIcon              from "@mui/icons-material/Menu";
 import SearchIcon            from "@mui/icons-material/Search";
 import CloseIcon             from "@mui/icons-material/Close";
-import NotificationOverlay   from "./NotificationOverlay";
-import TimeoutOverlay        from "./TimeoutOverlay";
+import NotificationOverlay   from "../overlay/NotificationOverlay";
+import TimeoutOverlay        from "../overlay/TimeoutOverlay";
 
 // ─── Font constant — leaf elements only ───────────────────────────────────────
 const SORA = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };

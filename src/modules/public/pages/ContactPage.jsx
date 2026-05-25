@@ -123,7 +123,7 @@ const ContactPage = () => {
               key={i}
               className="bg-white border border-[#e6e6e6] rounded-2xl p-5 flex flex-col gap-3"
             >
-              <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-[#f5f5f5] text-[#111] flex-shrink-0">
+              <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-[#f5f5f5] text-[#111] shrink-0">
                 {card.icon}
               </div>
               <p className="text-[#111]" style={{ ...SORA, fontSize: 13, fontWeight: 700 }}>
@@ -297,7 +297,7 @@ const ContactPage = () => {
                 ].map((s, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <div
-                      className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0"
+                      className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
                       style={{ backgroundColor: s.color + "15", color: s.color }}
                     >
                       {s.icon}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOrderDetail } from "../features/orders/hooks/useOrderDetail";
 import { useChangeOrderStatus } from "../features/orders/hooks/useChangeOrderStatus";
@@ -36,7 +36,7 @@ const STATUS_OPTIONS = ["pending", "paid", "processing", "shipped", "delivered",
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmt = (amount) =>
-  new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR", maximumFractionDigits: 2 }).format(Number(amount) ?? 0);
+  new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR", maximumFractionDigits: 2 }).format(Number(amount) || 0);
 
 const formatDate = (iso) => {
   if (!iso) return "—";
@@ -232,7 +232,7 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
 }
 
 // ─── Product item row ─────────────────────────────────────────────────────────
-function ProductItem({ item, index }) {
+function ProductItem({ item }) {
   return (
     <div
       className="flex items-start gap-4 p-4 rounded-xl"
@@ -323,6 +323,8 @@ const OrderDetailPage = ({
   const { order: fetchedOrder, loading, error, refresh } = useOrderDetail(orderId);
   const { changeStatus, loading: statusUpdating } = useChangeOrderStatus();
   const displayOrder = fetchedOrder || orderProp || {};
+  const [manualStatus, setManualStatus] = useState(null);
+  const orderStatus = manualStatus ?? displayOrder.order_status ?? "pending";
 
   if (!loading && !displayOrder?.order_id) {
     return (
@@ -339,12 +341,6 @@ const OrderDetailPage = ({
     );
   }
 
-  const [orderStatus, setOrderStatus] = useState(displayOrder.order_status || "pending");
-
-  useEffect(() => {
-    setOrderStatus(displayOrder.order_status || "pending");
-  }, [displayOrder.order_status]);
-
   const handleStatusChange = async (newStatus) => {
     if (!displayOrder?.order_id) return;
     if (statusUpdating) return;
@@ -354,12 +350,14 @@ const OrderDetailPage = ({
       const updated = result?.data ?? null;
       const serverStatus = updated?.order_status ?? updated?.orderStatus ?? null;
 
-      // set status from server or fallback to requested status
-      setOrderStatus(serverStatus || newStatus);
+      setManualStatus(serverStatus || newStatus);
 
-      // refresh to ensure full record sync (best-effort)
-      try { await refresh(); } catch {}
-      try { onStatusChange(displayOrder.order_id, newStatus); } catch {}
+      await refresh().catch(() => {});
+      try {
+        onStatusChange(displayOrder.order_id, newStatus);
+      } catch (callbackError) {
+        console.error("Order status callback failed:", callbackError);
+      }
       console.log(`Order #${displayOrder.order_id} status → ${newStatus}`);
     } catch (err) {
       console.error("Failed to update order status:", err);
@@ -463,8 +461,8 @@ const OrderDetailPage = ({
             </SectionTitle>
 
             <div className="flex flex-col gap-3">
-              {items.map((item, idx) => (
-                <ProductItem key={item.product_id} item={item} index={idx} />
+              {items.map((item) => (
+                <ProductItem key={item.product_id} item={item} />
               ))}
             </div>
 

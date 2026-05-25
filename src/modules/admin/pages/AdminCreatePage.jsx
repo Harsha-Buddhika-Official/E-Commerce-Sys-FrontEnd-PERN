@@ -78,7 +78,7 @@ function SectionCard({ children, className = "" }) {
 function SectionTitle({ icon, children }) {
   return (
     <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-[#f0f0f0]">
-      <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
+      <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
         {icon}
       </div>
       <span style={{ ...SORA, fontSize: 14, fontWeight: 800, color: "#111", letterSpacing: "0.02em" }}>
@@ -329,7 +329,7 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
                       { rule: /[^A-Za-z0-9]/.test(form.password), label: "One special character" },
                     ].map(({ rule, label }) => (
                       <div key={label} className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: rule ? "#16a34a" : "#e0e0e0" }} />
+                        <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: rule ? "#16a34a" : "#e0e0e0" }} />
                         <span style={{ ...INTER, fontSize: 11, color: rule ? "#16a34a" : "#bbb", fontWeight: 500 }}>{label}</span>
                       </div>
                     ))}
@@ -428,7 +428,7 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
                     }}
                   >
                     <div
-                      className="flex items-center justify-center w-9 h-9 rounded-xl flex-shrink-0"
+                      className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0"
                       style={{ backgroundColor: active ? role.bg : "#f0f0f0", color: active ? role.color : "#aaa" }}
                     >
                       {role.icon}
@@ -462,7 +462,7 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
               </div>
               <button
                 onClick={() => setField("is_active", !form.is_active)}
-                className="relative flex-shrink-0 transition-all cursor-pointer"
+                className="relative shrink-0 transition-all cursor-pointer"
                 style={{
                   width: 44, height: 24, borderRadius: 999,
                   backgroundColor: form.is_active ? "#111" : "#e0e0e0",

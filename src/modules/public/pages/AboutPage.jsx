@@ -156,7 +156,7 @@ const AboutPage = () => (
           </div>
 
           {/* Dark accent card */}
-          <div className="flex-shrink-0 w-full lg:w-60">
+          <div className="shrink-0 w-full lg:w-60">
             <div className="bg-[#111] rounded-2xl p-7 text-white flex flex-col gap-6 h-full">
               {[
                 { label: "Established", value: "2014" },
@@ -216,7 +216,7 @@ const AboutPage = () => (
               key={i}
               className="bg-white border border-[#e6e6e6] rounded-2xl p-6 flex flex-col items-center text-center gap-3 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
             >
-              <div className="w-16 h-16 rounded-full bg-[#111] flex items-center justify-center flex-shrink-0">
+              <div className="w-16 h-16 rounded-full bg-[#111] flex items-center justify-center shrink-0">
                 <span className="text-white" style={{ ...SORA, fontSize: 18, fontWeight: 800 }}>
                   {member.initials}
                 </span>

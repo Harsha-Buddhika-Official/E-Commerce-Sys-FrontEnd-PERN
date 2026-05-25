@@ -53,7 +53,7 @@ function SectionCard({ children, className = "" }) {
 function SectionTitle({ icon, children }) {
   return (
     <div className="flex items-center gap-2.5 mb-5 pb-3" style={{ borderBottom: "1px solid #f0f0f0" }}>
-      <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
+      <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
         {icon}
       </div>
       <span style={{ ...SORA, fontSize: 14, fontWeight: 800, color: "#111", letterSpacing: "0.02em" }}>
@@ -261,7 +261,7 @@ export default function OfferDetailPage({
                     border:          `1px solid ${isActive ? "#bbf7d0" : "#fecaca"}`,
                   }}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: isActive ? "#16a34a" : "#e53935" }} />
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: isActive ? "#16a34a" : "#e53935" }} />
                   {isActive ? "Active" : "Inactive"}
                 </span>
 
@@ -353,7 +353,7 @@ export default function OfferDetailPage({
 
               <div className="flex flex-col md:flex-row gap-6">
                 {/* Image gallery */}
-                <div className="flex flex-col gap-3 flex-shrink-0">
+                <div className="flex flex-col gap-3 shrink-0">
                   {/* Main image */}
                   <div
                     className="flex items-center justify-center rounded-2xl overflow-hidden"

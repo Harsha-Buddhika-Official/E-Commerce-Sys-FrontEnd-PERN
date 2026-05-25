@@ -9,11 +9,9 @@ import PersonAddAltOutlinedIcon   from "@mui/icons-material/PersonAddAltOutlined
 import LocalShippingOutlinedIcon  from "@mui/icons-material/LocalShippingOutlined";
 import InfoOutlinedIcon           from "@mui/icons-material/InfoOutlined";
 
-// ─── Font constants — leaf elements only ──────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
-// ─── Notification type config ─────────────────────────────────────────────────
 const TYPE_CONFIG = {
   order:    { icon: <ShoppingCartOutlinedIcon  style={{ fontSize: 16 }} />, bg: "#dbeafe", color: "#1d4ed8" },
   stock:    { icon: <WarningAmberOutlinedIcon  style={{ fontSize: 16 }} />, bg: "#fee2e2", color: "#dc2626" },
@@ -22,7 +20,6 @@ const TYPE_CONFIG = {
   info:     { icon: <InfoOutlinedIcon          style={{ fontSize: 16 }} />, bg: "#f3e8ff", color: "#7c3aed" },
 };
 
-// ─── Single notification row ──────────────────────────────────────────────────
 function NotifRow({ notif, onRead, onDelete }) {
   const cfg = TYPE_CONFIG[notif.type] || TYPE_CONFIG.info;
 
@@ -32,7 +29,6 @@ function NotifRow({ notif, onRead, onDelete }) {
         ${notif.read ? "bg-white hover:bg-[#fafafa]" : "bg-blue-50/60 hover:bg-blue-50"}`}
       onClick={() => onRead(notif.id)}
     >
-      {/* Type icon circle */}
       <div
         className="flex items-center justify-center rounded-full shrink-0 mt-0.5"
         style={{ width: 32, height: 32, backgroundColor: cfg.bg, color: cfg.color }}
@@ -40,7 +36,6 @@ function NotifRow({ notif, onRead, onDelete }) {
         {cfg.icon}
       </div>
 
-      {/* Text */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <p
@@ -49,7 +44,6 @@ function NotifRow({ notif, onRead, onDelete }) {
           >
             {notif.title}
           </p>
-          {/* Unread dot */}
           {!notif.read && (
             <CircleIcon style={{ fontSize: 8, color: "#1a73e8", flexShrink: 0, marginTop: 3 }} />
           )}
@@ -68,7 +62,6 @@ function NotifRow({ notif, onRead, onDelete }) {
         </p>
       </div>
 
-      {/* Delete button — visible on hover */}
       <button
         onClick={(e) => { e.stopPropagation(); onDelete(notif.id); }}
         className="opacity-0 group-hover:opacity-100 shrink-0 flex items-center justify-center w-6 h-6 rounded-md hover:bg-red-50 text-gray-300 hover:text-red-400 transition-all duration-150 bg-transparent border-none cursor-pointer mt-0.5"
@@ -79,19 +72,13 @@ function NotifRow({ notif, onRead, onDelete }) {
   );
 }
 
-// ─── NotificationOverlay ──────────────────────────────────────────────────────
-// Props:
-//   notifications  — array of notification objects
-//   onMarkAllRead  — () => void
-//   onClearAll     — () => void
-
 const NotificationOverlay = ({
   notifications: initNotifs = [],
   onMarkAllRead  = () => {},
   onClearAll     = () => {},
 }) => {
   const [open, setOpen] = useState(false);
-  const [tab, setTab] = useState("all"); // "all" | "unread"
+  const [tab, setTab] = useState("all");
   const [readIds, setReadIds] = useState(() => new Set());
   const [deletedIds, setDeletedIds] = useState(() => new Set());
   const [isCleared, setIsCleared] = useState(false);
@@ -107,7 +94,6 @@ const NotificationOverlay = ({
 
   const unreadCount = notifs.filter((n) => !n.read).length;
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
@@ -152,8 +138,6 @@ const NotificationOverlay = ({
 
   return (
     <div ref={ref} className="relative shrink-0">
-
-      {/* ── Bell trigger button ── */}
       <button
         onClick={() => setOpen((p) => !p)}
         className="relative flex items-center justify-center rounded-lg text-white transition-colors bg-transparent border-none cursor-pointer"
@@ -167,7 +151,6 @@ const NotificationOverlay = ({
       >
         <NotificationsOutlinedIcon style={{ fontSize: 18 }} />
 
-        {/* Unread badge */}
         {unreadCount > 0 && (
           <span
             className="absolute flex items-center justify-center bg-red-500 text-white rounded-full leading-none"
@@ -184,7 +167,6 @@ const NotificationOverlay = ({
         )}
       </button>
 
-      {/* ── Dropdown panel ── */}
       {open && (
         <div
           className="absolute right-0 z-50 bg-white rounded-2xl overflow-hidden flex flex-col"
@@ -196,7 +178,6 @@ const NotificationOverlay = ({
             border: "1px solid #f0f0f0",
           }}
         >
-          {/* Panel header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-[#f0f0f0] shrink-0">
             <p className="text-[#111]" style={{ ...SORA, fontSize: 14, fontWeight: 800 }}>
               Notifications
@@ -210,7 +191,6 @@ const NotificationOverlay = ({
               )}
             </p>
 
-            {/* Actions */}
             <div className="flex items-center gap-2">
               {unreadCount > 0 && (
                 <button
@@ -235,7 +215,6 @@ const NotificationOverlay = ({
             </div>
           </div>
 
-          {/* Tabs */}
           <div className="flex border-b border-[#f0f0f0] shrink-0">
             {[
               { key: "all",    label: "All",    count: notifs.length   },
@@ -263,7 +242,6 @@ const NotificationOverlay = ({
             ))}
           </div>
 
-          {/* Notification list */}
           <div className="overflow-y-auto flex-1 divide-y divide-[#f5f5f5]">
             {displayed.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2">
