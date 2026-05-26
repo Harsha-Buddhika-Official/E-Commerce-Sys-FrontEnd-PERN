@@ -358,7 +358,7 @@ const OrderDetailPage = ({
       } catch (callbackError) {
         console.error("Order status callback failed:", callbackError);
       }
-      console.log(`Order #${displayOrder.order_id} status → ${newStatus}`);
+
     } catch (err) {
       console.error("Failed to update order status:", err);
     }

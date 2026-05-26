@@ -13,7 +13,7 @@ export const fetchAttributesCatalog = async () => {
 export const createAttribute = async (attributeData) => {
      try{
         const res = await API.post("/attributes", attributeData);
-        console.log(attributeData);
+
         return res.data;
      } catch (error) {
         throw handleApiError(error, "Failed to create attribute");

@@ -33,7 +33,7 @@ export const getOrderDetails = async () => {
       : response;
 
     // Debug: Log the resolved payload
-    console.log("API Response payload:", payload);
+
 
     // Normalize supported payload shapes:
     // - { success: true, data: [...] }

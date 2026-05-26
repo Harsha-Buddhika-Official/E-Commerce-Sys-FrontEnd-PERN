@@ -18,7 +18,7 @@ API.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
 
-            // remove auth data
+            // Clear auth data on 401
             localStorage.removeItem("admin_token");
             localStorage.removeItem("user");
 

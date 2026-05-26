@@ -23,7 +23,7 @@ export const useStatusBar = () => {
             ...current,
             ...fetchedData,
           }));
-          console.log("Fetched status bar data:", fetchedData);
+
       } catch (err) {
           setError(`Failed to load status bar data. ${err.message}`);
       } finally {

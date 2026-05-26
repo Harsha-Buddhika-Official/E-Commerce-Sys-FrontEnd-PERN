@@ -22,9 +22,9 @@ const OffersPage = () => {
     // Use productId from the embedded product, not offer.id
     if (offer?.productId) {
       try {
-        console.log(`[Offers] Adding to cart: Product ID ${offer.productId} - ${offer.title}`);
+
         const result = await addProductToServer(offer.productId);
-        console.log(`[Offers] Add to cart success:`, result);
+
         // Dispatch event to show success notification
         window.dispatchEvent(
           new CustomEvent("cart:item-added", {

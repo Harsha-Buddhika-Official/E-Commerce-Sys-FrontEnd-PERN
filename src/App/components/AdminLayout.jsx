@@ -75,7 +75,7 @@ export default function AdminLayout() {
         <Sidebar
           activeItem={activeItem}
           onNavigate={() => {}}
-          onLogout={() => console.log("Logout")}
+          onLogout={() => {}}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           adminName={adminRole}

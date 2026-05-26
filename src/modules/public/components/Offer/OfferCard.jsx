@@ -206,7 +206,7 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
           <button
             disabled={!offer.inStock}
             onClick={() => {
-              console.log(`[OfferCard] Add to cart clicked for product ${offer.productId}`);
+
               onAddToCart(offer);
             }}
             className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-150

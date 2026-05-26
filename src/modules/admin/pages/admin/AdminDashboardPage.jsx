@@ -36,7 +36,7 @@ const AdminDashboard = () => {
 		shippedOrders,
 	});
 
-	const handleViewOrder = (orderId) => console.log("View order:", orderId);
+	const handleViewOrder = (orderId) => {};
 
 	return (
 		<main className="h-full overflow-y-auto p-5 lg:p-6">
