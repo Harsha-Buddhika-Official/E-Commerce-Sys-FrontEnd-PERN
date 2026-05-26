@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useOrderDetail } from "../features/orders/hooks/useOrderDetail";
-import { useChangeOrderStatus } from "../features/orders/hooks/useChangeOrderStatus";
+import { useOrderDetail } from "../../features/orders/hooks/useOrderDetail";
+import { useChangeOrderStatus } from "../../features/orders/hooks/useChangeOrderStatus";
 import ArrowBackOutlinedIcon        from "@mui/icons-material/ArrowBackOutlined";
 import ContentCopyOutlinedIcon      from "@mui/icons-material/ContentCopyOutlined";
 import CheckCircleOutlinedIcon      from "@mui/icons-material/CheckCircleOutlined";

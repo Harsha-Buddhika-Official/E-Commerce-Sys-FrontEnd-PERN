@@ -14,7 +14,7 @@ import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettin
 import SupervisorAccountOutlinedIcon  from "@mui/icons-material/SupervisorAccountOutlined";
 import ManageAccountsOutlinedIcon     from "@mui/icons-material/ManageAccountsOutlined";
 import InfoOutlinedIcon               from "@mui/icons-material/InfoOutlined";
-import { useCreateAdmin } from "../features/admin/hooks/useCreateAdmin";
+import { useCreateAdmin } from "../../features/admin/hooks/useCreateAdmin";
 
 // ─── Font constants ───────────────────────────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };

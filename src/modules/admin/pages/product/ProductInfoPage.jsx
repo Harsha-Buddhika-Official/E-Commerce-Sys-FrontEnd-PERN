@@ -17,8 +17,8 @@ import WarningAmberOutlinedIcon       from "@mui/icons-material/WarningAmberOutl
 import TagOutlinedIcon                from "@mui/icons-material/TagOutlined";
 import LinkOutlinedIcon               from "@mui/icons-material/LinkOutlined";
 import BrokenImageOutlinedIcon        from "@mui/icons-material/BrokenImageOutlined";
-import { useProductDetail }           from "../features/products/hooks/useProductDetail";
-import { useDeleteProduct }           from "../features/products/hooks/useDeleteProduct";
+import { useProductDetail }           from "../../features/products/hooks/useProductDetail";
+import { useDeleteProduct }           from "../../features/products/hooks/useDeleteProduct";
 
 // ─── Font constants — leaf elements only, never on wrapper divs ───────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
@@ -173,7 +173,6 @@ function DeleteModal({ name, onConfirm, onCancel }) {
 const ProductInfoPage = ({
   onBack     = null,
   onEdit     = () => {},
-  onDelete   = () => {},
 }) => {
   const navigate = useNavigate();
   const { id: routeProductId } = useParams();
@@ -283,14 +282,6 @@ const ProductInfoPage = ({
             <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Products / Detail</p>
             <h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>Product Info</h1>
           </div>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <button onClick={() => onEdit(productData)} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all hover:bg-[#222] cursor-pointer" style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}>
-            <EditOutlinedIcon style={{ fontSize: 16 }} /> Edit Product
-          </button>
-          <button onClick={() => setShowDelete(true)} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all hover:bg-red-600 cursor-pointer" style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#e53935", border: "none" }}>
-            <DeleteOutlineOutlinedIcon style={{ fontSize: 16 }} /> Delete
-          </button>
         </div>
       </div>
 

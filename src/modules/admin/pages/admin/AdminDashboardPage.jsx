@@ -1,9 +1,9 @@
-import StatCard  from "../components/Dashboard/StatCard";
-import RecentOrders   from "../components/Dashboard/RecentOrders";
-import LowStockAlert  from "../components/Dashboard/LowStockAlert";
-import { useStatusBar } from "../features/dashboard/hooks/useStatusBar";
-import { buildDashboardStats } from "../features/dashboard/utils/dashboardStats";
-import { useStock } from "../features/dashboard/hooks/useStock";
+import StatCard  from "../../components/Dashboard/StatCard";
+import RecentOrders   from "../../components/Dashboard/RecentOrders";
+import LowStockAlert  from "../../components/Dashboard/LowStockAlert";
+import { useStatusBar } from "../../features/dashboard/hooks/useStatusBar";
+import { buildDashboardStats } from "../../features/dashboard/utils/dashboardStats";
+import { useStock } from "../../features/dashboard/hooks/useStock";
 
 const AdminDashboard = () => {
 	const {

@@ -5,13 +5,13 @@ import FilterListOutlinedIcon    from "@mui/icons-material/FilterListOutlined";
 import LocalOfferOutlinedIcon    from "@mui/icons-material/LocalOfferOutlined";
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import CloseIcon                 from "@mui/icons-material/Close";
-import PromotionCard             from "../components/promotion/PromotionCard";
-import PromotionCreateOverlay    from "../overlay/PromotionCreateOverlay";
+import PromotionCard             from "../../components/promotion/PromotionCard.jsx";
+import PromotionCreateOverlay    from "../../overlay/PromotionCreateOverlay.jsx";
 import PromotionDetailPage       from "./PromotionDetailPage.jsx";
-import { useOffers }             from "../features/offers/hooks/useOffers";
-import { useUpdateOffer }        from "../features/offers/hooks/useUpdateOffer";
-import { useDeleteOffer }        from "../features/offers/hooks/useDeleteOffer";
-import { useToggleOffer }        from "../features/offers/hooks/useToggleOffer";
+import { useOffers }             from "../../features/offers/hooks/useOffers.js";
+import { useUpdateOffer }        from "../../features/offers/hooks/useUpdateOffer.js";
+import { useDeleteOffer }        from "../../features/offers/hooks/useDeleteOffer.js";
+import { useToggleOffer }        from "../../features/offers/hooks/useToggleOffer.js";
 
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
@@ -146,20 +146,18 @@ const PromotionsPage = () => {
 			<div className="flex flex-1 overflow-hidden">
 				<main className="flex-1 overflow-y-auto p-5 lg:p-6 min-w-0">
 					<div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-						<div>
-							<h1 style={{ ...SORA, fontSize: 22, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>Promotions</h1>
-							<p style={{ ...INTER, fontSize: 12, color: "#aaa" }}>Manage all your offers and discount campaigns</p>
-						</div>
+						<div><p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Catalogue / Promotions</p><h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>Promotions</h1></div>
 						<button
 							onClick={() => setShowForm(true)}
-							className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all hover:opacity-90 cursor-pointer"
+							className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all cursor-pointer"
 							style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}
+							onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#222"}
+							onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#111"}
 						>
 							<AddOutlinedIcon style={{ fontSize: 18 }} />
-							New Promotion
+							Add Promotion
 						</button>
 					</div>
-
 					<div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 						<StatChip label="Total" value={stats.total} color="#111" />
 						<StatChip label="Active" value={stats.active} color="#16a34a" />
@@ -209,8 +207,14 @@ const PromotionsPage = () => {
 						<div className="flex flex-col items-center justify-center py-24 gap-4">
 							<LocalOfferOutlinedIcon style={{ fontSize: 52, color: "#ddd" }} />
 							<p style={{ ...INTER, fontSize: 14, color: "#bbb" }}>No promotions found.</p>
-							<button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all hover:opacity-90 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, backgroundColor: "#1a73e8", border: "none" }}>
-								<AddOutlinedIcon style={{ fontSize: 16 }} /> Create your first promotion
+							<button 
+								onClick={() => setShowForm(true)} 
+								className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all cursor-pointer" 
+								style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}
+								onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#222"}
+								onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#111"}
+							>
+								<AddOutlinedIcon style={{ fontSize: 18 }} /> Add Promotion
 							</button>
 						</div>
 					) : (

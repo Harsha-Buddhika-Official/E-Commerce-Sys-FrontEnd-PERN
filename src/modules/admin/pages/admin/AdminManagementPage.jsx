@@ -6,10 +6,10 @@ import CloseOutlinedIcon         from "@mui/icons-material/CloseOutlined";
 import FilterListOutlinedIcon    from "@mui/icons-material/FilterListOutlined";
 import PersonOffOutlinedIcon     from "@mui/icons-material/PersonOffOutlined";
 import CircularProgress          from "@mui/material/CircularProgress";
-import { useGetAdmins } from "../features/admin/hooks/useGetAdmins.js";
-import { useDeleteAdmin } from "../features/admin/hooks/useDeleteAdmin.js";
-import StatusRow from "../components/admin/StatusRow.jsx";
-import AdminGrid from "../components/admin/AdminGrid.jsx";
+import { useGetAdmins } from "../../features/admin/hooks/useGetAdmins.js";
+import { useDeleteAdmin } from "../../features/admin/hooks/useDeleteAdmin.js";
+import StatusRow from "../../components/admin/StatusRow.jsx";
+import AdminGrid from "../../components/admin/AdminGrid.jsx";
 
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };

@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import EmailOutlinedIcon          from "@mui/icons-material/EmailOutlined";
 import LockOutlinedIcon           from "@mui/icons-material/LockOutlined";
 import VisibilityOffOutlinedIcon  from "@mui/icons-material/VisibilityOffOutlined";
-import OzoneLogo                  from "../../../assets/Ozone_Logo.png";
-import { useAdminLogin }          from "../features/auth/hooks/useAdminLogin";
+import OzoneLogo                  from "../../../../assets/Ozone_Logo.png";
+import { useAdminLogin }          from "../../features/auth/hooks/useAdminLogin";
 
 // ─── Font — leaf elements only ────────────────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };

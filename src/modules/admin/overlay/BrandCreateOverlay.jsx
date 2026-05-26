@@ -62,15 +62,12 @@ function TextInput({ value, onChange, placeholder, icon, error }) {
 // ══════════════════════════════════════════════════════════════════════════════
 // BRAND CREATE OVERLAY — centred popup modal
 // ══════════════════════════════════════════════════════════════════════════════
-// Props:
-//   isOpen    — boolean
-//   onClose   — () => void
-//   onSuccess — (brand) => void
 
 export default function BrandCreateOverlay({
-  isOpen    = true,
-  onClose   = null,
-  onSuccess = null,
+  isOpen     = true,
+  onClose    = null,
+  onSuccess  = null,
+  onCreated  = null,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -111,8 +108,10 @@ export default function BrandCreateOverlay({
       const created = await createBrand({ name: name.trim(), logo_url: logoUrl.trim() || null });
       setSaved(true);
       setTimeout(() => {
-        if (onSuccess) onSuccess(created);
-        else navigate("/admin/brands");
+            // Prefer caller's `onCreated` callback (BrandManagementPage passes this).
+            if (onCreated) onCreated(created);
+            else if (onSuccess) onSuccess(created);
+            else navigate("/admin/brands");
       }, 800);
     } catch (err) {
       setApiError(err?.message || "Failed to create brand.");

@@ -7,7 +7,7 @@ import WarningAmberOutlinedIcon     from "@mui/icons-material/WarningAmberOutlin
 import BrokenImageOutlinedIcon      from "@mui/icons-material/BrokenImageOutlined";
 import AccessTimeOutlinedIcon       from "@mui/icons-material/AccessTimeOutlined";
 import LocalOfferOutlinedIcon       from "@mui/icons-material/LocalOfferOutlined";
-import { useOfferDetail }           from "../features/offers/hooks/useOfferDetail";
+import { useOfferDetail }           from "../../features/offers/hooks/useOfferDetail";
 
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };

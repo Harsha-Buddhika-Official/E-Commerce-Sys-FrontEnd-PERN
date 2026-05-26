@@ -13,9 +13,9 @@ import InventoryOutlinedIcon         from "@mui/icons-material/InventoryOutlined
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import KeyboardArrowRightIcon        from "@mui/icons-material/KeyboardArrowRight";
 import WarningAmberOutlinedIcon      from "@mui/icons-material/WarningAmberOutlined";
-import ProductsGrid                  from "../components/product/ProductsGrid";
-import { useProducts }               from "../features/products/hooks/useProducts";
-import { useDeleteProduct }          from "../features/products/hooks/useDeleteProduct";
+import ProductsGrid                  from "../../components/product/ProductsGrid";
+import { useProducts }               from "../../features/products/hooks/useProducts";
+import { useDeleteProduct }          from "../../features/products/hooks/useDeleteProduct";
 
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
