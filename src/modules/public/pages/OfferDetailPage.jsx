@@ -13,27 +13,13 @@ import StorefrontOutlinedIcon       from "@mui/icons-material/StorefrontOutlined
 import BrokenImageOutlinedIcon      from "@mui/icons-material/BrokenImageOutlined";
 import MoneyOffOutlinedIcon         from "@mui/icons-material/MoneyOffOutlined";
 import { fetchOfferById, fetchOfferProducts } from "../features/offers/service/offers.service.js";
+import { formatDateWithTime } from "../../../utils/dateFormatters";
+import { daysRemaining } from "../../admin/utils/promotionStatus";
+import { SORA, INTER } from "../../../styles/fonts";
 
 // ─── Font constants ───────────────────────────────────────────────────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmt = (v) =>
   new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR", maximumFractionDigits: 0 }).format(Number(v) || 0);
-
-const formatDate = (iso) => {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
-    + "  " + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-};
-
-const daysRemaining = (endIso) => {
-  const diff = new Date(endIso) - new Date();
-  if (diff <= 0) return { expired: true, days: 0 };
-  return { expired: false, days: Math.ceil(diff / (1000 * 60 * 60 * 24)) };
-};
 
 const attrLabel = (name) =>
   name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());

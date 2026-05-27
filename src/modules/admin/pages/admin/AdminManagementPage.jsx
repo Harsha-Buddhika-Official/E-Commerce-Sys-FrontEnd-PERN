@@ -31,6 +31,23 @@ export default function AdminManagement({ onCreateNew } = {}) {
 	const [roleFilter, setRoleFilter] = useState("ALL");
 	const [statusFilter, setStatusFilter] = useState("ALL");
 
+	// Extract current logged-in admin ID from JWT token
+	const currentAdminId = (() => {
+		try {
+			const token = localStorage.getItem("admin_token");
+			if (token) {
+				const parts = token.split(".");
+				if (parts.length === 3) {
+					const payload = JSON.parse(atob(parts[1]));
+					return payload.adminId;
+				}
+			}
+		} catch (e) {
+			console.error("Failed to parse admin_token:", e);
+		}
+		return null;
+	})();
+
 	const total = admins.length;
 	const superAdmins = admins.filter((a) => a.role === "SUPER_ADMIN").length;
 	const adminCount = admins.filter((a) => a.role === "ADMIN").length;
@@ -58,7 +75,7 @@ export default function AdminManagement({ onCreateNew } = {}) {
 				<div className="flex items-center gap-2 flex-wrap"><div className="flex items-center gap-1.5 mr-1"><FilterListOutlinedIcon style={{ fontSize: 15, color: "#bbb" }} /><span style={{ ...INTER, fontSize: 11, fontWeight: 700, color: "#bbb", textTransform: "uppercase", letterSpacing: "0.07em" }}>Role</span></div>{["ALL", "SUPER_ADMIN", "ADMIN", "MANAGER"].map((r) => (<FilterChip key={r} label={r === "ALL" ? "All Roles" : r.split("_").map((w) => w[0] + w.slice(1).toLowerCase()).join(" ")} active={roleFilter === r} count={roleCounts[r]} onClick={() => setRoleFilter(r)} />))}<div className="w-px h-5 mx-2" style={{ backgroundColor: "#e5e5e5" }} /><div className="flex items-center gap-1.5 mr-1"><span style={{ ...INTER, fontSize: 11, fontWeight: 700, color: "#bbb", textTransform: "uppercase", letterSpacing: "0.07em" }}>Status</span></div>{["ALL", "ACTIVE", "INACTIVE"].map((s) => (<FilterChip key={s} label={s === "ALL" ? "All Status" : s} active={statusFilter === s} count={statusCounts[s]} onClick={() => setStatusFilter(s)} />))}</div>
 			</div>
 			<div className="flex items-center justify-between mb-4"><p style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#aaa" }}>Showing <span style={{ color: "#111", fontWeight: 800 }}>{filtered.length}</span> of {total} admins</p>{(search || roleFilter !== "ALL" || statusFilter !== "ALL") && (<button onClick={() => { setSearch(""); setRoleFilter("ALL"); setStatusFilter("ALL"); }} className="flex items-center gap-1.5 cursor-pointer border-none bg-transparent" style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#e53935" }}><CloseOutlinedIcon style={{ fontSize: 13 }} /> Clear filters</button>)}</div>
-			{filtered.length > 0 ? <AdminGrid admins={filtered} onDelete={handleDelete} /> : <div className="bg-white rounded-2xl flex flex-col items-center justify-center py-20 gap-4" style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}><div className="flex items-center justify-center w-16 h-16 rounded-2xl" style={{ backgroundColor: "#f5f5f5" }}><PersonOffOutlinedIcon style={{ fontSize: 32, color: "#ccc" }} /></div><div className="text-center"><p style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>No admins found</p><p style={{ ...INTER, fontSize: 13, color: "#bbb", marginTop: 4 }}>{search ? `No results for "${search}"` : "Try adjusting your filters"}</p></div><button onClick={() => { setSearch(""); setRoleFilter("ALL"); setStatusFilter("ALL"); }} className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 transition-all" style={{ ...INTER, fontSize: 13, fontWeight: 700, color: "#555", backgroundColor: "#fff" }}><CloseOutlinedIcon style={{ fontSize: 15 }} /> Clear filters</button></div>}
+			{filtered.length > 0 ? <AdminGrid admins={filtered} currentAdminId={currentAdminId} onDelete={handleDelete} /> : <div className="bg-white rounded-2xl flex flex-col items-center justify-center py-20 gap-4" style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}><div className="flex items-center justify-center w-16 h-16 rounded-2xl" style={{ backgroundColor: "#f5f5f5" }}><PersonOffOutlinedIcon style={{ fontSize: 32, color: "#ccc" }} /></div><div className="text-center"><p style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>No admins found</p><p style={{ ...INTER, fontSize: 13, color: "#bbb", marginTop: 4 }}>{search ? `No results for "${search}"` : "Try adjusting your filters"}</p></div><button onClick={() => { setSearch(""); setRoleFilter("ALL"); setStatusFilter("ALL"); }} className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 transition-all" style={{ ...INTER, fontSize: 13, fontWeight: 700, color: "#555", backgroundColor: "#fff" }}><CloseOutlinedIcon style={{ fontSize: 15 }} /> Clear filters</button></div>}
 		</div>
 	);
 }

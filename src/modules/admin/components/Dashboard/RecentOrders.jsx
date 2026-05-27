@@ -6,8 +6,7 @@ import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 import { useOrders } from "../../features/orders/hooks/useOrders";
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../../styles/fonts";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_STYLE = {

@@ -6,15 +6,14 @@ import CategoryOutlinedIcon     from "@mui/icons-material/CategoryOutlined";
 import StorefrontOutlinedIcon   from "@mui/icons-material/StorefrontOutlined";
 import TuneOutlinedIcon         from "@mui/icons-material/TuneOutlined";
 import CampaignOutlinedIcon     from "@mui/icons-material/CampaignOutlined";
-import SettingsOutlinedIcon     from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon       from "@mui/icons-material/LogoutOutlined";
 import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined';
+import SettingsOutlinedIcon     from "@mui/icons-material/SettingsOutlined";
 import { logout } from "../features/auth/hooks/useAuth";
 import Ozone_Logo from "../../../assets/Ozone_Logo.png"
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../styles/fonts";
 
 // ─── Nav structure ────────────────────────────────────────────────────────────
 const NAV_GROUPS = [
@@ -41,7 +40,7 @@ const NAV_GROUPS = [
     group: "SYSTEM",
     items: [
       { id: "admin",  label: "Admin Management",  icon: <SupervisorAccountOutlinedIcon style={{ fontSize: 20 }} /> },
-      // { id: "settings",  label: "Settings",  icon: <SettingsOutlinedIcon style={{ fontSize: 20 }} /> },
+      { id: "settings",  label: "Settings",  icon: <SettingsOutlinedIcon style={{ fontSize: 20 }} /> },
 
     ],
   },

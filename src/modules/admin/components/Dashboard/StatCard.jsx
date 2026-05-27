@@ -7,8 +7,7 @@ import TrendingDownOutlinedIcon   from "@mui/icons-material/TrendingDownOutlined
 import TrendingFlatOutlinedIcon   from "@mui/icons-material/TrendingFlatOutlined";
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../../styles/fonts";
 
 // ─── Icon + colour presets ────────────────────────────────────────────────────
 const ICON_PRESETS = {

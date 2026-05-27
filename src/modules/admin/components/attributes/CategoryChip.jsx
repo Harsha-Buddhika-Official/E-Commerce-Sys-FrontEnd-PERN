@@ -1,4 +1,4 @@
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { INTER } from "../../../../styles/fonts";
 
 export default function CategoryChip({ label, count, active, onClick }) {
   return (

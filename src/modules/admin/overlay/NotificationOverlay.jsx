@@ -9,8 +9,7 @@ import PersonAddAltOutlinedIcon   from "@mui/icons-material/PersonAddAltOutlined
 import LocalShippingOutlinedIcon  from "@mui/icons-material/LocalShippingOutlined";
 import InfoOutlinedIcon           from "@mui/icons-material/InfoOutlined";
 
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../styles/fonts";
 
 const TYPE_CONFIG = {
   order:    { icon: <ShoppingCartOutlinedIcon  style={{ fontSize: 16 }} />, bg: "#dbeafe", color: "#1d4ed8" },

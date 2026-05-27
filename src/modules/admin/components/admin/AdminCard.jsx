@@ -8,10 +8,9 @@ import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined"
 import UpdateOutlinedIcon            from "@mui/icons-material/UpdateOutlined";
 import AccessTimeOutlinedIcon        from "@mui/icons-material/AccessTimeOutlined";
 import { useUpdateAdminRole } from "../../features/admin/hooks/useUpdateAdminRole";
+import { formatDate, formatDateTime } from "../../../../utils/dateFormatters";
+import { SORA, INTER } from "../../../../styles/fonts";
 
-// ─── Font constants ───────────────────────────────────────────────────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
 const ROLE_OPTIONS = ["super_admin", "admin", "manager"];
 
@@ -53,23 +52,6 @@ const ROLE_STYLES = {
 
 const getRoleVisuals = (role = "admin") => ROLE_STYLES[role] || ROLE_STYLES.admin;
 
-// ─── Format date ─────────────────────────────────────────────────────────────
-const formatDate = (iso) => {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "2-digit", month: "short", year: "numeric",
-  });
-};
-
-const formatDateTime = (iso) => {
-  if (!iso) return "—";
-  const date = new Date(iso);
-  return date.toLocaleDateString("en-GB", {
-    day: "2-digit", month: "short", year: "numeric",
-  }) + " " + date.toLocaleTimeString("en-GB", {
-    hour: "2-digit", minute: "2-digit", hour12: true,
-  });
-};
 
 // ─── Avatar initials ─────────────────────────────────────────────────────────
 const getInitials = (name = "") =>

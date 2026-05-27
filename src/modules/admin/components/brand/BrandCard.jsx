@@ -3,8 +3,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import BrokenImageOutlinedIcon   from "@mui/icons-material/BrokenImageOutlined";
 
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../../styles/fonts";
 
 const toSlug = (value = "") =>
   value

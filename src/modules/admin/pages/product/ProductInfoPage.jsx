@@ -19,21 +19,12 @@ import LinkOutlinedIcon               from "@mui/icons-material/LinkOutlined";
 import BrokenImageOutlinedIcon        from "@mui/icons-material/BrokenImageOutlined";
 import { useProductDetail }           from "../../features/products/hooks/useProductDetail";
 import { useDeleteProduct }           from "../../features/products/hooks/useDeleteProduct";
-
-// ─── Font constants — leaf elements only, never on wrapper divs ───────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { formatDateWithTime }         from "../../../../utils/dateFormatters";
+import { SORA, INTER }                from "../../../../styles/fonts";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmt = (amount) =>
   new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR", maximumFractionDigits: 2 }).format(Number(amount) || 0);
-
-const formatDate = (iso) => {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
-    + "  " + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-};
 
 // Map snake_case attribute names → readable labels
 const attrLabel = (name) =>

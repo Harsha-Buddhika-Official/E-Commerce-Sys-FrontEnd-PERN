@@ -5,8 +5,7 @@ import AllInboxOutlinedIcon    from "@mui/icons-material/AllInboxOutlined";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../../styles/fonts";
 
 // ─── Preset icon + colour config ─────────────────────────────────────────────
 const PRESETS = {

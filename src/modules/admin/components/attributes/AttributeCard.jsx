@@ -3,8 +3,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import CloseIcon from "@mui/icons-material/Close";
 import TagOutlinedIcon from "@mui/icons-material/TagOutlined";
 
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../../styles/fonts";
 
 export default function AttributeCard({ attribute, onDeleteAttribute, onAddValue, onDeleteValue }) {
   return (

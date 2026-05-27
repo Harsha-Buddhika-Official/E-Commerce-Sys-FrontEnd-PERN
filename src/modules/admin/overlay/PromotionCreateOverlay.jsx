@@ -16,8 +16,7 @@ import { useLimitedData } from "../features/products/hooks/useLimitedData";
 import { useCreateOffer } from "../features/offers/hooks/useCreateOffer";
 import { useOfferProducts } from "../features/offers/hooks/useOfferProducts";
 
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../styles/fonts";
 
 const fmt = (v) =>
   new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR", maximumFractionDigits: 0 }).format(Number(v) || 0);

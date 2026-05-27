@@ -4,8 +4,7 @@ import CloseIcon from "@mui/icons-material/CloseOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import { useCreateValue } from "../../features/attributes/hooks/useCreateValue";
 
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../../styles/fonts";
 
 export default function CreateValueModal({ attribute, onSave, onClose }) {
   const [value,   setValue]   = useState("");

@@ -15,10 +15,8 @@ import CategoryOutlinedIcon         from "@mui/icons-material/CategoryOutlined";
 import KeyboardArrowDownIcon        from "@mui/icons-material/KeyboardArrowDown";
 import AccessTimeOutlinedIcon       from "@mui/icons-material/AccessTimeOutlined";
 import TagOutlinedIcon              from "@mui/icons-material/TagOutlined";
-
-// ─── Font constants — leaf elements only, never on wrapper divs ───────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { formatDateWithTime }       from "../../../../utils/dateFormatters";
+import { SORA, INTER }              from "../../../../styles/fonts";
 
 // NOTE: mock data removed — page fetches real order data from API via `useOrderDetail`.
 
@@ -37,13 +35,6 @@ const STATUS_OPTIONS = ["pending", "paid", "processing", "shipped", "delivered",
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmt = (amount) =>
   new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR", maximumFractionDigits: 2 }).format(Number(amount) || 0);
-
-const formatDate = (iso) => {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) +
-    "  " + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-};
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 

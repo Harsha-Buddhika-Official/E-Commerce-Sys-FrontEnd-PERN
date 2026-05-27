@@ -12,19 +12,10 @@ import { useOffers }             from "../../features/offers/hooks/useOffers.js"
 import { useUpdateOffer }        from "../../features/offers/hooks/useUpdateOffer.js";
 import { useDeleteOffer }        from "../../features/offers/hooks/useDeleteOffer.js";
 import { useToggleOffer }        from "../../features/offers/hooks/useToggleOffer.js";
-
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { getStatus }             from "../../utils/promotionStatus.js";
+import { SORA, INTER }           from "../../../../styles/fonts";
 
 const STATUS_FILTERS = ["All", "Active", "Scheduled", "Expired", "Inactive"];
-
-const getStatus = (start, end, isActive) => {
-	if (!isActive) return "Inactive";
-	const now = new Date(), s = new Date(start), e = new Date(end);
-	if (now < s) return "Scheduled";
-	if (now > e) return "Expired";
-	return "Active";
-};
 
 function DeleteModal({ offer, onConfirm, onCancel }) {
 	return (

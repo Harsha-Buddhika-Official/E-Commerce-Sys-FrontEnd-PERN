@@ -1,8 +1,7 @@
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../../styles/fonts";
 
 // ─── Stock progress bar ───────────────────────────────────────────────────────
 function StockBar({ stock, maxStock }) {

@@ -8,8 +8,7 @@ import BuildOutlinedIcon         from "@mui/icons-material/BuildOutlined";
 import PeopleAltOutlinedIcon     from "@mui/icons-material/PeopleAltOutlined";
 
 // ─── Font constants — leaf elements ONLY, never on wrapper divs ───────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../styles/fonts";
 
 // ─── Static data ──────────────────────────────────────────────────────────────
 const STATS = [

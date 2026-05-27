@@ -12,10 +12,7 @@ import CategoryChip from "../../components/attributes/CategoryChip";
 import { useAttributesCatalog }  from "../../features/attributes/hooks/useAttributesCatalog";
 import { useDeleteAttributes } from "../../features/attributes/hooks/useDeleteAttributes"
 import { useDeleteValue } from "../../features/attributes/hooks/useDeleteValue";
-
-// ─── Font constants ───────────────────────────────────────────────────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../../styles/fonts";
 
 // ══════════════════════════════════════════════════════════════════════════════
 // ATTRIBUTES PAGE

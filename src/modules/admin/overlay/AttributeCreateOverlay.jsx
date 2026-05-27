@@ -4,8 +4,7 @@ import CloseIcon                 from "@mui/icons-material/Close";
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import { useCreateAttributes }   from "../features/attributes/hooks/useCreateAttributes";
 
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../styles/fonts";
 
 const AttributeCreateOverlay = ({ categories, defaultCategoryId, onClose, onCreated }) => {
   const { loading, error, createAttribute } = useCreateAttributes();

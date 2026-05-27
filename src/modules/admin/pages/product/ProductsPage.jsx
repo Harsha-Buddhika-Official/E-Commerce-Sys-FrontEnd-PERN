@@ -16,9 +16,7 @@ import WarningAmberOutlinedIcon      from "@mui/icons-material/WarningAmberOutli
 import ProductsGrid                  from "../../components/product/ProductsGrid";
 import { useProducts }               from "../../features/products/hooks/useProducts";
 import { useDeleteProduct }          from "../../features/products/hooks/useDeleteProduct";
-
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER }               from "../../../../styles/fonts";
 
 const LIST_COLUMNS = [
 	{ key: "thumb",    width: "6%"  },

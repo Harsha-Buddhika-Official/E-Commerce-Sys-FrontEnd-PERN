@@ -18,6 +18,27 @@ export default function AdminLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notifications, setNotifications] = useState([]);
+  
+  // Extract admin ID from JWT token
+  const adminId = (() => {
+    try {
+      const token = localStorage.getItem("admin_token");
+      if (token) {
+        // JWT token format: header.payload.signature
+        const parts = token.split(".");
+        if (parts.length === 3) {
+          // Decode the payload (second part)
+          const payload = JSON.parse(atob(parts[1]));
+          const id = payload.adminId;
+          return id;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to parse admin_token:", e);
+    }
+    return null;
+  })();
+  
   const adminRole = location.state?.role ?? "super_admin";
   const adminEmail = location.state?.email ?? "admin@example.com";
 

@@ -11,8 +11,7 @@ import CloseIcon                 from "@mui/icons-material/Close";
 import { useCreateBrand }        from "../features/brands/hooks/useCreateBrand.js";
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
+import { SORA, INTER } from "../../../styles/fonts";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 

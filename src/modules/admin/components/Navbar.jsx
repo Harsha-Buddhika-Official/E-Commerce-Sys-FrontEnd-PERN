@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import MenuIcon              from "@mui/icons-material/Menu";
 import SearchIcon            from "@mui/icons-material/Search";
 import CloseIcon             from "@mui/icons-material/Close";
-import NotificationOverlay   from "../overlay/NotificationOverlay";
 import TimeoutOverlay        from "../overlay/TimeoutOverlay";
 
 // ─── Font constant — leaf elements only ───────────────────────────────────────
@@ -12,11 +11,9 @@ const SORA = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 // Props:
 //   title         — page title shown next to the hamburger (default "Dashboard")
 //   onMenuClick   — callback when hamburger is clicked (toggle sidebar)
-//   notifications — array of notification objects passed to NotificationOverlay
 const Navbar = ({
   title         = "Dashboard",
   onMenuClick   = () => {},
-  notifications = [],
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);

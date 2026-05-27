@@ -9,24 +9,9 @@ import InventoryOutlinedIcon       from "@mui/icons-material/InventoryOutlined";
 import ToggleOnIcon                from "@mui/icons-material/ToggleOn";
 import ToggleOffIcon               from "@mui/icons-material/ToggleOff";
 import BrokenImageOutlinedIcon     from "@mui/icons-material/BrokenImageOutlined";
-
-const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
-const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
-
-const formatDate = (iso) => {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-};
-
-const getStatus = (start, end, isActive) => {
-  if (!isActive) return { label: "Inactive", bg: "#f5f5f5", color: "#aaa", border: "#e5e5e5" };
-  const now = new Date();
-  const s   = new Date(start);
-  const e   = new Date(end);
-  if (now < s)  return { label: "Scheduled", bg: "#dbeafe", color: "#1d4ed8", border: "#93c5fd" };
-  if (now > e)  return { label: "Expired",   bg: "#fee2e2", color: "#dc2626", border: "#fca5a5" };
-  return           { label: "Active",    bg: "#dcfce7", color: "#16a34a", border: "#86efac" };
-};
+import { formatDate }              from "../../../../utils/dateFormatters";
+import { getStatus }               from "../../utils/promotionStatus";
+import { SORA, INTER }             from "../../../../styles/fonts";
 
 const daysLeft = (end) => {
   const diff = new Date(end) - new Date();
