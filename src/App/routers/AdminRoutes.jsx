@@ -22,6 +22,8 @@ import ProductInfoPage from "../../modules/admin/pages/product/ProductInfoPage.j
 import PromotionsPage from "../../modules/admin/pages/promotion/PromotionsPage.jsx";
 import PromotionDetailPage from "../../modules/admin/pages/promotion/PromotionDetailPage.jsx";
 
+import SettingsPage from "../../modules/admin/pages/settings/SettingsPage.jsx";
+
 
 export default function AdminRoutes() {
   const location = useLocation();
@@ -45,6 +47,7 @@ export default function AdminRoutes() {
             <Route path="promotions" element={<PromotionsPage />} />
             <Route path="promotions/:id" element={<PromotionDetailPage />} />
             <Route path="attributes" element={<AttributesPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Route>
 

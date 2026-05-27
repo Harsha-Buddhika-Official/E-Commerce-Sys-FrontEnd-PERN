@@ -36,3 +36,16 @@ export const deleteAdminByEmail = async (email) => {
         throw handleApiError(error, "Failed to delete admin");
     }
 };
+
+export const updatePassword = async (adminId, passwordData) => {
+    try{
+        const res = await API.put(`/admin/settings/updatePassword/${adminId}`, {
+            oldPassword: passwordData.oldPassword || passwordData.currentPassword,
+            newPassword: passwordData.newPassword,
+            confirmPassword: passwordData.confirmPassword
+        });
+        return res.data;
+    } catch (error) {
+        throw handleApiError(error, "Failed to update password");
+    }
+}
