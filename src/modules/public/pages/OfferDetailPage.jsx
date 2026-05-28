@@ -13,7 +13,7 @@ import StorefrontOutlinedIcon       from "@mui/icons-material/StorefrontOutlined
 import BrokenImageOutlinedIcon      from "@mui/icons-material/BrokenImageOutlined";
 import MoneyOffOutlinedIcon         from "@mui/icons-material/MoneyOffOutlined";
 import { fetchOfferById, fetchOfferProducts } from "../features/offers/service/offers.service.js";
-import { formatDateWithTime } from "../../../utils/dateFormatters";
+import { formatDateWithTime, formatDate } from "../../../utils/dateFormatters.js";
 import { daysRemaining } from "../../admin/utils/promotionStatus";
 import { SORA, INTER } from "../../../styles/fonts";
 

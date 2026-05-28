@@ -6,7 +6,7 @@ import TagOutlinedIcon           from "@mui/icons-material/TagOutlined";
 import TuneOutlinedIcon          from "@mui/icons-material/TuneOutlined";
 import AttributeCreateOverlay    from "../../overlay/AttributeCreateOverlay";
 import DeleteModal from "../../components/attributes/DeleteModal";
-import CreateValueModal from "../../components/attributes/CreateValueModal";
+import CreateAttributeValueOverlay from "../../overlay/CreateAttributeValueOverlay";
 import AttributeCard from "../../components/attributes/AttributeCard";
 import CategoryChip from "../../components/attributes/CategoryChip";
 import { useAttributesCatalog }  from "../../features/attributes/hooks/useAttributesCatalog";
@@ -53,7 +53,7 @@ const AttributesPage = () => {
   const totalAttrs  = attributes.length;
   const totalValues = attributes.reduce((s, a) => s + a.values.length, 0);
 
-  // ── Filtered attributes ───────────────────────────────────────────────────
+  // Filtered attributes 
   const filtered = useMemo(() => {
     return attributes.filter((a) => {
       const matchCat    = activeCategory === null || a.category_id === activeCategory;
@@ -63,7 +63,6 @@ const AttributesPage = () => {
     });
   }, [attributes, activeCategory, search]);
 
-  // ── CRUD ──────────────────────────────────────────────────────────────────
   const handleCreateAttribute = async () => {
     await refresh();
     setShowCreateAttr(false);
@@ -156,7 +155,7 @@ const AttributesPage = () => {
         />
       )}
       {createValueFor && (
-        <CreateValueModal
+        <CreateAttributeValueOverlay
           attribute={createValueFor}
           onSave={handleCreateValue}
           onClose={() => setCreateValueFor(null)}

@@ -2,11 +2,11 @@ import { useState } from "react";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
-import { useCreateValue } from "../../features/attributes/hooks/useCreateValue";
+import { useCreateValue } from "../features/attributes/hooks/useCreateValue";
 
-import { SORA, INTER } from "../../../../styles/fonts";
+import { SORA, INTER } from "../../../styles/fonts";
 
-export default function CreateValueModal({ attribute, onSave, onClose }) {
+export default function CreateAttributeValueOverlay({ attribute, onSave, onClose }) {
   const [value,   setValue]   = useState("");
   const [error,   setError]   = useState("");
   const [focused, setFocused] = useState(false);

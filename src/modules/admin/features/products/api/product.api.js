@@ -51,7 +51,6 @@ export const deleteProduct = async (productId) => {
 export const fetchProductsLimitedData = async () => {
   try {
     const res = await API.get("/products/admin/simple-details");
-    // endpoint returns { success, data: [...], message }
     return res.data?.data ?? [];
   } catch (error) {
     throw handleApiError(

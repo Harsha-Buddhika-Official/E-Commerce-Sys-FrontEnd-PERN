@@ -8,7 +8,7 @@ import BrokenImageOutlinedIcon      from "@mui/icons-material/BrokenImageOutline
 import AccessTimeOutlinedIcon       from "@mui/icons-material/AccessTimeOutlined";
 import LocalOfferOutlinedIcon       from "@mui/icons-material/LocalOfferOutlined";
 import { useOfferDetail }           from "../../features/offers/hooks/useOfferDetail";
-import { formatDateWithTime }       from "../../../../utils/dateFormatters";
+import { formatDate } from "../../../../utils/dateFormatters";
 import { getStatus }                from "../../utils/promotionStatus";
 import { SORA, INTER }              from "../../../../styles/fonts";
 
