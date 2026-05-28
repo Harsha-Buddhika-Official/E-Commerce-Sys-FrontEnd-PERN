@@ -1,4 +1,4 @@
-import { fetchBrands } from "../services/getBrand.service.js";
+import { fetchBrands } from "../services/brand.service.js";
 import { useState, useEffect } from "react";
 
 export const useBrands = () => {

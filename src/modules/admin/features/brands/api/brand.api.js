@@ -13,7 +13,9 @@ export const getBrands = async () => {
 
 export const createBrand = async (brandData) => {
   try{
-    const res = await API.post("/brands", brandData);
+    const res = await API.post("/brands", brandData, {
+      timeout: 30000,
+    });
     return res.data;
   }catch(err){
     handleApiError(err, "Failed to create brand");
@@ -30,3 +32,13 @@ export const deleteBrand = async (brandId) => {
     throw err;
   }
 }
+
+export const getBrandNames = async () => {
+  try {
+    const res = await API.get("/brands/names");
+    return res.data;
+  } catch (err) {
+    handleApiError(err, "Failed to fetch brand names");
+    throw err;
+  }
+};

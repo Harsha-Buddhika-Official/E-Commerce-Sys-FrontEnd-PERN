@@ -6,7 +6,6 @@ import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined"
 import LabelOutlinedIcon         from "@mui/icons-material/LabelOutlined";
 import ImageOutlinedIcon         from "@mui/icons-material/ImageOutlined";
 import StorefrontOutlinedIcon    from "@mui/icons-material/StorefrontOutlined";
-import BrokenImageOutlinedIcon   from "@mui/icons-material/BrokenImageOutlined";
 import CloseIcon                 from "@mui/icons-material/Close";
 import { useCreateBrand }        from "../features/brands/hooks/useCreateBrand.js";
 
@@ -72,12 +71,13 @@ export default function BrandCreateOverlay({
   const location = useLocation();
   const { createBrand, loading } = useCreateBrand();
 
-  const [name,     setName]     = useState("");
-  const [logoUrl,  setLogoUrl]  = useState("");
-  const [logoErr,  setLogoErr]  = useState(false);
-  const [saved,    setSaved]    = useState(false);
-  const [errors,   setErrors]   = useState({});
-  const [apiError, setApiError] = useState("");
+  const [name,        setName]        = useState("");
+  const [logoFile,    setLogoFile]    = useState(null);
+  const [logoPreview, setLogoPreview] = useState("");
+  const [logoErr,     setLogoErr]     = useState(false);
+  const [saved,       setSaved]       = useState(false);
+  const [errors,      setErrors]      = useState({});
+  const [apiError,    setApiError]    = useState("");
 
   // ── Form handlers ─────────────────────────────────────────────────────────
   const handleNameChange = (v) => {
@@ -87,11 +87,36 @@ export default function BrandCreateOverlay({
     if (errors.name) setErrors((e) => { const n = { ...e }; delete n.name; return n; });
   };
 
-  const handleLogoChange = (v) => {
-    setLogoUrl(v);
+  const handleLogoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      setLogoErr(true);
+      setApiError("Please upload a valid image (JPEG, PNG, or WebP).");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setLogoErr(true);
+      setApiError("Image size must be less than 5MB.");
+      return;
+    }
+
+    setLogoFile(file);
     setLogoErr(false);
     setSaved(false);
     setApiError("");
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setLogoPreview(event.target?.result || "");
+    };
+    reader.readAsDataURL(file);
   };
 
   const validate = () => {
@@ -104,10 +129,13 @@ export default function BrandCreateOverlay({
   const handleSave = async () => {
     if (!validate()) return;
     try {
-      const created = await createBrand({ name: name.trim(), logo_url: logoUrl.trim() || null });
+      const formData = new FormData();
+      formData.append("name", name.trim());
+      if (logoFile) formData.append("logo", logoFile);
+
+      const created = await createBrand(formData);
       setSaved(true);
       setTimeout(() => {
-            // Prefer caller's `onCreated` callback (BrandManagementPage passes this).
             if (onCreated) onCreated(created);
             else if (onSuccess) onSuccess(created);
             else navigate("/admin/brands");
@@ -118,14 +146,18 @@ export default function BrandCreateOverlay({
   };
 
   const handleClose = () => {
-    setName(""); setLogoUrl(""); setLogoErr(false);
-    setSaved(false); setErrors({}); setApiError("");
+    setName(""); 
+    setLogoFile(null); 
+    setLogoPreview(""); 
+    setLogoErr(false);
+    setSaved(false); 
+    setErrors({}); 
+    setApiError("");
     if (typeof onClose === "function") { onClose(); return; }
     if (location.state?.backgroundLocation) { navigate(-1); return; }
     navigate("/admin/brands", { replace: true });
   };
 
-  const hasLogo      = !logoErr && logoUrl.trim().length > 0;
   const saveDisabled = loading || saved;
 
   if (!isOpen) return null;
@@ -233,18 +265,53 @@ export default function BrandCreateOverlay({
               )}
             </div>
 
-            {/* Logo URL */}
+            {/* Logo File Upload */}
             <div>
-              <FieldLabel>Logo URL</FieldLabel>
-              <TextInput
-                value={logoUrl}
-                onChange={handleLogoChange}
-                placeholder="https://example.com/logo.png"
-                icon={<ImageOutlinedIcon style={{ fontSize: 16 }} />}
-              />
-              <p style={{ ...INTER, fontSize: 11, color: "#bbb", marginTop: 5 }}>
-                Paste a direct image URL — PNG, JPG, SVG, or WebP.
-              </p>
+              <FieldLabel>Logo Image</FieldLabel>
+              
+              {/* Upload Input */}
+              <label className="relative flex items-center justify-center w-full border-2 border-dashed rounded-xl p-6 cursor-pointer transition-all"
+                style={{
+                  borderColor: logoErr ? "#e53935" : "#ddd",
+                  backgroundColor: logoFile ? "#f0f7ff" : "#fafafa",
+                }}
+              >
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                  onChange={handleLogoChange}
+                  className="hidden"
+                />
+                <div className="flex flex-col items-center gap-2">
+                  {logoPreview ? (
+                    <>
+                      <img 
+                        src={logoPreview} 
+                        alt="Logo preview" 
+                        className="h-16 w-16 object-contain rounded"
+                      />
+                      <p style={{ ...INTER, fontSize: 12, color: "#666", fontWeight: 600 }}>
+                        Click to change image
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <ImageOutlinedIcon style={{ fontSize: 32, color: "#bbb" }} />
+                      <p style={{ ...INTER, fontSize: 12, color: "#666", fontWeight: 600 }}>
+                        Click to upload or drag and drop
+                      </p>
+                      <p style={{ ...INTER, fontSize: 11, color: "#999" }}>
+                        JPEG, PNG, or WebP (max 5MB)
+                      </p>
+                    </>
+                  )}
+                </div>
+              </label>
+              {logoErr && (
+                <p className="flex items-center gap-1 mt-1.5" style={{ ...INTER, fontSize: 11, color: "#e53935" }}>
+                  <WarningAmberOutlinedIcon style={{ fontSize: 12 }} /> Invalid image
+                </p>
+              )}
             </div>
           </div>
         </div>

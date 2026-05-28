@@ -1,26 +1,27 @@
-import { createBrandService } from "../services/createBrand.service.js";
 import { useState } from "react";
+import { createBrandService } from "../services/brand.service.js";
 
 export const useCreateBrand = () => {
-    const [createdBrand, setCreatedBrand] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
+    const [createdBrand, setCreatedBrand] = useState(null);
     const createBrand = async (brandData) => {
-        setLoading(true);
-        setError(null);
-
         try {
-            const newBrand = await createBrandService(brandData);
-            setCreatedBrand(newBrand);
-            return newBrand;
+            setLoading(true);
+            setError(null);
+            const brand = await createBrandService(brandData);
+            setCreatedBrand(brand);
+            return brand;
         } catch (err) {
-            setError(err?.message || "Failed to create brand.");
+            setError(
+                err?.response?.data?.message ||
+                "Failed to create brand"
+            );
             throw err;
         } finally {
             setLoading(false);
         }
     };
 
-    return { createdBrand, loading, error, createBrand };
+    return {createBrand,createdBrand,loading,error};
 };

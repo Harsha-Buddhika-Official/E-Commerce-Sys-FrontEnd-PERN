@@ -1,4 +1,4 @@
-import { deleteBrandService } from "../services/deleteBrand.service";
+import { deleteBrandService } from "../services/brand.service.js";
 import { useState } from "react";
 
 export const useDeleteBrand = () => {

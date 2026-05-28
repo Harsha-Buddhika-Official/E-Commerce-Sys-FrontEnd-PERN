@@ -9,6 +9,7 @@ import ToggleOnIcon               from "@mui/icons-material/ToggleOn";
 import ToggleOffIcon              from "@mui/icons-material/ToggleOff";
 import SearchOutlinedIcon         from "@mui/icons-material/SearchOutlined";
 import InventoryOutlinedIcon      from "@mui/icons-material/InventoryOutlined";
+import ImageOutlinedIcon          from "@mui/icons-material/ImageOutlined";
 import CloseOutlinedIcon          from "@mui/icons-material/CloseOutlined";
 import CheckOutlinedIcon          from "@mui/icons-material/CheckOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
@@ -261,7 +262,9 @@ const PromotionCreateOverlay = ({ mode = "create", offer = null, onSave, onClose
   const [startDate,     setStartDate]     = useState(toDateInput(offer?.start_date));
   const [endDate,       setEndDate]       = useState(toDateInput(offer?.end_date));
   const [isActive,      setIsActive]      = useState(offer?.is_active ?? true);
-  const [bannerImage,   setBannerImage]   = useState(offer?.banner_image   || "");
+  const [bannerFile,    setBannerFile]    = useState(null);
+  const [bannerPreview, setBannerPreview]  = useState(offer?.banner_image   || "");
+  const [bannerErr,     setBannerErr]     = useState(false);
   const [productId,     setProductId]     = useState(offer?.product_id     || null);
   const [saving,        setSaving]        = useState(false);
   const [errors,        setErrors]        = useState({});
@@ -282,6 +285,41 @@ const PromotionCreateOverlay = ({ mode = "create", offer = null, onSave, onClose
     }
   }, [isEdit, offer]);
 
+  const handleBannerChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      setBannerFile(null);
+      setBannerErr(true);
+      setErrors((current) => ({ ...current, form: "Please upload a valid banner image (JPEG, PNG, or WebP)." }));
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setBannerFile(null);
+      setBannerErr(true);
+      setErrors((current) => ({ ...current, form: "Banner image must be less than 5MB." }));
+      return;
+    }
+
+    setBannerFile(file);
+    setBannerErr(false);
+    setErrors((current) => {
+      if (!current.form) return current;
+      const next = { ...current };
+      delete next.form;
+      return next;
+    });
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setBannerPreview(event.target?.result || "");
+    };
+    reader.readAsDataURL(file);
+  };
+
   const validate = () => {
     const e = {};
     if (!title.trim())                                                         e.title         = "Title is required.";
@@ -298,18 +336,32 @@ const PromotionCreateOverlay = ({ mode = "create", offer = null, onSave, onClose
   const handleSave = async () => {
     if (!validate()) return;
     setSaving(true);
-    const payload = {
+    const selectedProductId = productId;
+    const basePayload = {
       ...(isEdit && offer ? { id: offer.id } : {}),
-      title:          title.trim(),
-      description:    description.trim() || null,
-      discount_type:  discountType,
+      title: title.trim(),
+      description: description.trim() || null,
+      discount_type: discountType,
       discount_value: Number(discountValue),
-      start_date:     new Date(startDate).toISOString(),
-      end_date:       new Date(endDate).toISOString(),
-      is_active:      isActive,
-      banner_image:   bannerImage.trim() || null,
-      product_id:     productId,
+      start_date: new Date(startDate).toISOString(),
+      end_date: new Date(endDate).toISOString(),
+      is_active: isActive,
+      banner_image: bannerPreview.trim() || null,
+      product_id: productId,
     };
+
+    const payload = bannerFile
+      ? (() => {
+          const formData = new FormData();
+          Object.entries(basePayload).forEach(([key, value]) => {
+            if (key === "banner_image") return;
+            if (value === null || typeof value === "undefined") return;
+            formData.append(key, value);
+          });
+          formData.append("banner_image", bannerFile);
+          return formData;
+        })()
+      : basePayload;
 
     try {
       if (isEdit) {
@@ -324,9 +376,9 @@ const PromotionCreateOverlay = ({ mode = "create", offer = null, onSave, onClose
       const created = await createOffer(payload);
 
       // If a product was chosen, try attaching it
-      if (payload.product_id && created?.id) {
+      if (selectedProductId && created?.id) {
         try {
-          await attachProduct(created.id, payload.product_id);
+          await attachProduct(created.id, selectedProductId);
         } catch (err) {
           console.error("Failed to attach product to offer:", err);
           // don't block on attachment failure
@@ -504,12 +556,49 @@ const PromotionCreateOverlay = ({ mode = "create", offer = null, onSave, onClose
             </div>
 
             <div>
-              <FieldLabel>Banner Image URL</FieldLabel>
-              <TextInput value={bannerImage} onChange={setBannerImage} placeholder="https://…/banner.jpg" />
-              {bannerImage && (
-                <div className="mt-2 rounded-xl overflow-hidden" style={{ height: 80, border: "1px solid #f0f0f0", backgroundColor: "#f7f7f7" }}>
-                  <img src={bannerImage} alt="Banner preview" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = "none"; }} />
+              <FieldLabel>Banner Image</FieldLabel>
+              <label
+                className="relative flex items-center justify-center w-full border-2 border-dashed rounded-xl p-6 cursor-pointer transition-all"
+                style={{
+                  borderColor: bannerErr ? "#e53935" : "#ddd",
+                  backgroundColor: bannerPreview ? "#f0f7ff" : "#fafafa",
+                }}
+              >
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleBannerChange}
+                  className="hidden"
+                />
+                <div className="flex flex-col items-center gap-2 w-full">
+                  {bannerPreview ? (
+                    <>
+                      <img
+                        src={bannerPreview}
+                        alt="Banner preview"
+                        className="w-full max-h-32 object-cover rounded-lg"
+                      />
+                      <p style={{ ...INTER, fontSize: 12, color: "#666", fontWeight: 600 }}>
+                        Click to change banner image
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <ImageOutlinedIcon style={{ fontSize: 32, color: "#bbb" }} />
+                      <p style={{ ...INTER, fontSize: 12, color: "#666", fontWeight: 600 }}>
+                        Click to upload a banner image
+                      </p>
+                      <p style={{ ...INTER, fontSize: 11, color: "#999" }}>
+                        JPEG, PNG, or WebP (max 5MB)
+                      </p>
+                    </>
+                  )}
                 </div>
+              </label>
+              {bannerErr && (
+                <p className="flex items-center gap-1 mt-1.5" style={{ ...INTER, fontSize: 11, color: "#e53935" }}>
+                  <WarningAmberOutlinedIcon style={{ fontSize: 12 }} /> Invalid banner image
+                </p>
               )}
             </div>
 

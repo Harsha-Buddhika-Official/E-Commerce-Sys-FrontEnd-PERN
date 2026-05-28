@@ -78,7 +78,10 @@ const PromotionsPage = () => {
 
 	const handleEdit = async (payload) => {
 		try {
-			await updateOffer(payload.id, payload);
+			const offerId = typeof FormData !== "undefined" && payload instanceof FormData
+				? payload.get("id")
+				: payload.id;
+			await updateOffer(offerId, payload);
 			setEditTarget(null);
 			refresh();
 		} catch (err) {

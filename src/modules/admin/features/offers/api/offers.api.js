@@ -68,7 +68,8 @@ export const createOffer = async (payload) => {
     throw new Error("Offer payload is required");
   }
   try {
-    const res = await API.post("/offers/admin/", payload);
+    const isMultipart = typeof FormData !== "undefined" && payload instanceof FormData;
+    const res = await API.post("/offers/admin/", payload, isMultipart ? { timeout: 30000 } : undefined);
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to create offer");
@@ -87,7 +88,8 @@ export const updateOffer = async (offerId, payload) => {
     throw new Error("Offer payload is required");
   }
   try {
-    const res = await API.put(`/offers/admin/${offerId}`, payload);
+    const isMultipart = typeof FormData !== "undefined" && payload instanceof FormData;
+    const res = await API.put(`/offers/admin/${offerId}`, payload, isMultipart ? { timeout: 30000 } : undefined);
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to update offer");
@@ -112,22 +114,21 @@ export const toggleOfferActive = async (offerId) => {
 
 /**
  * Set an offer's active status explicitly
- * PUT /api/offers/admin/activation/:id
- * Body: { is_active: "true" | "false" }
+ * PUT /api/offers/admin/:id/activation
+ * Body: { is_active: boolean }
  */
 export const setOfferActivation = async (offerId, isActive) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
   }
 
-  // Backend expects the is_active value as a string: "true" or "false"
   if (typeof isActive !== "boolean") {
     throw new Error("isActive must be a boolean");
   }
 
   try {
-    const payload = { is_active: isActive ? "true" : "false" };
-    const res = await API.put(`/offers/admin/activation/${offerId}`, payload);
+    const payload = { is_active: isActive };
+    const res = await API.put(`/offers/admin/${offerId}/activation`, payload);
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to set offer activation");
