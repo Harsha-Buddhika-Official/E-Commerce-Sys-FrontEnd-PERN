@@ -16,7 +16,8 @@ import Orders from "../../modules/admin/pages/order/OrdersPage.jsx";
 import OrderDetailPage from "../../modules/admin/pages/order/OrderDetailPage.jsx";
 
 import Products from "../../modules/admin/pages/product/ProductsPage.jsx";
-import AddProductPage from "../../modules/admin/pages/product/AddProductPage.jsx";
+import AddProductBasicPage from "../../modules/admin/pages/product/AddProductBasicPage.jsx";
+import AddProductAttributes from "../../modules/admin/pages/product/AddProductAttributes.jsx";
 import ProductInfoPage from "../../modules/admin/pages/product/ProductInfoPage.jsx";
 
 import PromotionsPage from "../../modules/admin/pages/promotion/PromotionsPage.jsx";
@@ -39,7 +40,8 @@ export default function AdminRoutes() {
             <Route path="orders" element={<Orders />} />
             <Route path="orders/:id" element={<OrderDetailPage />} />
             <Route path="products" element={<Products />} />
-            <Route path="products/add" element={<AddProductPage />} />
+            <Route path="products/add" element={<AddProductBasicPage />} />
+            <Route path="products/add/attributes" element={<AddProductAttributes />} />
             <Route path="products/:id" element={<ProductInfoPage />} />
             <Route path="brands" element={<BrandsManagement />} />
             <Route path="admin" element={<AdminManagement />} />

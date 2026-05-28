@@ -424,8 +424,8 @@ const ProductInfoPage = ({
                 {/* Dates */}
                 <div className="flex items-center gap-6 flex-wrap">
                   {[
-                    { label: "Created",      value: formatDate(productData.created_at).split("  ")[0] },
-                    { label: "Last Updated", value: formatDate(productData.updated_at).split("  ")[0] },
+                    { label: "Created",      value: formatDateWithTime(productData.created_at).split("  ")[0] },
+                    { label: "Last Updated", value: formatDateWithTime(productData.updated_at).split("  ")[0] },
                   ].map(({ label, value }) => (
                     <div key={label}>
                       <p style={{ ...INTER, fontSize: 10, color: "#bbb", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
@@ -539,8 +539,8 @@ const ProductInfoPage = ({
             <InfoRow label="Stock Status"value={productData.stock_status.replace("_", " ")} />
             <InfoRow label="Tag"         value={productData.product_tag?.replace("_", " ") || "—"} />
             <InfoRow label="Status"      value={productData.is_active ? "Active" : "Inactive"} />
-            <InfoRow label="Created"     value={formatDate(productData.created_at)} />
-            <InfoRow label="Updated"     value={formatDate(productData.updated_at)} />
+            <InfoRow label="Created"     value={formatDateWithTime(productData.created_at)} />
+            <InfoRow label="Updated"     value={formatDateWithTime(productData.updated_at)} />
           </SectionCard>
 
           {/* Quick actions */}

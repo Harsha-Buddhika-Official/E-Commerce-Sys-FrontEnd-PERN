@@ -35,10 +35,23 @@ export const deleteBrand = async (brandId) => {
 
 export const getBrandNames = async () => {
   try {
-    const res = await API.get("/brands/names");
-    return res.data;
+    // Prefer /brands first to avoid noisy 400s when /brands/names is not supported.
+    try {
+      const res = await API.get("/brands");
+      const payload = Array.isArray(res.data) ? res.data : res.data?.data ?? [];
+      return payload.map((b) => {
+        if (typeof b === "string") return { brand_name: b };
+        if (b?.brand_name) return b;
+        return {
+          brand_id: b?.id ?? b?.brand_id,
+          brand_name: b?.name ?? b?.brand_name,
+        };
+      });
+    } catch {
+      const res = await API.get("/brands/names");
+      return res.data;
+    }
   } catch (err) {
-    handleApiError(err, "Failed to fetch brand names");
-    throw err;
+    throw handleApiError(err, "Failed to fetch brand names");
   }
 };

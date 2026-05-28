@@ -38,7 +38,7 @@ export const deleteProduct = async (productId) => {
     throw new Error("Product ID is required");
   }
   try {
-    const res = await API.delete(`/products/admin/delete/${productId}`);
+    const res = await API.delete(`/products/admin/delete/${productId}`, {timeout: 30000});
     return res.data;
   } catch (error) {
     throw handleApiError(
@@ -50,12 +50,62 @@ export const deleteProduct = async (productId) => {
 
 export const fetchProductsLimitedData = async () => {
   try {
-    const res = await API.get("/products/admin/simple-details");
+    const res = await API.get("/products/admin/simple-details", {timeout: 30000});
     return res.data?.data ?? [];
   } catch (error) {
     throw handleApiError(
       error,
       "Failed to fetch limited product data"
     );
+  }
+};
+
+export const createProduct = async (payload) => {
+  if (!payload) {
+    throw new Error("Product payload is required");
+  }
+
+  try {
+    const res = await API.post("/products/without-attributes", payload, {timeout: 30000});
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to create product");
+  }
+};
+
+export const fetchProductAttributesByCategory = async (categoryId) => {
+  if (categoryId === null || typeof categoryId === "undefined" || categoryId === "") {
+    throw new Error("Category ID is required");
+  }
+
+  try {
+    try {
+      const res = await API.get(`/attributes/grouped/${categoryId}`);
+      return res.data;
+    } catch {
+      const res = await API.get(`/products/attributes/by-category/${categoryId}`);
+      return res.data;
+    }
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch product attributes");
+  }
+};
+
+export const addProductAttribute = async (productId, payload) => {
+  if (!productId) {
+    throw new Error("Product ID is required");
+  }
+
+  if (!payload) {
+    throw new Error("Attribute payload is required");
+  }
+
+  try {
+    // API docs: POST /api/attributes/products/:productId/attributes
+    // Payload: { attribute_id, attribute_value_id }
+    const res = await API.post(`/attributes/products/${productId}/attributes`, payload, { timeout: 30000 });
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to save product attribute");
   }
 };
