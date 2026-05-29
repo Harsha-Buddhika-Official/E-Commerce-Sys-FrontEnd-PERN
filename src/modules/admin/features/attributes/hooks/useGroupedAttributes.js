@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getGroupedAttributes } from "../service/groupedAttributes.service";
+import { getGroupedAttributes } from "../service/attributes.service.js";
 
 export const useGroupedAttributes = () => {
   const [groups, setGroups] = useState([]);

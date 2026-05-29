@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { createProduct as createProductService } from "../service/products.service.js";
+import { updateProductFull } from "../service/products.service.js";
 
-export const useCreateProduct = () => {
+export const useUpdateProduct = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const createProduct = async (payload) => {
+  const updateProduct = async (productId, payload) => {
     setLoading(true);
     setError(null);
+    console.log(payload);
+
     try {
-      const res = await createProductService(payload);
-      return res;
+      return await updateProductFull(productId, payload);
     } catch (err) {
       setError(err?.message || String(err));
       throw err;
@@ -19,5 +20,5 @@ export const useCreateProduct = () => {
     }
   };
 
-  return { createProduct, loading, error };
+  return { updateProduct, loading, error };
 };

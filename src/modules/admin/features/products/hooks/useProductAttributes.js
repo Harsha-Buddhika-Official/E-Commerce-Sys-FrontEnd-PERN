@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchAttributesByCategory } from "../services/product.service.js";
+import { fetchAttributesByCategory } from "../service/products.service.js";
 
 export const useProductAttributes = (categoryId) => {
   const [attributes, setAttributes] = useState([]);

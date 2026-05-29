@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllOffers } from "../service/offersList.service";
+import { getAllOffers } from "../service/offers.service.js";
 
 /**
  * Hook to fetch and manage offers state

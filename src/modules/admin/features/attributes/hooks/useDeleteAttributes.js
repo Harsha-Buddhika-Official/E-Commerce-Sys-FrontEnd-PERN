@@ -1,4 +1,4 @@
-import { deleteAttributesService } from "../service/deleteAttributes.service";
+import { deleteAttributesService } from "../service/attributes.service.js";
 import { useState } from "react";
 
 export const useDeleteAttributes = () => {

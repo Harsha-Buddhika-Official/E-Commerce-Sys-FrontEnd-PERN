@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchAllAdmins } from "../service/getAdmins.service";
+import { fetchAllAdmins } from "../service/admin.service.js";
 
 export const useGetAdmins = () => {
     const [admins, setAdmins] = useState([]);

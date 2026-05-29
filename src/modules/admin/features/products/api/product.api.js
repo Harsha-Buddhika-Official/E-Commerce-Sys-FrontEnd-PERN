@@ -73,6 +73,23 @@ export const createProduct = async (payload) => {
   }
 };
 
+export const updateProductFull = async (productId, payload) => {
+  if (!productId) {
+    throw new Error("Product ID is required");
+  }
+
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Product payload is required");
+  }
+
+  try {
+    const res = await API.put(`/products/admin/products/${productId}/full-update`, payload, { timeout: 60000 });
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to update product");
+  }
+};
+
 export const fetchProductAttributesByCategory = async (categoryId) => {
   if (categoryId === null || typeof categoryId === "undefined" || categoryId === "") {
     throw new Error("Category ID is required");

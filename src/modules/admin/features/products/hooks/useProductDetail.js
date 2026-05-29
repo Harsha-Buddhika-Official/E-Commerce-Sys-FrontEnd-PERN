@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getProductDetail } from "../service/productDetail.service";
+import { getProductDetail } from "../service/products.service.js";
 
 const INITIAL_STATE = {
   product: null,

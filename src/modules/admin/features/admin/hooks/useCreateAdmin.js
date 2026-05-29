@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createNewAdmin } from "../service/createAdmin.service";
+import { createNewAdmin } from "../service/admin.service.js";
 
 /**
  * Hook to create a new admin

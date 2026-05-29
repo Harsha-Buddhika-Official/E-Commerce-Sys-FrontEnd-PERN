@@ -1,4 +1,4 @@
-import { fetchStatusBarData } from "../services/statusBar.service";
+import { fetchStatusBarData } from "../services/dashboard.service.js";
 import { useState, useEffect } from "react";
 
 export const useStatusBar = () => {

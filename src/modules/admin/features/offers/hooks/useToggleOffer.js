@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toggleOfferActiveService } from "../service/offerToggle.service";
+import { toggleOfferActiveService } from "../service/offers.service.js";
 
 /**
  * Hook to toggle an offer's active status

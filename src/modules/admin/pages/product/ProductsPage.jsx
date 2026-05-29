@@ -114,7 +114,7 @@ const ProductsPage = () => {
 	const handleViewMode = (m) => { setViewMode(m); setPage(1); };
 
 	const handleView = useCallback((p) => navigate(`/admin/products/${p.id}`), [navigate]);
-	const handleEdit = useCallback((p) => navigate(`/admin/products/${p.id}/edit`), [navigate]);
+	const handleEdit = useCallback((p) => navigate(`/admin/products/${p.id}/edit`, { state: { product: p } }), [navigate]);
 	const handleDelete = useCallback((p) => setDeleteTarget(p), []);
 	const handleDeleteConfirm = useCallback(async (p) => { try { await deleteProduct(p.id); setDeleteTarget(null); refresh?.(); } catch (err) { window.alert(err?.message || "Failed to delete product"); } }, [deleteProduct, refresh]);
 	const handleAddProduct = useCallback(() => navigate("add"), [navigate]);

@@ -182,6 +182,14 @@ const ProductInfoPage = ({
 
   const productData = resolvedProduct;
   const { deleting, error: deleteError, deleteProduct } = useDeleteProduct();
+  const handleEditRoute = (editMode = "details") => {
+    navigate(`/admin/products/${routeProductId}/edit`, {
+      state: {
+        product: productData,
+        editMode,
+      },
+    });
+  };
 
   if (!routeProductId) {
     return (
@@ -549,10 +557,10 @@ const ProductInfoPage = ({
               Quick Actions
             </SectionTitle>
             <div className="flex flex-col gap-2.5">
-              <button onClick={() => onEdit(productData)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white transition-all hover:bg-[#222] cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}>
+              <button onClick={() => handleEditRoute("details")} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white transition-all hover:bg-[#222] cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}>
                 <EditOutlinedIcon style={{ fontSize: 17 }} /> Edit Product Details
               </button>
-              <button onClick={() => onEdit({ ...productData, editMode: "attributes" })} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-gray-100 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, color: "#111", backgroundColor: "#f5f5f5", border: "1px solid #ebebeb" }}>
+              <button onClick={() => handleEditRoute("attributes")} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-gray-100 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, color: "#111", backgroundColor: "#f5f5f5", border: "1px solid #ebebeb" }}>
                 <TagOutlinedIcon style={{ fontSize: 17 }} /> Edit Attributes
               </button>
               <button onClick={() => setShowDelete(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 transition-all hover:bg-red-50 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, backgroundColor: "#fef2f2", border: "1px solid #fecaca" }}>

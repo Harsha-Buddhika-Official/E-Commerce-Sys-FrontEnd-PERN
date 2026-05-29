@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { deleteOfferService } from "../service/offerDelete.service";
+import { deleteOfferService } from "../service/offers.service.js";
 
 /**
  * Hook to delete an offer

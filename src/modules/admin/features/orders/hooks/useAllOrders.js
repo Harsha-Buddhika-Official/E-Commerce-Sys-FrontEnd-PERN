@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllOrders } from "../service/allOrders.service";
+import { getAllOrders } from "../service/order.service.js";
 
 /**
  * Custom hook to fetch and manage all orders from the API.

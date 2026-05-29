@@ -1,4 +1,4 @@
-import { getOrderStatusCounts } from "../service/orderStatus.service";
+import { getOrderStatusCounts } from "../service/order.service.js";
 import { useEffect,useState } from "react";
 
 export  const useOrderStatus = () => {

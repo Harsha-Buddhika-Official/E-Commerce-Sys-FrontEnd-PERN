@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllProductsLimited } from "../service/products.service";
+import { getAllProductsLimited } from "../service/products.service.js";
 
 /**
  * Hook to fetch and manage products state

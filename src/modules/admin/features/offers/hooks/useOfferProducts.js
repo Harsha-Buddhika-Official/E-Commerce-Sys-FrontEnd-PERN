@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { attachProductService, detachProductService } from "../service/offerProduct.service";
+import { attachProductService, detachProductService } from "../service/offers.service.js";
 
 /**
  * Hook to manage offer products (attach/detach)

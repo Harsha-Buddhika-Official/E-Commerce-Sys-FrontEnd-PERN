@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { deleteValueService } from "../service/deleteValue.service";
+import { deleteValueService } from "../service/attributes.service.js";
 
 export const useDeleteValue = () => {
     const [loading, setLoading] = useState(false);

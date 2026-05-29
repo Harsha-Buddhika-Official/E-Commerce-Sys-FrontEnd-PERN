@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createOfferService } from "../service/offerCreate.service";
+import { createOfferService } from "../service/offers.service.js";
 
 /**
  * Hook to create a new offer

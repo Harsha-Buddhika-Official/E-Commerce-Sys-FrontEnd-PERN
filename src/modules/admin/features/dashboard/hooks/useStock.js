@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchLowAlertData } from "../services/stockData.service";
+import { fetchLowAlertData } from "../services/dashboard.service.js";
 
 export const useStock = () => {
     const [lowStockItems, setLowStockItems] = useState([]);

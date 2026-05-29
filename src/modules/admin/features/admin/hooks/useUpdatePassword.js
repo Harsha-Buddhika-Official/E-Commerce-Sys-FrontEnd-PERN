@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { updateAdminPassword } from "../service/updatePassword.service.js";
+import { updateAdminPassword } from "../service/admin.service.js";
 import { handleApiError } from "../../../../../utils/apiError.js";
 
 /**

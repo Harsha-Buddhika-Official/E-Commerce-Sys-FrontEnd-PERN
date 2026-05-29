@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getOfferDetail } from "../service/offerDetail.service";
+import { getOfferDetail } from "../service/offers.service.js";
 
 const INITIAL_STATE = {
   offer: null,

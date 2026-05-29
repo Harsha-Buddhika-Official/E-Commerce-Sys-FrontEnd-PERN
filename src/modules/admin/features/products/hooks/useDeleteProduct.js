@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { deleteProductService } from "../service/productDelete.service";
+import { deleteProductService } from "../service/products.service.js";
 
 /**
  * Hook to perform product deletion.

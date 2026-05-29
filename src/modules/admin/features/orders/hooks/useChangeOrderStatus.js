@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { changeOrderStatus } from "../service/orderStatusUpdate.service";
+import { changeOrderStatus } from "../service/order.service.js";
 
 /**
  * Hook to change order status. Returns an executor and state.

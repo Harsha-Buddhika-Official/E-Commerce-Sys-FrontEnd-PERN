@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { updateOfferService } from "../service/offerUpdate.service";
+import { updateOfferService } from "../service/offers.service.js";
 
 /**
  * Hook to update an offer

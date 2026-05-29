@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { deleteAdmin as deleteAdminService } from "../service/deleteAdmin.service";
+import { deleteAdmin as deleteAdminService } from "../service/admin.service.js";
 
 /**
  * Hook to delete an admin

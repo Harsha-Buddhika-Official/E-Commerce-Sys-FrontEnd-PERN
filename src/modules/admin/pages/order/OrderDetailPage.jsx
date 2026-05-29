@@ -15,7 +15,7 @@ import CategoryOutlinedIcon         from "@mui/icons-material/CategoryOutlined";
 import KeyboardArrowDownIcon        from "@mui/icons-material/KeyboardArrowDown";
 import AccessTimeOutlinedIcon       from "@mui/icons-material/AccessTimeOutlined";
 import TagOutlinedIcon              from "@mui/icons-material/TagOutlined";
-import { formatDateWithTime }       from "../../../../utils/dateFormatters";
+import { formatDate }               from "../../../../utils/dateFormatters";
 import { SORA, INTER }              from "../../../../styles/fonts";
 
 // NOTE: mock data removed — page fetches real order data from API via `useOrderDetail`.

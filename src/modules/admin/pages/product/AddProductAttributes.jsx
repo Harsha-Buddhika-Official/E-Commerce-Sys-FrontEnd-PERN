@@ -7,7 +7,7 @@ import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import { useProductAttributes } from "../../features/products/hooks/useProductAttributes.js";
-import { addAttributeToProduct } from "../../features/products/services/product.service.js";
+import { addAttributeToProduct } from "../../features/products/service/products.service.js";
 import AttributeCreateOverlay from "../../overlay/AttributeCreateOverlay.jsx";
 import CreateAttributeValueOverlay from "../../overlay/CreateAttributeValueOverlay.jsx";
 import { useCategories } from "../../features/categories/hooks/useCategories.js";

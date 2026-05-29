@@ -1,4 +1,4 @@
-import { createAttributeValueService } from "../service/createValue.service";
+import { createAttributeValueService } from "../service/attributes.service.js";
 import { useState } from "react";
 
 export const useCreateValue = () => {

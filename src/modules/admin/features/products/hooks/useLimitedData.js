@@ -1,4 +1,4 @@
-import { getProductsLimitedData } from "../service/productsLimitedData.service";
+import { getProductsLimitedData } from "../service/products.service.js";
 import { useState, useEffect } from "react";
 
 export const useLimitedData = () => {

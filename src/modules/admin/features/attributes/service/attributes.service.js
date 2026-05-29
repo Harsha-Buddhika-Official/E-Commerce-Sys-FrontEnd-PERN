@@ -1,4 +1,12 @@
-import { fetchAttributesCatalog } from "../api/attributes.api";
+import API from "../../../../../api/client";
+import {
+  fetchAttributesCatalog,
+  createAttribute,
+  createAttributeValue as createAttributeValueApi,
+  deleteAttributeValue,
+  deleteAttribute,
+} from "../api/attributes.api";
+import { handleApiError } from "../../../../../utils/apiError";
 
 const slugify = (str) =>
   String(str || "")
@@ -16,6 +24,7 @@ const normalizeValue = (value) => ({
   attribute_value_id: Number(value.attribute_value_id),
   value: value.value || "",
   slug: value.slug || slugify(value.value),
+  created_at: value.created_at || null,
 });
 
 const normalizeAttribute = (attribute) => ({
@@ -50,5 +59,98 @@ export const getAttributesCatalog = async () => {
     const err = new Error(error.message || "Failed to fetch attributes catalog");
     err.cause = error;
     throw err;
+  }
+};
+
+export const createAttributeService = async (attributeData) => {
+  try {
+    const res = await createAttribute(attributeData);
+    return res;
+  } catch (error) {
+    const err = new Error(error.message || "Failed to create attribute");
+    err.cause = error;
+    throw err;
+  }
+};
+
+export const createAttributeValueService = async (attributeId, valueData) => {
+  try {
+    const newValue = await createAttributeValueApi(attributeId, valueData);
+    return newValue;
+  } catch (err) {
+    console.error("Failed to create attribute value:", err);
+    throw err;
+  }
+};
+
+export const deleteValueService = async (attributeId, attributeValueId) => {
+  try {
+    const res = await deleteAttributeValue(attributeId, attributeValueId);
+    return res;
+  } catch (err) {
+    throw handleApiError(err, "Failed to delete attribute value");
+  }
+};
+
+export const deleteAttributesService = async (id) => {
+  try {
+    const res = await deleteAttribute(id);
+    return res;
+  } catch (err) {
+    throw handleApiError(err, "Failed to delete attribute");
+  }
+};
+
+export const getGroupedAttributes = async () => {
+  try {
+    const response = await API.get("/attributes/grouped");
+    const payload = Array.isArray(response?.data)
+      ? response.data
+      : Array.isArray(response?.data?.data)
+      ? response.data.data
+      : Array.isArray(response)
+      ? response
+      : [];
+
+    const groups = payload
+      .filter((group) => group && typeof group === "object")
+      .map((group) => {
+        const categoryId = Number(group.category_id);
+        const attributes = Array.isArray(group.attributes)
+          ? group.attributes
+              .filter((attribute) => attribute && typeof attribute === "object")
+              .map((attribute) => ({
+                attribute_id: Number(attribute.attribute_id),
+                name: attribute.name || "",
+                category_id: Number(categoryId),
+                values: Array.isArray(attribute.values) ? attribute.values.map(normalizeValue) : [],
+              }))
+              .sort((a, b) => a.name.localeCompare(b.name))
+          : [];
+
+        return {
+          category_id: categoryId,
+          category_name: group.category_name || group.name || "",
+          attributes,
+        };
+      })
+      .sort((a, b) => a.category_id - b.category_id);
+
+    const categories = groups.map((group) => ({
+      category_id: group.category_id,
+      name: group.category_name,
+    }));
+
+    const attributes = groups
+      .flatMap((group) => group.attributes)
+      .sort((a, b) => a.category_id - b.category_id || a.name.localeCompare(b.name));
+
+    return {
+      groups,
+      categories,
+      attributes,
+    };
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch grouped attributes");
   }
 };
