@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import { useProductAttributes } from "../../features/products/hooks/useProductAttributes.js";
 import { addAttributeToProduct } from "../../features/products/services/product.service.js";
+import AttributeCreateOverlay from "../../overlay/AttributeCreateOverlay.jsx";
+import CreateAttributeValueOverlay from "../../overlay/CreateAttributeValueOverlay.jsx";
+import { useCategories } from "../../features/categories/hooks/useCategories.js";
 import {
   ErrorBanner,
   FieldLabel,
@@ -34,12 +38,15 @@ const AddProductAttributes = () => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showAttrCreate, setShowAttrCreate] = useState(false);
+  const [createValueFor, setCreateValueFor] = useState(null);
 
   const normalizedCategoryId = categoryId === "" || categoryId === null || typeof categoryId === "undefined"
     ? ""
     : Number(categoryId);
   const { attributes: rawAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(normalizedCategoryId);
   const attributes = useMemo(() => normalizeAttributes(rawAttributes), [rawAttributes]);
+  const { categories } = useCategories();
 
   useEffect(() => {
     if (!productId || !normalizedCategoryId) {
@@ -60,6 +67,11 @@ const AddProductAttributes = () => {
         product: state.product,
       },
     });
+  };
+
+  const handleCreateValue = () => {
+    setCreateValueFor(null);
+    window.location.reload();
   };
 
   const handleSaveAttributes = async () => {
@@ -130,6 +142,13 @@ const AddProductAttributes = () => {
         </div>
         <div className="ml-auto flex items-center gap-2.5">
           <button
+            onClick={() => setShowAttrCreate(true)}
+            className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
+            style={{ ...INTER, fontSize: 13, fontWeight: 600 }}
+          >
+            Add Attribute
+          </button>
+          <button
             onClick={handleCancel}
             className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
             style={{ ...INTER, fontSize: 13, fontWeight: 600 }}
@@ -152,6 +171,27 @@ const AddProductAttributes = () => {
           </button>
         </div>
       </div>
+
+      {/* Overlays */}
+      {showAttrCreate && (
+        <AttributeCreateOverlay
+          categories={categories || []}
+          defaultCategoryId={normalizedCategoryId}
+          onCreated={() => {
+            setShowAttrCreate(false);
+            // refresh attributes to show newly created attribute
+            window.location.reload();
+          }}
+          onClose={() => setShowAttrCreate(false)}
+        />
+      )}
+      {createValueFor && (
+        <CreateAttributeValueOverlay
+          attribute={createValueFor}
+          onSave={handleCreateValue}
+          onClose={() => setCreateValueFor(null)}
+        />
+      )}
 
       {(errors.form || attributesError) && (
         <div className="flex flex-col gap-3 mb-5">
@@ -182,8 +222,18 @@ const AddProductAttributes = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {attributes.map((attribute) => (
-                    <div key={attribute.attribute_id}>
-                      <FieldLabel>{attribute.name}</FieldLabel>
+                    <div key={attribute.attribute_id} className="rounded-xl border border-gray-200 bg-white p-4">
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <FieldLabel>{attribute.name}</FieldLabel>
+                        <button
+                          type="button"
+                          onClick={() => setCreateValueFor(attribute)}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
+                          style={{ ...INTER, fontSize: 12, fontWeight: 600 }}
+                        >
+                          <AddOutlinedIcon style={{ fontSize: 15 }} /> Add Value
+                        </button>
+                      </div>
                       {attribute.values.length > 0 ? (
                         <SelectField
                           value={attributeSelections[attribute.attribute_id] || ""}

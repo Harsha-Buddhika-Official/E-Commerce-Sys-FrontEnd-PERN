@@ -9,6 +9,7 @@ import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import { useBrandNames } from "../../features/brands/hooks/useBrandNames.js";
+import BrandCreateOverlay from "../../overlay/BrandCreateOverlay.jsx";
 import { useCategories } from "../../features/categories/hooks/useCategories.js";
 import { useCreateProduct } from "../../features/products/hooks/useCreateProduct.js";
 import {
@@ -34,7 +35,7 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  const { brandNames, loading: brandsLoading, error: brandsError } = useBrandNames();
+  const { brandNames, loading: brandsLoading, error: brandsError, refresh: refreshBrandNames } = useBrandNames();
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
   const { createProduct } = useCreateProduct();
 
@@ -56,6 +57,7 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showBrandCreate, setShowBrandCreate] = useState(false);
 
   const brandOptions = useMemo(() => normalizeOptions(brandNames, ["brand_name", "name", "label", "brand_id", "id"], ["brand_name", "name", "label"]), [brandNames]);
   const categoryOptions = useMemo(() => normalizeOptions(categories, ["category_id", "id"], ["category_name", "name", "label"]), [categories]);
@@ -236,6 +238,13 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
         </div>
         <div className="ml-auto flex items-center gap-2.5">
           <button
+            onClick={() => setShowBrandCreate(true)}
+            className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
+            style={{ ...INTER, fontSize: 13, fontWeight: 600 }}
+          >
+            Add Brand
+          </button>
+          <button
             onClick={() => { onCancel?.(); navigate("/admin/products"); }}
             className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
             style={{ ...INTER, fontSize: 13, fontWeight: 600 }}
@@ -258,6 +267,21 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
           </button>
         </div>
       </div>
+
+        {showBrandCreate && (
+          <BrandCreateOverlay
+            onClose={() => setShowBrandCreate(false)}
+            onCreated={async () => {
+              setShowBrandCreate(false);
+              try {
+                await refreshBrandNames();
+              } catch {
+                // fallback to full reload if refresh fails
+                window.location.reload();
+              }
+            }}
+          />
+        )}
 
       {(hasLoadError || errors.form || errors.images) && (
         <div className="flex flex-col gap-3 mb-5">
