@@ -5,13 +5,12 @@ export const useUpdateProduct = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const updateProduct = async (productId, payload) => {
+  const updateProduct = async (productId, payload, images = []) => {
     setLoading(true);
     setError(null);
-    console.log(payload);
 
     try {
-      return await updateProductFull(productId, payload);
+      return await updateProductFull(productId, payload, images);
     } catch (err) {
       setError(err?.message || String(err));
       throw err;

@@ -4,6 +4,7 @@ import { useProductDetail } from "../../features/products/hooks/useProductDetail
 import { useCategories } from "../../features/categories/hooks/useCategories.js";
 import { useBrandNames } from "../../features/brands/hooks/useBrandNames.js";
 import { normalizeOptions } from "./components/AddProductUi.jsx";
+import { normalizeProductForForm } from "../../features/products/service/products.service.js";
 import { useUpdateProduct } from "../../features/products/hooks/useUpdateProduct.js";
 import { useProductAttributes } from "../../features/products/hooks/useProductAttributes.js";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
@@ -24,39 +25,7 @@ import {
 const SORA = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
-const normalizeAttributes = (attributes = []) =>
-  attributes.map((attribute, index) => ({
-    ...attribute,
-    _key: attribute.product_attribute_id ?? attribute.attribute_id ?? index,
-    value: attribute.value ?? attribute.attribute_value ?? "",
-  }));
-
-const normalizeImages = (images = []) =>
-  images
-    .map((image, index) => ({
-      ...image,
-      _key: image.image_id ?? index,
-      alt_text: image.alt_text ?? "",
-      sort_order: Number(image.sort_order ?? index),
-    }))
-    .sort((left, right) => Number(left.sort_order ?? 0) - Number(right.sort_order ?? 0));
-
-const normalizeProductForForm = (source = {}) => ({
-  product_id:       source.product_id ?? source.id ?? null,
-  name:             source.name ?? "",
-  description:      source.description ?? "",
-  brand_id:         source.brand_id ?? "",
-  brand_name:       source.brand_name ?? source.brand ?? "",
-  category_id:      source.category_id ?? "",
-  category_name:    source.category_name ?? source.category ?? "",
-  base_price:       source.base_price ?? source.basePrice ?? "",
-  selling_price:    source.selling_price ?? source.sellingPrice ?? "",
-  discounted_price: source.discounted_price ?? source.discountedPrice ?? "",
-  stock_quantity:   source.stock_quantity ?? source.stockCount ?? 0,
-  warranty_months:  source.warranty_months ?? 12,
-  attributes:       normalizeAttributes(source.attributes),
-  images:           normalizeImages(source.images),
-});
+// normalization helpers moved to service layer
 
 // ══════════════════════════════════════════════════════════════════════════════
 // EDIT PRODUCT PAGE
@@ -203,79 +172,16 @@ const EditProductPage = ({
     try {
       let updated;
 
-      if (localFiles.length > 0) {
-        // Enforce server-side limit
-        if (localFiles.length > 3) {
-          alert("You can upload up to 3 images only.");
-          setSaving(false);
-          return;
-        }
-        // Send multipart/form-data with uploaded files
-        const fd = new FormData();
-
-        // Append scalar fields
-        Object.entries(payload).forEach(([key, value]) => {
-          if (typeof value === "undefined" || value === null) return;
-          if (typeof value === "object") {
-            fd.append(key, JSON.stringify(value));
-          } else {
-            fd.append(key, String(value));
-          }
-        });
-
-        // Attributes should be sent as JSON string
-        if (normalizedAttributes.length) {
-          fd.set("attributes", JSON.stringify(normalizedAttributes));
-        }
-
-        // Append files under 'images' field and collect metadata
-        const imagesMeta = [];
-
-        // Preserve order as in `images` array so first file is primary when intended
-        images.forEach((img) => {
-          if (img._file) {
-            fd.append("images", img._file, img._file.name);
-            imagesMeta.push({
-              fileName: img._file.name,
-              alt_text: img.alt_text || "",
-              sort_order: Number(img.sort_order ?? 0),
-              is_primary: Boolean(img.is_primary),
-            });
-          }
-        });
-
-        // Send metadata for files so backend can store alt_text/sort_order/is_primary
-        if (imagesMeta.length) {
-          fd.set("images_meta", JSON.stringify(imagesMeta));
-        }
-
-        // Log FormData entries for debugging
-        try {
-          const entries = [];
-          for (const e of fd.entries()) {
-            // show file names for File objects
-            if (e[1] instanceof File) entries.push([e[0], e[1].name]);
-            else entries.push(e);
-          }
-          console.debug("Updating product with multipart/form-data. FormData entries:", entries);
-        } catch (err) {
-          console.debug("Updating product with multipart/form-data. (could not enumerate FormData)");
-        }
-
-        updated = await updateProduct(productId, fd);
-      } else {
-        if (images.length) {
-          payload.images = images.map(({ _key, _file, ...img }) => ({
-            image_url: img.image_url,
-            is_primary: Boolean(img.is_primary),
-            alt_text: img.alt_text || "",
-            sort_order: Number(img.sort_order ?? 0),
-          }));
-        }
-
-        console.debug("Updating product with JSON payload:", payload);
-        updated = await updateProduct(productId, payload);
+      // Let the service layer handle FormData creation and uploads;
+      // pass payload and images array so service can determine upload strategy.
+      if (localFiles.length > 0 && localFiles.length > 3) {
+        alert("You can upload up to 3 images only.");
+        setSaving(false);
+        return;
       }
+
+      console.debug("Updating product with payload and images metadata:", { payload, images });
+      updated = await updateProduct(productId, payload, images);
       setSaving(false);
       setSaved(true);
       setDirty(false);

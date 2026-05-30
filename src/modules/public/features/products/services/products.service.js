@@ -1,7 +1,7 @@
+import { getAllProducts, getProductsByCategory, getFilterOptions, getFilteredProducts, getProductDetails } from "../api/products.api";
+
 // features/products/services/products.service.js
 // Layer: Service — normalization, business rules, error handling.
-
-import { getAllProducts, getProductsByCategory, getFilterOptions, getFilteredProducts, getProductDetails } from "../api/products.api";
 
 const extractList = (response) => {
   const payload =

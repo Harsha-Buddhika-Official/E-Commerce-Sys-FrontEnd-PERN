@@ -96,39 +96,3 @@ const StatCard = ({
 };
 
 export default StatCard;
-
-
-// ─── Usage example (4-card dashboard row) ────────────────────────────────────
-//
-// import AdminStatCard from "./AdminStatCard";
-//
-// <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-//   <AdminStatCard
-//     title="Total Revenue"
-//     value="LKR 1,40,689.00"
-//     change={8.5}
-//     changeLabel="Up from last month"
-//     preset="revenue"
-//   />
-//   <AdminStatCard
-//     title="Total Orders"
-//     value="1,284"
-//     change={3.2}
-//     changeLabel="Up from last week"
-//     preset="orders"
-//   />
-//   <AdminStatCard
-//     title="Total Customers"
-//     value="9,430"
-//     change={-1.4}
-//     changeLabel="Down from last month"
-//     preset="customers"
-//   />
-//   <AdminStatCard
-//     title="Low Stock Items"
-//     value="24"
-//     change={0}
-//     changeLabel=""
-//     preset="inventory"
-//   />
-// </div>

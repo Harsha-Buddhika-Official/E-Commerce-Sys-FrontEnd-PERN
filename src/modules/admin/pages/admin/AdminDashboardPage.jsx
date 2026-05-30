@@ -7,10 +7,10 @@ import { useStock } from "../../features/dashboard/hooks/useStock";
 
 const AdminDashboard = () => {
 	const {
-		totalRevenueThisMonth,
-		comparedRevenuePercentage,
-		totalOrdersThisMonth,
-		comparedOrdersPercentage,
+		revenue,
+		revenueGrowth,
+		totalOrders,
+		orderGrowth,
 		activeProducts,
 		lowStockProducts,
 		pendingOrders,
@@ -26,10 +26,10 @@ const AdminDashboard = () => {
 	const dashboardError = statusError || lowStockError;
 
 	const stats = buildDashboardStats({
-		totalRevenueThisMonth,
-		comparedRevenuePercentage,
-		totalOrdersThisMonth,
-		comparedOrdersPercentage,
+		revenue,
+		revenueGrowth,
+		totalOrders,
+		orderGrowth,
 		activeProducts,
 		lowStockProducts,
 		pendingOrders,

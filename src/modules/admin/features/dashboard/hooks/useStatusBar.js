@@ -3,10 +3,10 @@ import { useState, useEffect } from "react";
 
 export const useStatusBar = () => {
   const [data, setData] = useState({
-    totalRevenueThisMonth: 0,
-    comparedRevenuePercentage: 0,
-    totalOrdersThisMonth: 0,
-    comparedOrdersPercentage: 0,
+    revenue: 0,
+    revenueGrowth: 0,
+    totalOrders: 0,
+    orderGrowth: 0,
     activeProducts: 0,
     lowStockProducts: 0,
     pendingOrders: 0,
@@ -33,6 +33,5 @@ export const useStatusBar = () => {
 
     loadData();
   }, []);
-
   return { ...data, loading, error };
 };
