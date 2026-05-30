@@ -41,10 +41,12 @@ export const fetchAllOrders = async () => {
   }
 };
 
+// for order page order details
 export const fetchOrderDetail = async (orderId) => {
   if (!orderId) throw new Error("orderId is required");
   try {
     const res = await API.get(`/orders/admin/${orderId}`);
+    console.log("API response for order details:", res);
     return res.data;
   } catch (error) {
     throw handleApiError(

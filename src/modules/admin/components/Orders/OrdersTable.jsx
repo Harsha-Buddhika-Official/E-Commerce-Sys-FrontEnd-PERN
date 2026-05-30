@@ -39,7 +39,7 @@ const COLUMNS = [
   { key: "email",            label: "Customer email",    w: "18%" },
   { key: "date",             label: "Date",              w: "10%" },
   { key: "quantity",         label: "Quantity",          w: "8%" },
-  { key: "priceAtPurchase",  label: "Price @ Purchase",  w: "12%" },
+  { key: "priceAtPurchase",  label: "Price at Purchase",  w: "12%" },
   { key: "amount",           label: "Total Amount",      w: "12%" },
   { key: "status",           label: "Status",            w: "11%" },
 ];
@@ -85,13 +85,7 @@ function OrderCard({ order, selected, onClick }) {
         <span>Qty: {order.quantity}</span>
       </div>
       <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
-        <div className="flex flex-col gap-0.5">
-          <span style={{ ...INTER, fontSize: 10, color: "#aaa" }}>Unit Price</span>
-          <span style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#333" }}>
-            Rs {order.priceAtPurchase.toLocaleString()}
-          </span>
-        </div>
-        <div className="flex flex-col gap-0.5 text-right">
+        <div className="flex flex-col gap-0.5 text-left">
           <span style={{ ...INTER, fontSize: 10, color: "#aaa" }}>Total</span>
           <span style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#111" }}>
             Rs {order.amount.toLocaleString()}

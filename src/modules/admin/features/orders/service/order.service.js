@@ -7,19 +7,65 @@ import {
 } from "../api/order.api";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 
+// Helpers to normalize various API payload shapes into expected JS values
+function extractArrayPayload(payload) {
+  if (payload?.success !== undefined) {
+    if (!payload.success) throw new Error(payload.message || "API request failed");
+    return payload.data;
+  }
+  if (Array.isArray(payload)) return payload;
+  if (payload?.data && Array.isArray(payload.data)) return payload.data;
+  throw new Error(`Expected array payload from API, got ${typeof payload}`);
+}
+
+function extractObjectPayload(payload) {
+  if (payload?.success !== undefined) {
+    if (!payload.success) throw new Error(payload.message || "API request failed");
+    return payload.data;
+  }
+  if (payload && typeof payload === "object") return payload;
+  throw new Error(`Expected object payload from API, got ${typeof payload}`);
+}
+
+function safeNumber(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function safeMoney(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function safeText(value) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function safeDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function normalizeStatus(value) {
+  const status = safeText(value);
+  return status ? status.toLowerCase() : null;
+}
+
 // for dashboard recent orders widget
 export const getRecentOrders = async () => {
   try {
-    const res = await fetchRecentOrders();
-    const orders = res.data.map(order => ({
-      id: Number(order.order_id),
-      totalAmount: Number(order.total_amount) || 0,
-      status: String(order.order_status || "")
-        ? String(order.order_status).charAt(0).toUpperCase() + String(order.order_status).slice(1).toLowerCase()
-        : "Pending",
-      product: String(order.product_name),
-      quantity: Number(order.quantity),
+    const payload = await fetchRecentOrders();
+    const data = extractArrayPayload(payload);
+
+    const orders = data.map((order) => ({
+      id: safeNumber(order.order_id),
+      totalAmount: safeMoney(order.total_amount),
+      status: normalizeStatus(order.order_status) ?? "pending",
+      product: safeText(order.product_name) ?? "",
+      quantity: safeNumber(order.quantity) ?? 0,
     }));
+
     return orders;
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch recent orders", {
@@ -32,13 +78,15 @@ export const getRecentOrders = async () => {
 // for order page order details and status update
 export const getOrderStatusCounts = async () => {
   try {
-    const res = await fetchOrderStats();
-    const data = res.data;
+    const payload = await fetchOrderStats();
+    const data = extractObjectPayload(payload);
+
     const counts = {
-      pendingOrders: Number(data.pendingOrders) || 0,
-      completeOrders: Number(data.completedOrders) || 0,
-      cancelledOrders: Number(data.cancelledOrders) || 0,
+      pendingOrders: safeNumber(data.pendingOrders) ?? 0,
+      completeOrders: safeNumber(data.completedOrders) ?? 0,
+      cancelledOrders: safeNumber(data.cancelledOrders) ?? 0,
     };
+
     return counts;
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch order status counts", {
@@ -48,21 +96,22 @@ export const getOrderStatusCounts = async () => {
   }
 };
 
+// for order page order details
 export const getAllOrders = async () => {
   try {
-    const response = await fetchAllOrders();
-    const data = response?.data;
+    const payload = await fetchAllOrders();
+    const data = extractArrayPayload(payload);
 
-    const orderDetails = data.map(orders => ({
-      orderId: Number(orders.order_id),
-      productName: String(orders.product_name || ""),
-      customerEmail: String(orders.customer_email || ""),
-      quantity: Number(orders.quantity) || 0,
-      priceAtPurchase: Number(orders.price_at_purchase) || 0,
-      totalAmount: Number(orders.total_amount) || 0,
-      orderStatus: String(orders.order_status).toLowerCase(),
-      updatedAt: new Date(orders.date),
-    }))
+    const orderDetails = data.map((orders) => ({
+      orderId: safeNumber(orders.order_id),
+      productName: safeText(orders.product_name) ?? "",
+      customerEmail: safeText(orders.customer_email) ?? "",
+      quantity: safeNumber(orders.quantity) ?? 0,
+      priceAtPurchase: safeMoney(orders.price_at_purchase),
+      totalAmount: safeMoney(orders.total_amount),
+      orderStatus: normalizeStatus(orders.order_status) ?? "pending",
+      updatedAt: safeDate(orders.updated_at ?? orders.date),
+    }));
 
     return orderDetails;
   } catch (error) {
@@ -73,117 +122,60 @@ export const getAllOrders = async () => {
   }
 };
 
-const transformOrderData = (rawOrders) => {
-  return rawOrders.map((order) => ({
-    id: `#${order.order_id}`,
-    trackingCode: order.tracking_code,
-    product: order.product_name,
-    quantity: order.quantity,
-    amount: parseFloat(order.price_at_purchase),
-    totalAmount: parseFloat(order.total_amount),
-    status: order.order_status.charAt(0).toUpperCase() + order.order_status.slice(1),
-    customer: {
-      email: order.customer_email,
-      phone: order.phone_number,
-      address: order.shipping_address,
-      city: order.city,
-      postalCode: order.postal_code,
-    },
-    rawData: order,
-  }));
-};
+export const getOrderDetail = async (orderId) => {
+  if (orderId === undefined || orderId === null) {
+    throw new Error("orderId is required");
+  }
 
-export const getOrderDetails = async () => {
   try {
-    const response = await fetchAllOrders();
-    // If this is an Axios response, the real payload lives at response.data
-    const payload = response && typeof response === "object" && "data" in response
-      ? response.data
-      : response;
+    const payload = await fetchOrderDetail(orderId);
+    const data = extractObjectPayload(payload);
 
-    // Debug: Log the resolved payload
+    const orderItems = Array.isArray(data.order_items) ? data.order_items : [];
+    const itemsSource = orderItems.length > 0
+      ? orderItems
+      : data.product_id || data.productId
+        ? [data]
+        : [];
 
+    const items = itemsSource.map((item) => ({
+      order_item_id: item.order_item_id ?? item.orderItemId ?? null,
+      product_id: item.product_id ?? item.productId ?? null,
+      product_name: item.product_name ?? item.productName ?? null,
+      product_slug: item.product_slug ?? item.productSlug ?? null,
+      brand_id: item.brand_id ?? item.brandId ?? null,
+      brand_name: item.brand_name ?? item.brandName ?? null,
+      category_id: item.category_id ?? item.categoryId ?? null,
+      category_name: item.category_name ?? item.categoryName ?? null,
+      quantity: Number(item.quantity) || 0,
+      price_at_purchase: safeNumber(item.price_at_purchase ?? item.priceAtPurchase),
+      selling_price: safeNumber(item.selling_price ?? item.sellingPrice),
+      stock_quantity: safeNumber(item.stock_quantity ?? item.stockQuantity),
+      warranty_months: safeNumber(item.warranty_months ?? item.warrantyMonths),
+      image: typeof item.image === "string" ? item.image : null,
+    }));
 
-    // Normalize supported payload shapes:
-    // - { success: true, data: [...] }
-    // - { data: [...] }
-    // - [...] (direct array)
-    let orderData;
-
-    if (payload?.success !== undefined) {
-      if (!payload.success) throw new Error(payload.message || "API request failed");
-      orderData = payload.data;
-    } else if (Array.isArray(payload)) {
-      orderData = payload;
-    } else if (payload?.data && Array.isArray(payload.data)) {
-      orderData = payload.data;
-    } else {
-      console.error("Response payload is not an array:", payload);
-      throw new Error(`Expected array of orders, got ${typeof payload}`);
-    }
-
-    return transformOrderData(orderData);
+    return {
+      order_id: safeNumber(data.order_id ?? data.orderId ?? data.id),
+      tracking_code: safeText(data.tracking_code ?? data.trackingCode),
+      customer_email: safeText(data.customer_email ?? data.customerEmail),
+      phone_number: safeText(data.phone_number ?? data.phoneNumber),
+      total_amount: safeMoney(data.total_amount ?? data.totalAmount),
+      order_status: normalizeStatus(data.order_status ?? data.orderStatus),
+      shipping_address: safeText(data.shipping_address ?? data.shippingAddress),
+      city: safeText(data.city),
+      postal_code: safeText(data.postal_code ?? data.postalCode),
+      created_at: safeDate(data.created_at ?? data.createdAt),
+      updated_at: safeDate(data.updated_at ?? data.updatedAt),
+      items,
+    };
   } catch (error) {
-    throw handleServiceError(error, "Failed to fetch orders", {
+    throw handleServiceError(error, "Failed to fetch order detail", {
       service: "orders",
-      operation: "getOrderDetails",
+      operation: "getOrderDetail",
+      details: { orderId },
     });
   }
-};
-
-
-
-export const getOrderDetail = async (orderId) => {
-  if (!orderId) throw new Error("orderId is required");
-
-  const res = await fetchOrderDetail(orderId);
-  if (!res || typeof res !== "object") throw new Error("Invalid API response");
-  if (res.success !== true) throw new Error(res.message || "API returned failure");
-
-  const data = res.data;
-  if (!data || typeof data !== "object") return null;
-
-  const orderItems = Array.isArray(data.order_items) ? data.order_items : [];
-
-  const fallbackItems = orderItems.length > 0
-    ? orderItems
-    : (data.product_id || data.productId
-      ? [data]
-      : []);
-
-  const normalizedItems = fallbackItems.map((item) => ({
-    order_item_id: item.order_item_id ?? item.orderItemId ?? null,
-    product_id: item.product_id ?? item.productId ?? null,
-    product_name: item.product_name ?? item.productName ?? null,
-    product_slug: item.product_slug ?? item.productSlug ?? null,
-    brand_id: item.brand_id ?? item.brandId ?? null,
-    brand_name: item.brand_name ?? item.brandName ?? null,
-    category_id: item.category_id ?? item.categoryId ?? null,
-    category_name: item.category_name ?? item.categoryName ?? null,
-    quantity: Number(item.quantity) || 0,
-    price_at_purchase: item.price_at_purchase ?? item.priceAtPurchase ?? null,
-    selling_price: item.selling_price ?? item.sellingPrice ?? null,
-    stock_quantity: item.stock_quantity ?? item.stockQuantity ?? null,
-    warranty_months: item.warranty_months ?? item.warrantyMonths ?? null,
-    image: item.image ?? null,
-  }));
-
-  const normalized = {
-    order_id: data.order_id ?? data.orderId ?? data.id,
-    tracking_code: data.tracking_code ?? data.trackingCode ?? null,
-    customer_email: data.customer_email ?? data.customerEmail ?? null,
-    phone_number: data.phone_number ?? data.phoneNumber ?? null,
-    total_amount: data.total_amount ?? data.totalAmount ?? null,
-    order_status: data.order_status ?? data.orderStatus ?? null,
-    shipping_address: data.shipping_address ?? data.shippingAddress ?? null,
-    city: data.city ?? null,
-    postal_code: data.postal_code ?? data.postalCode ?? null,
-    created_at: data.created_at ?? data.createdAt ?? null,
-    updated_at: data.updated_at ?? data.updatedAt ?? null,
-    items: normalizedItems,
-  };
-
-  return normalized;
 };
 
 export const changeOrderStatus = async (orderId, newStatus) => {
