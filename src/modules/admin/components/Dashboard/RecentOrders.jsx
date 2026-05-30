@@ -3,7 +3,7 @@ import OpenInNewOutlinedIcon  from "@mui/icons-material/OpenInNewOutlined";
 import KeyboardArrowLeftIcon  from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
-import { useOrders } from "../../features/orders/hooks/useOrders";
+import { useRecentOrders } from "../../features/orders/hooks/useRecentOrders";
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
 import { SORA, INTER } from "../../../../styles/fonts";
@@ -49,7 +49,7 @@ const RecentOrders = ({
   onViewOrder = () => {},
   title       = "RECENT ORDERS",
 }) => {
-  const { orders, loading, error } = useOrders();
+  const { orders, loading, error } = useRecentOrders();
   const [page,         setPage]         = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
 

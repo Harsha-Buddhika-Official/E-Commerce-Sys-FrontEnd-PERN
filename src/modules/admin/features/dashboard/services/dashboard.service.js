@@ -3,9 +3,9 @@ import {getStatusBarDataApi,getLowAlertDataApi} from "../api/dashboard.api";
 export const fetchStatusBarData = async () => {
 
     try {
-        const response = await getStatusBarDataApi();
-        const data = response.data;
-        return {
+        const res = await getStatusBarDataApi();
+        const data = res.data;
+        const dashboardStats = {
             revenue:Number(data.totalRevenueThisMonth),
             revenueGrowth:Number(data.comparedRevenuePercentage),
             totalOrders:Number(data.totalOrdersThisMonth),
@@ -15,8 +15,7 @@ export const fetchStatusBarData = async () => {
             pendingOrders:Number(data.pendingOrders),
             shippedOrders:Number(data.shippedOrders)
         };
-        
-
+        return dashboardStats;
     } catch (error) {
         console.error("Error fetching dashboard stats:", error);
         throw error;
@@ -25,16 +24,14 @@ export const fetchStatusBarData = async () => {
 
 export const fetchLowAlertData = async () => {
     try {
-        const response =await getLowAlertDataApi();
+        const res =await getLowAlertDataApi();
 
-        return response.data.map(product => ({
-            id: product.product_id,
-            name: product.name,
-            stock: product.stock_quantity,
-            image: product.image_url,
-            category: product.category_name,
-            price: Number(product.selling_price)
+        const lowStockItems = res.data.map(product => ({
+            id: Number(product.product_id),
+            name: String(product.name),
+            stock: Number(product.stock_quantity)
         }));
+        return lowStockItems;
     } catch (error) {
         console.error("Error fetching low stock products:", error);
         throw error;

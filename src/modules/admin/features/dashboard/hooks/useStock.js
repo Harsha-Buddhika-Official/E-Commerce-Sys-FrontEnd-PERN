@@ -5,48 +5,20 @@ export const useStock = () => {
     const [lowStockItems, setLowStockItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
     useEffect(() => {
-        let isMounted = true;
-
-        const loadLowStockItems = async () => {
+        const loadData = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                const data = await fetchLowAlertData();
-
-                if (!isMounted) return;
-
-                let items = [];
-
-                if (Array.isArray(data)) {
-                    items = data;
-                } else if (Array.isArray(data?.items)) {
-                    items = data.items;
-                } else if (Array.isArray(data?.data)) {
-                    items = data.data;
-                }
-
-                setLowStockItems(items);
-            } catch (fetchError) {
-                if (isMounted) {
-                    setError(`Failed to load low stock alerts. ${fetchError.message}`);
-                }
+                const fetchedData = await fetchLowAlertData();
+                setLowStockItems(fetchedData);
+            } catch (err) {
+                setError(`Failed to load low stock data. ${err.message}`);
             } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
+                setLoading(false);
             }
         };
-
-        loadLowStockItems();
-
-        return () => {
-            isMounted = false;
-        };
+        loadData();
     }, []);
-
-    return {
-        lowStockItems,
-        loading,
-        error,
-    };
-};
+    return { lowStockItems, loading, error };
+}

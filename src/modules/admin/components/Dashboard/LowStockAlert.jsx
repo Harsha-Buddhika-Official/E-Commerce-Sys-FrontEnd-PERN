@@ -76,7 +76,7 @@ const LowStockAlert = ({
               >
                 {item.name}
               </p>
-              <StockBar stock={item.stock_quantity} maxStock={5} />
+              <StockBar stock={item.stock} maxStock={5} />
             </div>
           </div>
         ))

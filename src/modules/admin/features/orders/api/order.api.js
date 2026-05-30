@@ -1,6 +1,20 @@
 import API from "../../../../../api/client";
 import { handleApiError } from "../../../../../utils/apiError";
 
+
+// for dashboard recent orders and stats
+export const fetchRecentOrders = async () => {
+  try {
+    const res = await API.get("/orders/admin/recent-orders");
+    return res.data;
+  } catch (error) {
+    throw handleApiError(
+      error,
+      "Failed to fetch recent orders"
+    );
+  }
+};
+
 export const fetchOrderStats = async () => {
   try {
     const res = await API.get("/orders/admin/order-status-count");

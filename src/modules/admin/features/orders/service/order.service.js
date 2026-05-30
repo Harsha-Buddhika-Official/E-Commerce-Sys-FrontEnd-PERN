@@ -1,15 +1,30 @@
 import {
+  fetchRecentOrders,
   fetchAllOrders,
   fetchOrderDetail,
   fetchOrderStats,
   updateOrderStatus as apiUpdateOrderStatus,
 } from "../api/order.api";
-import { handleApiError } from "../../../../../utils/apiError";
 
-/**
- * Transform raw API data to table format
- * Handles data normalization and formatting
- */
+export const getRecentOrders = async () => {
+  try {
+    const res = await fetchRecentOrders();
+    const orders = res.data.map(order => ({
+      id: Number(order.order_id),
+      totalAmount: Number(order.total_amount) || 0,
+      status: String(order.order_status || "")
+        ? String(order.order_status).charAt(0).toUpperCase() + String(order.order_status).slice(1).toLowerCase()
+        : "Pending",
+      product: String(order.product_name),
+      quantity: Number(order.quantity),
+    }));
+    return orders;
+  } catch (error) {
+    console.error("Error fetching recent orders:", error);
+    throw error;
+  }
+}
+
 const transformOrderData = (rawOrders) => {
   return rawOrders.map((order) => ({
     id: `#${order.order_id}`,
