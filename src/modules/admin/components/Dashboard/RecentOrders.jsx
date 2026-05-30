@@ -33,9 +33,6 @@ function StatusBadge({ status }) {
 const ROWS_PER_PAGE  = 10;
 const STATUS_FILTERS = ["All", "Paid", "Pending", "Processing", "Cancelled"];
 
-// ─── Columns — percentage widths + table-layout:fixed ────────────────────────
-// table-layout:fixed is REQUIRED — without it browsers ignore colgroup widths
-// and let content stretch columns freely (the gap problem in the screenshot).
 const COLUMNS = [
   { key: "id",       label: "Order ID",     w: "18%" },
   { key: "product",  label: "Product",      w: "36%" },

@@ -16,19 +16,16 @@ const PRESETS = {
   shipping:  { icon: <LocalShippingOutlinedIcon style={{ fontSize: 22 }} />, bg: "#fef9c3", color: "#fde047" },
 };
 
-// ─── OrderStatCard ─────────────────────────────────────────────────────────────
-// Props:
-//   label      — e.g. "Pending"
-//   count      — number shown large e.g. 3
-//   preset     — "pending" | "completed" | "cancelled" | "all" | "shipping"
-//   iconBg     — optional override for icon circle background
-//   iconColor  — optional override for icon colour
-//   onClick    — optional click handler (e.g. filter table by this status)
-
-const OrderStatCard = ({label,count,preset,iconBg,iconColor,}) => {
+const OrderStatCard = ({label,count,preset,iconBg,iconColor,loading = false,error = null,}) => {
   const p            = PRESETS[preset] || PRESETS.pending;
   const resolvedBg   = iconBg    || p.bg;
   const resolvedClr  = iconColor || p.color;
+
+  const renderCount = () => {
+    if (loading) return <span style={{ ...SORA, fontSize: 18, fontWeight: 700 }}>...</span>;
+    if (error) return <span style={{ ...SORA, fontSize: 18, fontWeight: 700, color: '#dc2626' }}>!</span>;
+    return <span style={{ ...SORA, fontSize: 32, fontWeight: 800 }}>{count ?? 0}</span>;
+  };
 
   return (
     <div
@@ -49,12 +46,7 @@ const OrderStatCard = ({label,count,preset,iconBg,iconColor,}) => {
         >
           {label}
         </p>
-        <p
-          className="text-[#111] leading-none"
-          style={{ ...SORA, fontSize: 32, fontWeight: 800 }}
-        >
-          {count}
-        </p>
+        {renderCount()}
       </div>
 
       {/* Right: icon circle */}

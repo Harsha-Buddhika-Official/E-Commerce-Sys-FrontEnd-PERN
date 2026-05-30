@@ -2,15 +2,19 @@ import { getOrderStatusCounts } from "../service/order.service.js";
 import { useEffect,useState } from "react";
 
 export  const useOrderStatus = () => {
-    const [orderStatus, setOrderStatus] = useState(null);
+    const [orderStatus, setOrderStatus] = useState({
+        pendingOrders: 0,
+        completeOrders: 0,
+        cancelledOrders: 0,
+    });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const data = await getOrderStatusCounts();
-                setOrderStatus(data);
+                const fetchedData = await getOrderStatusCounts();
+                setOrderStatus(fetchedData);
             } catch (err) {
                 setError(err);
             } finally {

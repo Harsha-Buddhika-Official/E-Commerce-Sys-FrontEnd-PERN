@@ -9,7 +9,7 @@ import {
   detachProductFromOffer as apiDetachProduct,
   setOfferActivation as apiSetOfferActivation,
 } from "../api/offers.api";
-import { handleApiError } from "../../../../../utils/apiError";
+import { handleServiceError } from "../../../../../utils/serviceError.js";
 
 export const getAllOffers = async () => {
   try {
@@ -32,9 +32,10 @@ export const getAllOffers = async () => {
       .filter((o) => o && typeof o === "object")
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   } catch (error) {
-    const err = new Error(error.message || "Failed to fetch offers");
-    err.cause = error;
-    throw err;
+    throw handleServiceError(error, "Failed to fetch offers", {
+      service: "offers",
+      operation: "getAllOffers",
+    });
   }
 };
 
@@ -57,9 +58,10 @@ export const getActiveOffers = async () => {
 
     return offers.filter((o) => o && typeof o === "object");
   } catch (error) {
-    const err = new Error(error.message || "Failed to fetch active offers");
-    err.cause = error;
-    throw err;
+    throw handleServiceError(error, "Failed to fetch active offers", {
+      service: "offers",
+      operation: "getActiveOffers",
+    });
   }
 };
 
@@ -71,7 +73,10 @@ export const createOfferService = async (payload) => {
     if (response.success !== true) throw new Error(response.message || "Failed to create offer");
     return response.data;
   } catch (error) {
-    throw handleApiError(error, "Failed to create offer");
+    throw handleServiceError(error, "Failed to create offer", {
+      service: "offers",
+      operation: "createOfferService",
+    });
   }
 };
 
@@ -84,7 +89,10 @@ export const updateOfferService = async (offerId, payload) => {
     if (response.success !== true) throw new Error(response.message || "Failed to update offer");
     return response.data;
   } catch (error) {
-    throw handleApiError(error, "Failed to update offer");
+    throw handleServiceError(error, "Failed to update offer", {
+      service: "offers",
+      operation: "updateOfferService",
+    });
   }
 };
 
@@ -95,7 +103,10 @@ export const deleteOfferService = async (offerId) => {
     if (!response || typeof response !== "object") throw new Error("Invalid delete response");
     return response;
   } catch (error) {
-    throw handleApiError(error, "Failed to delete offer");
+    throw handleServiceError(error, "Failed to delete offer", {
+      service: "offers",
+      operation: "deleteOfferService",
+    });
   }
 };
 
@@ -108,9 +119,10 @@ export const getOfferDetail = async (offerId) => {
     if (!offer || typeof offer !== "object") throw new Error("Invalid offer detail response");
     return offer;
   } catch (error) {
-    const err = new Error(error.message || "Failed to fetch offer details");
-    err.cause = error;
-    throw err;
+    throw handleServiceError(error, "Failed to fetch offer details", {
+      service: "offers",
+      operation: "getOfferDetail",
+    });
   }
 };
 
@@ -122,7 +134,10 @@ export const attachProductService = async (offerId, productId) => {
     if (!response || typeof response !== "object") throw new Error("Invalid attach response");
     return response;
   } catch (error) {
-    throw handleApiError(error, "Failed to attach product to offer");
+    throw handleServiceError(error, "Failed to attach product to offer", {
+      service: "offers",
+      operation: "attachProductService",
+    });
   }
 };
 
@@ -134,7 +149,10 @@ export const detachProductService = async (offerId, productId) => {
     if (!response || typeof response !== "object") throw new Error("Invalid detach response");
     return response;
   } catch (error) {
-    throw handleApiError(error, "Failed to detach product from offer");
+    throw handleServiceError(error, "Failed to detach product from offer", {
+      service: "offers",
+      operation: "detachProductService",
+    });
   }
 };
 
@@ -152,6 +170,9 @@ export const toggleOfferActiveService = async (offerId, isActive) => {
       if (fallbackResponse.success !== true) throw new Error(fallbackResponse.message || "Failed to set offer activation");
       return fallbackResponse.data;
     }
-    throw handleApiError(error, "Failed to set offer activation");
+    throw handleServiceError(error, "Failed to set offer activation", {
+      service: "offers",
+      operation: "toggleOfferActiveService",
+    });
   }
 };

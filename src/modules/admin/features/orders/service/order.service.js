@@ -5,7 +5,9 @@ import {
   fetchOrderStats,
   updateOrderStatus as apiUpdateOrderStatus,
 } from "../api/order.api";
+import { handleServiceError } from "../../../../../utils/serviceError.js";
 
+// for dashboard recent orders widget
 export const getRecentOrders = async () => {
   try {
     const res = await fetchRecentOrders();
@@ -20,10 +22,56 @@ export const getRecentOrders = async () => {
     }));
     return orders;
   } catch (error) {
-    console.error("Error fetching recent orders:", error);
-    throw error;
+    throw handleServiceError(error, "Failed to fetch recent orders", {
+      service: "orders",
+      operation: "getRecentOrders",
+    });
   }
 }
+
+// for order page order details and status update
+export const getOrderStatusCounts = async () => {
+  try {
+    const res = await fetchOrderStats();
+    const data = res.data;
+    const counts = {
+      pendingOrders: Number(data.pendingOrders) || 0,
+      completeOrders: Number(data.completedOrders) || 0,
+      cancelledOrders: Number(data.cancelledOrders) || 0,
+    };
+    return counts;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to fetch order status counts", {
+      service: "orders",
+      operation: "getOrderStatusCounts",
+    });
+  }
+};
+
+export const getAllOrders = async () => {
+  try {
+    const response = await fetchAllOrders();
+    const data = response?.data;
+
+    const orderDetails = data.map(orders => ({
+      orderId: Number(orders.order_id),
+      productName: String(orders.product_name || ""),
+      customerEmail: String(orders.customer_email || ""),
+      quantity: Number(orders.quantity) || 0,
+      priceAtPurchase: Number(orders.price_at_purchase) || 0,
+      totalAmount: Number(orders.total_amount) || 0,
+      orderStatus: String(orders.order_status).toLowerCase(),
+      updatedAt: new Date(orders.date),
+    }))
+
+    return orderDetails;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to fetch all orders", {
+      service: "orders",
+      operation: "getAllOrders",
+    });
+  }
+};
 
 const transformOrderData = (rawOrders) => {
   return rawOrders.map((order) => ({
@@ -76,60 +124,14 @@ export const getOrderDetails = async () => {
 
     return transformOrderData(orderData);
   } catch (error) {
-    console.error("Error fetching orders:", error);
-    throw error;
-  }
-};
-
-export const getAllOrders = async () => {
-  try {
-    const response = await fetchAllOrders();
-    const payload = response?.data ?? response;
-
-    let orders;
-    if (Array.isArray(payload)) {
-      orders = payload;
-    } else if (payload?.success !== undefined) {
-      if (!payload.success) throw new Error(payload.message || "API request failed");
-      orders = payload.data;
-    } else if (payload?.data && Array.isArray(payload.data)) {
-      orders = payload.data;
-    } else {
-      console.error("Unexpected orders payload:", payload);
-      throw new Error("Invalid API response: expected an array of orders");
-    }
-
-    if (!Array.isArray(orders) || orders.length === 0) {
-      console.warn("No orders found in API response");
-      return [];
-    }
-
-    const normalizedOrders = orders.map((order, index) => {
-      try {
-        return {
-          orderId: Number(order.order_id),
-          productId: Number(order.product_id),
-          productName: String(order.product_name || ""),
-          customerEmail: String(order.customer_email || ""),
-          quantity: Number(order.quantity) || 0,
-          priceAtPurchase: Number(order.price_at_purchase) || 0,
-          totalAmount: Number(order.total_amount) || 0,
-          orderStatus: String(order.order_status || "").toLowerCase(),
-          updatedAt: new Date(order.updated_at),
-        };
-      } catch (itemError) {
-        console.error(`Error transforming order at index ${index}:`, itemError);
-        throw new Error(`Failed to parse order item #${index + 1}`);
-      }
+    throw handleServiceError(error, "Failed to fetch orders", {
+      service: "orders",
+      operation: "getOrderDetails",
     });
-
-    return normalizedOrders;
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred while fetching orders";
-    console.error("All orders fetch error:", errorMessage);
-    throw new Error(`Failed to fetch all orders: ${errorMessage}`);
   }
 };
+
+
 
 export const getOrderDetail = async (orderId) => {
   if (!orderId) throw new Error("orderId is required");
@@ -184,29 +186,6 @@ export const getOrderDetail = async (orderId) => {
   return normalized;
 };
 
-export const getOrderStatusCounts = async () => {
-  try {
-    const response = await fetchOrderStats();
-    const stats = response?.data ?? response;
-
-    if (!stats || typeof stats !== "object") {
-      throw new Error("Invalid API response structure: expected stats object");
-    }
-
-    const { pendingOrders, completedOrders, cancelledOrders } = stats;
-
-    return {
-      pendingOrders: Number(pendingOrders) || 0,
-      completeOrders: Number(completedOrders) || 0,
-      cancelledOrders: Number(cancelledOrders) || 0,
-    };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred while fetching order status counts";
-    console.error("Order status fetch error:", errorMessage);
-    throw new Error(`Failed to fetch order status counts: ${errorMessage}`);
-  }
-};
-
 export const changeOrderStatus = async (orderId, newStatus) => {
   if (orderId === undefined || orderId === null) throw new Error("orderId is required");
   if (!newStatus) throw new Error("newStatus is required");
@@ -234,7 +213,10 @@ export const changeOrderStatus = async (orderId, newStatus) => {
 
     return res.data;
   } catch (err) {
-    console.error("changeOrderStatus service error:", err instanceof Error ? err.message : err);
-    throw err;
+    throw handleServiceError(err, "Failed to change order status", {
+      service: "orders",
+      operation: "changeOrderStatus",
+      details: { orderId: id, newStatus: String(newStatus) },
+    });
   }
 };

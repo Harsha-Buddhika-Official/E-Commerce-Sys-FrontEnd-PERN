@@ -19,10 +19,7 @@ export const useStatusBar = () => {
     const loadData = async () => {
       try {
         const fetchedData = await fetchStatusBarData();
-          setData((current) => ({
-            ...current,
-            ...fetchedData,
-          }));
+          setData(fetchedData);
 
       } catch (err) {
           setError(`Failed to load status bar data. ${err.message}`);

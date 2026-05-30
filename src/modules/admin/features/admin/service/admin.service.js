@@ -1,5 +1,5 @@
 import { createAdmin as createAdminAPI, deleteAdminByEmail, getAllAdmins, updatePassword } from "../api/admin.api";
-import { handleApiError } from "../../../../../utils/apiError.js";
+import { handleServiceError } from "../../../../../utils/serviceError.js";
 
 /**
  * Create a new admin account
@@ -34,7 +34,10 @@ export const createNewAdmin = async (payload) => {
 
     return admin;
   } catch (error) {
-    throw handleApiError(error, "Failed to create admin");
+    throw handleServiceError(error, "Failed to create admin", {
+      service: "admin",
+      operation: "createNewAdmin",
+    });
   }
 };
 
@@ -57,7 +60,10 @@ export const deleteAdmin = async (email) => {
 
     return result;
   } catch (error) {
-    throw handleApiError(error, "Failed to delete admin");
+    throw handleServiceError(error, "Failed to delete admin", {
+      service: "admin",
+      operation: "deleteAdmin",
+    });
   }
 };
 
@@ -84,7 +90,10 @@ export const fetchAllAdmins = async () => {
 
     return admins.map((it) => normalize(it));
   } catch (error) {
-    throw handleApiError(error, "Failed to fetch admins");
+    throw handleServiceError(error, "Failed to fetch admins", {
+      service: "admin",
+      operation: "fetchAllAdmins",
+    });
   }
 };
 
@@ -98,6 +107,9 @@ export const updateAdminPassword = async (adminId, passwordData) => {
   try {
     return await updatePassword(adminId, passwordData);
   } catch (error) {
-    throw handleApiError(error, "Failed to update password");
+    throw handleServiceError(error, "Failed to update password", {
+      service: "admin",
+      operation: "updateAdminPassword",
+    });
   }
 };

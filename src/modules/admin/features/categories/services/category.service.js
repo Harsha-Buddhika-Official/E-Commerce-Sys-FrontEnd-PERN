@@ -1,19 +1,24 @@
 import { getCategories, getCategory } from "../api/category.api.js";
+import { handleServiceError } from "../../../../../utils/serviceError.js";
 
 export const fetchCategories = async () => {
   try {
     return await getCategories();
-  } catch (err) {
-    console.error("Error fetching categories:", err);
-    throw err;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to fetch categories", {
+      service: "categories",
+      operation: "fetchCategories",
+    });
   }
 };
 
 export const fetchCategoryNames = async () => {
   try {
     return await getCategory();
-  } catch (err) {
-    console.error("Error fetching category names:", err);
-    throw err;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to fetch category names", {
+      service: "categories",
+      operation: "fetchCategoryNames",
+    });
   }
 };

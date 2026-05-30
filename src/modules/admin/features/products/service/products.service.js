@@ -8,7 +8,7 @@ import {
   fetchProductAttributesByCategory as apiFetchAttributesByCategory,
   addProductAttribute as apiAddProductAttribute,
 } from "../api/product.api.js";
-import { handleApiError } from "../../../../../utils/apiError";
+import { handleServiceError } from "../../../../../utils/serviceError.js";
 
 /**
  * Normalize backend product data to frontend format
@@ -92,9 +92,10 @@ export const getAllProductsLimited = async () => {
       .map(normalizeProduct)
       .sort((a, b) => b.id - a.id); // Descending order by ID
   } catch (error) {
-    const err = new Error(error.message || "Failed to fetch products");
-    err.cause = error;
-    throw err;
+    throw handleServiceError(error, "Failed to fetch products", {
+      service: "products",
+      operation: "getAllProductsLimited",
+    });
   }
 };
 
@@ -109,8 +110,11 @@ export const getProductsLimitedData = async () => {
       selling_price: product.discounted_price ?? product.price ?? 0,
       is_active: product.is_active,
     }));
-  } catch (err) {
-    throw new Error("Failed to fetch limited product data: " + (err?.message || String(err)));
+  } catch (error) {
+    throw handleServiceError(error, "Failed to fetch limited product data", {
+      service: "products",
+      operation: "getProductsLimitedData",
+    });
   }
 };
 
@@ -132,9 +136,10 @@ export const getProductDetail = async (productId) => {
 
     return product;
   } catch (error) {
-    const err = new Error(error.message || "Failed to fetch product details");
-    err.cause = error;
-    throw err;
+    throw handleServiceError(error, "Failed to fetch product details", {
+      service: "products",
+      operation: "getProductDetail",
+    });
   }
 };
 
@@ -187,11 +192,11 @@ export const updateProductFull = async (productId, payload, images = []) => {
     if (Array.isArray(images) && images.length) {
       payload = {
         ...payload,
-        images: images.map(({ _key, _file, ...img }) => ({
-          image_url: img.image_url,
-          is_primary: Boolean(img.is_primary),
-          alt_text: img.alt_text || "",
-          sort_order: Number(img.sort_order ?? 0),
+        images: images.map((image) => ({
+          image_url: image.image_url,
+          is_primary: Boolean(image.is_primary),
+          alt_text: image.alt_text || "",
+          sort_order: Number(image.sort_order ?? 0),
         })),
       };
     }
@@ -201,9 +206,10 @@ export const updateProductFull = async (productId, payload, images = []) => {
     if (response.success !== true) throw new Error(response.message || "Failed to update product");
     return response.data;
   } catch (error) {
-    const err = new Error(error.message || "Failed to update product");
-    err.cause = error;
-    throw err;
+    throw handleServiceError(error, "Failed to update product", {
+      service: "products",
+      operation: "updateProductFull",
+    });
   }
 };
 
@@ -215,33 +221,42 @@ export const deleteProductService = async (productId) => {
     const res = await deleteProduct(productId);
     return res;
   } catch (error) {
-    throw handleApiError(error, "Failed to delete product");
+    throw handleServiceError(error, "Failed to delete product", {
+      service: "products",
+      operation: "deleteProductService",
+    });
   }
 };
 
 export const createProduct = async (payload) => {
   try {
     return await apiCreateProduct(payload);
-  } catch (err) {
-    console.error("Error creating product:", err);
-    throw err;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to create product", {
+      service: "products",
+      operation: "createProduct",
+    });
   }
 };
 
 export const fetchAttributesByCategory = async (categoryId) => {
   try {
     return await apiFetchAttributesByCategory(categoryId);
-  } catch (err) {
-    console.error("Error fetching attributes for category:", err);
-    throw err;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to fetch attributes for category", {
+      service: "products",
+      operation: "fetchAttributesByCategory",
+    });
   }
 };
 
 export const addAttributeToProduct = async (productId, payload) => {
   try {
     return await apiAddProductAttribute(productId, payload);
-  } catch (err) {
-    console.error("Error adding attribute to product:", err);
-    throw err;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to add attribute to product", {
+      service: "products",
+      operation: "addAttributeToProduct",
+    });
   }
 };

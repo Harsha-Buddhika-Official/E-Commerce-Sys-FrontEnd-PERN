@@ -15,6 +15,7 @@ export const fetchRecentOrders = async () => {
   }
 };
 
+// for order page order status counts
 export const fetchOrderStats = async () => {
   try {
     const res = await API.get("/orders/admin/order-status-count");
@@ -27,9 +28,10 @@ export const fetchOrderStats = async () => {
   }
 };
 
+// for order page order list and details
 export const fetchAllOrders = async () => {
   try {
-    const res = await API.get("/orders/admin/all");
+    const res = await API.get("/orders/admin/orders");
     return res.data;
   } catch (error) {
     throw handleApiError(

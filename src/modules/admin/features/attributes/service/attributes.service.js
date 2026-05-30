@@ -6,7 +6,7 @@ import {
   deleteAttributeValue,
   deleteAttribute,
 } from "../api/attributes.api";
-import { handleApiError } from "../../../../../utils/apiError";
+import { handleServiceError } from "../../../../../utils/serviceError.js";
 
 const slugify = (str) =>
   String(str || "")
@@ -56,9 +56,10 @@ export const getAttributesCatalog = async () => {
         .sort((a, b) => a.category_id - b.category_id || a.name.localeCompare(b.name)),
     };
   } catch (error) {
-    const err = new Error(error.message || "Failed to fetch attributes catalog");
-    err.cause = error;
-    throw err;
+    throw handleServiceError(error, "Failed to fetch attributes catalog", {
+      service: "attributes",
+      operation: "getAttributesCatalog",
+    });
   }
 };
 
@@ -67,9 +68,10 @@ export const createAttributeService = async (attributeData) => {
     const res = await createAttribute(attributeData);
     return res;
   } catch (error) {
-    const err = new Error(error.message || "Failed to create attribute");
-    err.cause = error;
-    throw err;
+    throw handleServiceError(error, "Failed to create attribute", {
+      service: "attributes",
+      operation: "createAttributeService",
+    });
   }
 };
 
@@ -77,9 +79,11 @@ export const createAttributeValueService = async (attributeId, valueData) => {
   try {
     const newValue = await createAttributeValueApi(attributeId, valueData);
     return newValue;
-  } catch (err) {
-    console.error("Failed to create attribute value:", err);
-    throw err;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to create attribute value", {
+      service: "attributes",
+      operation: "createAttributeValueService",
+    });
   }
 };
 
@@ -87,8 +91,11 @@ export const deleteValueService = async (attributeId, attributeValueId) => {
   try {
     const res = await deleteAttributeValue(attributeId, attributeValueId);
     return res;
-  } catch (err) {
-    throw handleApiError(err, "Failed to delete attribute value");
+  } catch (error) {
+    throw handleServiceError(error, "Failed to delete attribute value", {
+      service: "attributes",
+      operation: "deleteValueService",
+    });
   }
 };
 
@@ -96,8 +103,11 @@ export const deleteAttributesService = async (id) => {
   try {
     const res = await deleteAttribute(id);
     return res;
-  } catch (err) {
-    throw handleApiError(err, "Failed to delete attribute");
+  } catch (error) {
+    throw handleServiceError(error, "Failed to delete attribute", {
+      service: "attributes",
+      operation: "deleteAttributesService",
+    });
   }
 };
 
@@ -151,6 +161,9 @@ export const getGroupedAttributes = async () => {
       attributes,
     };
   } catch (error) {
-    throw handleApiError(error, "Failed to fetch grouped attributes");
+    throw handleServiceError(error, "Failed to fetch grouped attributes", {
+      service: "attributes",
+      operation: "getGroupedAttributes",
+    });
   }
 };
