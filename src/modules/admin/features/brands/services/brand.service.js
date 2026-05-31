@@ -51,17 +51,18 @@ export const fetchBrands = async () => {
   }
 };
 
+// for create product form dropdown
 export const fetchBrandNames = async () => {
   try {
     const payload = await getBrandNames();
     const data = extractArrayPayload(payload);
 
-    const brandNames = data.map((b) => ({
+    const brandDetails = data.map((b) => ({
       brand_id: safeNumber(b.brand_id),
       brand_name: safeText(b.name),
     }));
     
-    return brandNames;
+    return brandDetails;
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch brand names", {
       service: "brands",
@@ -70,9 +71,11 @@ export const fetchBrandNames = async () => {
   }
 };
 
+// for deleting a brand in brand details page
 export const deleteBrandService = async (brandId) => {
   try {
-    return await deleteBrand(brandId);
+    const res = await deleteBrand(brandId);
+    return res;
   } catch (error) {
     throw handleServiceError(error, "Failed to delete brand", {
       service: "brands",
