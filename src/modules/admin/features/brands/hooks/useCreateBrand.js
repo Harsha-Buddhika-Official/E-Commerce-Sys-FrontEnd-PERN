@@ -2,9 +2,9 @@ import { useState } from "react";
 import { createBrandService } from "../services/brand.service.js";
 
 export const useCreateBrand = () => {
+    const [createdBrand, setCreatedBrand] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [createdBrand, setCreatedBrand] = useState(null);
     const createBrand = async (brandData) => {
         try {
             setLoading(true);

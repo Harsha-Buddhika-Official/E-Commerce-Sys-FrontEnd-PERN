@@ -1,7 +1,7 @@
 import { getBrands, getBrandNames, createBrand, deleteBrand } from "../api/brand.api.js";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 import { extractArrayPayload } from "../../../../../utils/payloadExtractors.js";
-import { safeNumber, safeText, safeDate, normalizeStatus } from "../../../../../utils/normalizers.js";
+import { safeNumber, safeText, safeDate } from "../../../../../utils/normalizers.js";
 
 // for creating a new brand in brand page 
 export const createBrandService = async (brandData) => {

@@ -2,9 +2,9 @@ import { deleteBrandService } from "../services/brand.service.js";
 import { useState } from "react";
 
 export const useDeleteBrand = () => {
+    const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
 
     const deleteBrand = async (brandId) => {
         setLoading(true);
