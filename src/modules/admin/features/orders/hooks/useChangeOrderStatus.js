@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { changeOrderStatus } from "../service/order.service.js";
 
-/**
- * Hook to change order status. Returns an executor and state.
- * @returns {Object} { changeStatus, loading, error }
- */
 export const useChangeOrderStatus = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -19,7 +15,6 @@ export const useChangeOrderStatus = () => {
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
       setLoading(false);
-      // rethrow so callers can await and react
       throw err;
     }
   };

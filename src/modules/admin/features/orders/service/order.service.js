@@ -6,51 +6,8 @@ import {
   updateOrderStatus as apiUpdateOrderStatus,
 } from "../api/order.api";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
-
-// Helpers to normalize various API payload shapes into expected JS values
-function extractArrayPayload(payload) {
-  if (payload?.success !== undefined) {
-    if (!payload.success) throw new Error(payload.message || "API request failed");
-    return payload.data;
-  }
-  if (Array.isArray(payload)) return payload;
-  if (payload?.data && Array.isArray(payload.data)) return payload.data;
-  throw new Error(`Expected array payload from API, got ${typeof payload}`);
-}
-
-function extractObjectPayload(payload) {
-  if (payload?.success !== undefined) {
-    if (!payload.success) throw new Error(payload.message || "API request failed");
-    return payload.data;
-  }
-  if (payload && typeof payload === "object") return payload;
-  throw new Error(`Expected object payload from API, got ${typeof payload}`);
-}
-
-function safeNumber(value) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function safeMoney(value) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function safeText(value) {
-  return typeof value === "string" && value.trim() ? value.trim() : null;
-}
-
-function safeDate(value) {
-  if (!value) return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-}
-
-function normalizeStatus(value) {
-  const status = safeText(value);
-  return status ? status.toLowerCase() : null;
-}
+import { safeNumber, safeMoney, safeText, safeDate, normalizeStatus } from "../../../../../utils/normalizers.js";
+import { extractArrayPayload, extractObjectPayload } from "../../../../../utils/payloadExtractors.js";
 
 // for dashboard recent orders widget
 export const getRecentOrders = async () => {
@@ -122,6 +79,7 @@ export const getAllOrders = async () => {
   }
 };
 
+// for the get all details about one order in order details page
 export const getOrderDetail = async (orderId) => {
   if (orderId === undefined || orderId === null) {
     throw new Error("orderId is required");
@@ -178,12 +136,15 @@ export const getOrderDetail = async (orderId) => {
   }
 };
 
+// for the change order status action in order details page
 export const changeOrderStatus = async (orderId, newStatus) => {
   if (orderId === undefined || orderId === null) throw new Error("orderId is required");
-  if (!newStatus) throw new Error("newStatus is required");
+  const id = safeNumber(orderId);
+  if (id === null) throw new Error("orderId must be a valid number");
 
-  const id = Number(orderId);
-  if (Number.isNaN(id)) throw new Error("orderId must be a number");
+  const rawStatus = safeText(newStatus);
+  if (!rawStatus) throw new Error("newStatus is required");
+  const normStatus = normalizeStatus(rawStatus);
 
   const ALLOWED_STATUSES = [
     "pending",
@@ -194,21 +155,19 @@ export const changeOrderStatus = async (orderId, newStatus) => {
     "cancelled",
   ];
 
-  if (!ALLOWED_STATUSES.includes(String(newStatus))) {
+  if (!ALLOWED_STATUSES.includes(normStatus)) {
     throw new Error(`newStatus must be one of: ${ALLOWED_STATUSES.join(", ")}`);
   }
 
   try {
-    const res = await apiUpdateOrderStatus(id, String(newStatus));
-    if (!res || typeof res !== "object") throw new Error("Invalid API response");
-    if (res.success !== true) throw new Error(res.message || "Failed to update status");
-
-    return res.data;
+    const payload = await apiUpdateOrderStatus(id, normStatus);
+    const data = extractObjectPayload(payload);
+    return data;
   } catch (err) {
     throw handleServiceError(err, "Failed to change order status", {
       service: "orders",
       operation: "changeOrderStatus",
-      details: { orderId: id, newStatus: String(newStatus) },
+      details: { orderId: id, newStatus: normStatus },
     });
   }
 };

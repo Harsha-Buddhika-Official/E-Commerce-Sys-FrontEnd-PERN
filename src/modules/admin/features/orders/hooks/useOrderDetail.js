@@ -1,61 +1,58 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { getOrderDetail } from "../service/order.service.js";
 
 export const useOrderDetail = (orderId) => {
+  const mounted = useRef(false);
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(Boolean(orderId));
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    let active = true;
-
-    const load = async () => {
-      if (!orderId) {
-        if (active) {
-          setOrder(null);
-          setLoading(false);
-        }
-        return;
+  const load = useCallback(async () => {
+    if (!orderId) {
+      if (mounted.current) {
+        setOrder(null);
+        setLoading(false);
       }
+      return null;
+    }
 
-      if (active) {
-        setLoading(true);
-        setError(null);
-      }
-
-      try {
-        const data = await getOrderDetail(orderId);
-        if (active) setOrder(data);
-      } catch (err) {
-        if (active) {
-          setError(err instanceof Error ? err : new Error(String(err)));
-        }
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-
-    load();
-
-    return () => {
-      active = false;
-    };
-  }, [orderId]);
-
-  const refresh = async () => {
-    if (!orderId) return;
-    setLoading(true);
-    setError(null);
+    if (mounted.current) {
+      setLoading(true);
+      setError(null);
+    }
 
     try {
       const data = await getOrderDetail(orderId);
-      setOrder(data);
+      if (mounted.current) setOrder(data);
+      return data;
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      // preserve structured service errors (do not convert to plain Error here)
+      if (mounted.current) setError(err);
+      throw err;
     } finally {
-      setLoading(false);
+      if (mounted.current) setLoading(false);
     }
-  };
+  }, [orderId]);
+
+  useEffect(() => {
+    mounted.current = true;
+    (async () => {
+      try {
+        await load();
+      } catch (e) {
+        // intentionally ignore load errors here; they are reflected in state
+        void e;
+      }
+    })();
+    return () => {
+      mounted.current = false;
+    };
+  }, [load]);
+
+  const refresh = useCallback(async () => {
+    if (!orderId) return null;
+    return load();
+  }, [orderId, load]);
 
   return { order, loading, error, refresh };
 };

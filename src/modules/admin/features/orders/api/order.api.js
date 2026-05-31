@@ -60,11 +60,7 @@ export const updateOrderStatus = async (orderId, newStatus) => {
   if (!orderId) throw new Error("orderId is required");
   if (!newStatus) throw new Error("newStatus is required");
   try {
-    // explicit JSON header and logging for easier debugging
-    const res = await API.put(`/orders/admin/state/${orderId}`, { newStatus }, {
-      headers: { "Content-Type": "application/json" },
-    });
-    // server response body
+    const res = await API.put(`/orders/admin/state/${orderId}`, { newStatus });
     return res.data;
   } catch (error) {
     throw handleApiError(
