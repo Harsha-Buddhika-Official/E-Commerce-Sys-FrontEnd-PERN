@@ -7,16 +7,11 @@ export const useBrandNames = () => {
     const [error, setError] = useState(null);
 
     const loadBrandNames = async () => {
+        setLoading(true);
+        setError(null);
         try {
-            const BrandNames = await fetchBrandNames();
-            const normalizedBrands = Array.isArray(BrandNames)
-                ? BrandNames
-                : Array.isArray(BrandNames?.brands)
-                    ? BrandNames.brands
-                    : Array.isArray(BrandNames?.data)
-                        ? BrandNames.data
-                        : [];
-            setBrandNames(normalizedBrands);
+            const data = await fetchBrandNames();
+            setBrandNames(data);
         } catch (err) {
             setError(`Failed to load brands. ${err.message}`);
         } finally {

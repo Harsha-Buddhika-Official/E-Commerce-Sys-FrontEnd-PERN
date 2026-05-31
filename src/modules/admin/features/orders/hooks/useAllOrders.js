@@ -1,64 +1,59 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getAllOrders } from "../service/order.service.js";
+import { formatDate } from "../../../../../utils/dateFormatters.js";
 
 export const useAllOrders = () => {
     const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const mounted = useRef(true);
 
-    const mapToUi = (apiOrders = []) =>
-        apiOrders.map((order) => ({
-            id: `#${order.orderId}`,
-            product: order.productName ?? "",
-            email: order.customerEmail ?? "",
-            date: order.updatedAt ? formatDate(order.updatedAt) : "Unknown",
-            quantity: order.quantity ?? 0,
-            priceAtPurchase: order.priceAtPurchase ?? 0,
-            amount: order.totalAmount ?? 0,
-            status: capitalizeStatus(order.orderStatus),
-            raw: order,
-        }));
-
-    const load = useCallback(async () => {
-        setLoading(true);
-        setError(null);
+    const loadOrders = useCallback(async () => {
         try {
-            const apiOrders = await getAllOrders();
-            if (!mounted.current) return;
-            setOrders(mapToUi(apiOrders));
+            setLoading(true);
+            setError(null);
+            const data = await getAllOrders();
+            const formattedOrders = data.map(formatOrderForTable);
+            setOrders(formattedOrders);
+            return formattedOrders;
         } catch (err) {
-            if (!mounted.current) return;
-            setError(err instanceof Error ? err : new Error(String(err) || "Failed to load orders"));
+            const message =
+                err?.message || "Failed to load orders";
+            setError(message);
+            throw err;
         } finally {
-            if (mounted.current) setLoading(false);
+
+            setLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        mounted.current = true;
-        (async () => { await load(); })();
-        return () => {
-            mounted.current = false;
-        };
-    }, [load]);
+        loadOrders();
+    }, [loadOrders]);
 
-    const refresh = useCallback(() => load(), [load]);
-
-    return { orders, loading, error, refresh };
+    return {orders,loading,error,refresh: loadOrders};
 };
 
-function formatDate(dateInput) {
-    try {
-        const date = new Date(dateInput);
-        if (isNaN(date.getTime())) return "Unknown";
-        return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    } catch {
-        return "Unknown";
-    }
+function formatOrderForTable(order) {
+    return {
+        id: `#${order.orderId}`,
+        product: order.productName,
+        email: order.customerEmail,
+        quantity: order.quantity,
+        priceAtPurchase: order.priceAtPurchase,
+        amount: order.totalAmount,
+        date: formatDate(order.updatedAt),
+        status: capitalizeStatus(order.orderStatus),
+        raw: order
+    };
 }
 
 function capitalizeStatus(status) {
-    if (!status) return "Pending";
-    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+    if (!status) {
+        return "Pending";
+    }
+
+    return (
+        status.charAt(0).toUpperCase() +
+        status.slice(1).toLowerCase()
+    );
 }

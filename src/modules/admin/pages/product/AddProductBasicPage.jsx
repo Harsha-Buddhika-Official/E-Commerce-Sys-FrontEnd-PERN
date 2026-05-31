@@ -59,10 +59,11 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
   const [errors, setErrors] = useState({});
   const [showBrandCreate, setShowBrandCreate] = useState(false);
 
-  const brandOptions = useMemo(() => normalizeOptions(brandNames, ["brand_name", "name", "label", "brand_id", "id"], ["brand_name", "name", "label"]), [brandNames]);
+  const brandOptions = useMemo(() => normalizeOptions(brandNames, ["brand_id", "id"], ["brand_name", "name", "label"]), [brandNames]);
   const categoryOptions = useMemo(() => normalizeOptions(categories, ["category_id", "id"], ["category_name", "name", "label"]), [categories]);
   const selectedBrand = useMemo(() => brandOptions.find((option) => option.label === form.brand_name || option.value === form.brand_name) || null, [brandOptions, form.brand_name]);
 
+  
   useEffect(() => {
     return () => {
       images.forEach((image) => image.preview && URL.revokeObjectURL(image.preview));

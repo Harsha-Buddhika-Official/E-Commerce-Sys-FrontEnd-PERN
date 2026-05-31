@@ -1,4 +1,3 @@
-// Utilities to normalize common API response shapes into usable payloads
 export function extractArrayPayload(payload) {
   if (payload?.success !== undefined) {
     if (!payload.success) throw new Error(payload.message || "API request failed");

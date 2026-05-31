@@ -1,4 +1,3 @@
-// Shared normalization helpers for service layer
 export function safeNumber(value) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
