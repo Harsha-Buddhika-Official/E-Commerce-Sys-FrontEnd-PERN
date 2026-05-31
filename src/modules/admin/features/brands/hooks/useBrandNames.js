@@ -1,4 +1,4 @@
-import { useEffect,useState } from "react";
+import { useCallback, useEffect,useState } from "react";
 import { fetchBrandNames } from "../services/brand.service.js";
 
 export const useBrandNames = () => {
@@ -6,7 +6,7 @@ export const useBrandNames = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const loadBrandNames = async () => {
+    const loadBrandNames = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
@@ -17,7 +17,7 @@ export const useBrandNames = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
     useEffect(()=>{
         loadBrandNames()
     }, []);
