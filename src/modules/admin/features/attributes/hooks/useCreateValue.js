@@ -1,26 +1,31 @@
+import { useCallback, useState } from "react";
 import { createAttributeValueService } from "../service/attributes.service.js";
-import { useState } from "react";
 
 export const useCreateValue = () => {
-    const [createdValue, setCreatedValue] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+  const [createdValue, setCreatedValue] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const createValue = async (attributeId, valueData) => {
-        setLoading(true);
-        setError(null);
+  const createValue = useCallback(async (attributeId, valueData) => {
+    setLoading(true);
+    setError(null);
 
-        try {
-            const newValue = await createAttributeValueService(attributeId, valueData);
-            setCreatedValue(newValue);
-            return newValue;
-        } catch (err) {
-            setError(err?.message || "Failed to create attribute value.");
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
+    try {
+      const value = await createAttributeValueService(attributeId, valueData);
+      setCreatedValue(value);
+      return value;
+    } catch (err) {
+      setError(err?.message || "Failed to create attribute value");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    return { createValue, loading, error, createdValue };
+  const reset = useCallback(() => {
+    setCreatedValue(null);
+    setError(null);
+  }, []);
+
+  return {createdValue,loading,error,createValue,reset,};
 };

@@ -79,14 +79,30 @@ const AttributesPage = () => {
     }
   };
 
-  const handleCreateValue = ({ attribute_id, value, slug }) => {
+  const handleCreateValue = (savedValue) => {
+    // savedValue should include attribute_id and attribute_value_id from server
+    const attributeId = savedValue?.attribute_id ?? savedValue?.attributeId ?? null;
+    const valueObj = {
+      attribute_value_id: savedValue.attribute_value_id ?? savedValue.id ?? Date.now(),
+      value: savedValue.value ?? "",
+      slug: savedValue.slug ?? null,
+    };
+
+    if (!attributeId) {
+      // fallback: close overlay and refresh full catalog
+      setCreateValueFor(null);
+      refresh();
+      return;
+    }
+
     setAttributes((prev) =>
       prev.map((a) =>
-        a.attribute_id === attribute_id
-          ? { ...a, values: [...a.values, { attribute_value_id: Date.now(), value, slug }] }
+        a.attribute_id === attributeId
+          ? { ...a, values: [...a.values, valueObj] }
           : a
       )
     );
+
     setCreateValueFor(null);
   };
 
@@ -157,7 +173,16 @@ const AttributesPage = () => {
       {createValueFor && (
         <CreateAttributeValueOverlay
           attribute={createValueFor}
-          onSave={handleCreateValue}
+          onSave={async (payload) => {
+            try {
+              // update local state optimistically
+              handleCreateValue(payload);
+              // then re-sync with server to ensure full, canonical data
+              await refresh();
+            } finally {
+              setCreateValueFor(null);
+            }
+          }}
           onClose={() => setCreateValueFor(null)}
         />
       )}

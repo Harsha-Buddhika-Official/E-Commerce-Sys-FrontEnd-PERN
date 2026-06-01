@@ -14,14 +14,23 @@ export default function CreateAttributeValueOverlay({ attribute, onSave, onClose
 
   const handleSave = async () => {
     if (!value.trim()) { setError("Value is required."); return; }
+    setError("");
+    try {
+      const savedValue = await createValue(attribute.attribute_id, { value: value.trim() });
+      if (!savedValue) throw new Error("No response from server");
 
-    const savedValue = await createValue(attribute.attribute_id, { value: value.trim() });
-    onSave?.({
-      attribute_id: attribute.attribute_id,
-      value: savedValue?.value ?? value.trim(),
-      slug: savedValue?.slug,
-    });
-    onClose();
+      const payload = {
+        attribute_id: attribute.attribute_id,
+        attribute_value_id: savedValue.attribute_value_id ?? savedValue.id ?? Date.now(),
+        value: savedValue.value ?? value.trim(),
+        slug: savedValue.slug ?? savedValue.slug_text ?? null,
+      };
+
+      onSave?.(payload);
+      onClose();
+    } catch (err) {
+      setError(err?.message || "Failed to add value.");
+    }
   };
 
   return (

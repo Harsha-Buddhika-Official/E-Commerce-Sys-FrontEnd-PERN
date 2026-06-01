@@ -1,19 +1,16 @@
-import { useState } from "react";
+import { useState,useCallback } from "react";
 import { deleteValueService } from "../service/attributes.service.js";
 
 export const useDeleteValue = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
 
-    const deleteValue = async (attributeId, attributeValueId) => {
+    const deleteValue = useCallback(async (attributeId, attributeValueId) => {
         setLoading(true);
         setError(null);
-        setSuccess(false);
 
         try {
             const deletedValue = await deleteValueService(attributeId, attributeValueId);
-            setSuccess(true);
             return deletedValue;
         } catch (err) {
             const message = err?.message || "Failed to delete attribute value.";
@@ -22,7 +19,7 @@ export const useDeleteValue = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    return { loading, error, success, deleteValue };
+    return { loading, error, deleteValue };
 };

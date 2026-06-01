@@ -4,7 +4,6 @@ import { handleApiError } from "../../../../../utils/apiError";
 export const createAttribute = async (attributeData) => {
      try{
         const res = await API.post("/attributes", attributeData);
-
         return res.data;
      } catch (error) {
         throw handleApiError(error, "Failed to create attribute");
@@ -20,6 +19,7 @@ export const createAttributeValue = async (attributeId, valueData) => {
   }
 };
 
+// get all attributes with their values devided into categories for attribute page 
 export const fetchAttributesCatalog = async () => {
   try {
     const res = await API.get("/attributes");

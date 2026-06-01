@@ -1,26 +1,25 @@
+import { useCallback, useState } from "react";
 import { deleteAttributesService } from "../service/attributes.service.js";
-import { useState } from "react";
 
 export const useDeleteAttributes = () => {
-    const[loading, setLoading] = useState(false);
-    const[error, setError] = useState(null);
-    const[success, setSuccess] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const deleteAttribute = async(id) => {
-        setLoading(true);
-        setError(null);
-        setSuccess(false);
-        try{
-            const deletedAttribute = await deleteAttributesService(id);
-            setSuccess(true);
-            return deletedAttribute;
-        } catch(err){
-            const message = err.message || "Failed to delete attribute.";
-            setError(message)
-            throw err;
-        } finally{
-            setLoading(false);
-        }
+  const deleteAttribute = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const deleteAttribute = await deleteAttributesService(id);
+      return deleteAttribute;
+    } catch (err) {
+      const message = err?.message || "Failed to delete attribute.";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
     }
-    return { loading, error, success, deleteAttribute}
-}
+  }, []);
+
+  return {loading,error,deleteAttribute };
+};

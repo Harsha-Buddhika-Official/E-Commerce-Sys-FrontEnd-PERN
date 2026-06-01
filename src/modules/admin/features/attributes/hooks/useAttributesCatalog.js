@@ -1,40 +1,47 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getAttributesCatalog } from "../service/attributes.service";
 
+const INITIAL_CATALOG = {
+  categories: [],
+  attributes: [],
+  groupedCategories: [],
+  totalCategories: 0,
+  totalAttributes: 0,
+};
+
 export const useAttributesCatalog = () => {
-  const [categories, setCategories] = useState([]);
-  const [attributes, setAttributes] = useState([]);
+  const [catalog, setCatalog] = useState(INITIAL_CATALOG);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchCatalog = async () => {
+  const fetchCatalog = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
       const data = await getAttributesCatalog();
-      setCategories(data.categories || []);
-      setAttributes(data.attributes || []);
+
+      setCatalog({
+        categories: data?.categories ?? [],
+        attributes: data?.attributes ?? [],
+        groupedCategories: data?.groupedCategories ?? [],
+        totalCategories: data?.totalCategories ?? 0,
+        totalAttributes: data?.totalAttributes ?? 0,
+      });
     } catch (err) {
-      setCategories([]);
-      setAttributes([]);
+      setCatalog(INITIAL_CATALOG);
       setError(err);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    const loadCatalog = async () => {
-      await fetchCatalog();
-    };
-
-    void loadCatalog();
   }, []);
 
+  useEffect(() => {
+    fetchCatalog();
+  }, [fetchCatalog]);
+
   return {
-    categories,
-    attributes,
+    ...catalog,
     loading,
     error,
     refresh: fetchCatalog,
