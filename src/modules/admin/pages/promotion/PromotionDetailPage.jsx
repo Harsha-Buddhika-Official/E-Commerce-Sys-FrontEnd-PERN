@@ -92,8 +92,8 @@ const PromotionDetailPage = ({ offer = null, onBack = () => {}, onDelete = () =>
 	const status = getStatus(resolvedOffer.start_date, resolvedOffer.end_date, resolvedOffer.is_active);
 	const isPercent = resolvedOffer.discount_type === "percentage";
 	const linkedProducts = resolvedOffer.products || offer?.products || [];
+	const primaryProduct = resolvedOffer.product || linkedProducts?.[0]?.product || linkedProducts?.[0] || null;
 	const remaining = daysRemaining(resolvedOffer.end_date, resolvedOffer.start_date);
-	const featuredProduct = linkedProducts?.[0]?.product || linkedProducts?.[0] || null;
 
 	return (
 		<div className="min-h-screen w-full bg-[#f5f5f5] p-4 md:p-5 lg:p-6">
@@ -184,12 +184,12 @@ const PromotionDetailPage = ({ offer = null, onBack = () => {}, onDelete = () =>
 						</div>
 					</SectionCard>
 
-					{featuredProduct ? (
+					{primaryProduct ? (
 						<SectionCard>
 							<div className="flex items-center gap-4">
 								<div className="shrink-0 rounded-lg overflow-hidden" style={{ width: 96, height: 72, background: "#f7f7f7", border: "1px solid #f0f0f0" }}>
-									{featuredProduct.images?.[0]?.image_url ? (
-										<img src={featuredProduct.images[0].image_url} alt={featuredProduct.name} className="w-full h-full object-cover" />
+									{primaryProduct.image?.image_url || primaryProduct.images?.[0]?.image_url ? (
+										<img src={primaryProduct.image?.image_url || primaryProduct.images[0].image_url} alt={primaryProduct.name} className="w-full h-full object-cover" />
 									) : (
 										<div className="w-full h-full flex items-center justify-center">
 											<BrokenImageOutlinedIcon style={{ fontSize: 28, color: "#ddd" }} />
@@ -198,8 +198,8 @@ const PromotionDetailPage = ({ offer = null, onBack = () => {}, onDelete = () =>
 								</div>
 								<div className="min-w-0">
 									<p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 700 }}>Featured Product</p>
-									<h3 style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111", lineHeight: 1.2, marginTop: 4 }}>{featuredProduct.name}</h3>
-									<p style={{ ...INTER, fontSize: 12, color: "#777", marginTop: 6 }}>ID: #{featuredProduct.id ?? featuredProduct.product_id ?? "—"}</p>
+									<h3 style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111", lineHeight: 1.2, marginTop: 4 }}>{primaryProduct.name}</h3>
+							
 								</div>
 							</div>
 						</SectionCard>
@@ -213,9 +213,18 @@ const PromotionDetailPage = ({ offer = null, onBack = () => {}, onDelete = () =>
 						<InfoRow label="Discount Type" value={resolvedOffer.discount_type} />
 						<InfoRow label="Discount" value={isPercent ? `${resolvedOffer.discount_value}%` : `Rs ${Number(resolvedOffer.discount_value).toLocaleString()}`} accent />
 						<InfoRow label="Status" value={status.label} />
-						<InfoRow label="Products" value={`${linkedProducts.length} linked`} />
+                        
 						<InfoRow label="Created" value={formatDate(resolvedOffer.created_at)} />
 						<InfoRow label="Updated" value={formatDate(resolvedOffer.updated_at)} />
+					</SectionCard>
+
+					<SectionCard>
+						<SectionTitle icon={<AttachMoneyOutlinedIcon style={{ fontSize: 16 }} />}>Prices & Stock</SectionTitle>
+						<InfoRow label="Price" value={primaryProduct ? (primaryProduct.discounted_price ? `Rs ${Number(primaryProduct.discounted_price).toLocaleString()}` : `Rs ${Number(primaryProduct.selling_price).toLocaleString()}`) : "—"} />
+						{primaryProduct && primaryProduct.discounted_price && primaryProduct.discounted_price !== primaryProduct.selling_price ? (
+							<InfoRow label="Original Price" value={<span style={{ textDecoration: 'line-through' }}>{`Rs ${Number(primaryProduct.selling_price).toLocaleString()}`}</span>} />
+						) : null}
+						<InfoRow label="Stock" value={primaryProduct && typeof primaryProduct.stock_quantity !== 'undefined' ? Number(primaryProduct.stock_quantity) : "—"} />
 					</SectionCard>
 				</div>
 			</div>

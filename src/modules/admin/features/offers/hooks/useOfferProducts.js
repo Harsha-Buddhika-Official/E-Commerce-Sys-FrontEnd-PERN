@@ -1,64 +1,44 @@
-import { useState } from "react";
-import { attachProductService, detachProductService } from "../service/offers.service.js";
+import { useCallback, useState } from "react";
+import { attachProductService } from "../service/offers.service.js";
 
-/**
- * Hook to manage offer products (attach/detach)
- * Returns: { attaching, detaching, error, attachProduct, detachProduct }
- */
 export const useOfferProducts = () => {
+  const [attachedProduct, setAttachedProduct] = useState(null);
   const [attaching, setAttaching] = useState(false);
-  const [detaching, setDetaching] = useState(false);
   const [error, setError] = useState(null);
 
-  const attachProduct = async (offerId, productId) => {
+  const attachProduct = useCallback(async (offerId, productId) => {
     if (!offerId) {
-      const err = new Error("Offer ID is required");
-      setError(err);
-      throw err;
+      const validationError = new Error("Offer ID is required");
+      setError(validationError.message);
+      throw validationError;
     }
+
     if (!productId) {
-      const err = new Error("Product ID is required");
-      setError(err);
-      throw err;
+      const validationError = new Error("Product ID is required");
+      setError(validationError.message);
+      throw validationError;
     }
 
     setAttaching(true);
     setError(null);
+
     try {
-      const res = await attachProductService(offerId, productId);
-      setAttaching(false);
-      return res;
+      const result = await attachProductService(offerId, productId);
+      setAttachedProduct(result);
+      return result;
     } catch (err) {
-      setError(err);
+      setError(err?.message || "Failed to attach product to offer");
+      throw err;
+    } finally {
       setAttaching(false);
-      throw err;
     }
-  };
+  }, []);
 
-  const detachProduct = async (offerId, productId) => {
-    if (!offerId) {
-      const err = new Error("Offer ID is required");
-      setError(err);
-      throw err;
-    }
-    if (!productId) {
-      const err = new Error("Product ID is required");
-      setError(err);
-      throw err;
-    }
-
-    setDetaching(true);
+  const reset = useCallback(() => {
+    setAttachedProduct(null);
     setError(null);
-    try {
-      const res = await detachProductService(offerId, productId);
-      setDetaching(false);
-      return res;
-    } catch (err) {
-      setError(err);
-      setDetaching(false);
-      throw err;
-    }
-  };
+    setAttaching(false);
+  }, []);
 
-  return { attaching, detaching, error, attachProduct, detachProduct };
+  return {attachedProduct,attaching,error,attachProduct,reset,};
 };

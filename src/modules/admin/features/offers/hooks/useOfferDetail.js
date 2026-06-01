@@ -8,10 +8,6 @@ const INITIAL_STATE = {
   error: null,
 };
 
-/**
- * Hook for loading a single offer detail record.
- * Accepts an explicit offerId or falls back to the route param.
- */
 export const useOfferDetail = (offerIdFromArg) => {
   const params = useParams();
   const offerId = offerIdFromArg ?? params.id;
@@ -21,6 +17,8 @@ export const useOfferDetail = (offerIdFromArg) => {
       : { offer: null, loading: false, error: "Offer ID is required" }
   ));
 
+  const loadOffer = () => getOfferDetail(offerId);
+
   useEffect(() => {
     if (!offerId) {
       return;
@@ -28,7 +26,7 @@ export const useOfferDetail = (offerIdFromArg) => {
 
     let cancelled = false;
 
-    getOfferDetail(offerId)
+    loadOffer()
       .then((offer) => {
         if (!cancelled) {
           setState({ offer, loading: false, error: null });
@@ -50,7 +48,7 @@ export const useOfferDetail = (offerIdFromArg) => {
     refresh: () => {
       if (offerId) {
         setState((prev) => ({ ...prev, loading: true, error: null }));
-        getOfferDetail(offerId)
+        loadOffer()
           .then((offer) => setState({ offer, loading: false, error: null }))
           .catch((err) => setState({ offer: null, loading: false, error: err.message }));
       }

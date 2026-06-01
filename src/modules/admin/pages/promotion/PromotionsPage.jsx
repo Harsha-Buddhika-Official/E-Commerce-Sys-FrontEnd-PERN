@@ -49,9 +49,9 @@ function StatChip({ label, value, color }) {
 }
 
 const PromotionsPage = () => {
-	const { offers, loading, error: offersError, refresh } = useOffers();
-	const { updating, error: updateError, updateOffer } = useUpdateOffer();
-	const { deleting, error: deleteError, deleteOffer } = useDeleteOffer();
+	const { offers, refresh } = useOffers();
+	const { updateOffer } = useUpdateOffer();
+	const { deleteOffer } = useDeleteOffer();
 	const { toggleOfferActive } = useToggleOffer();
 
 	const [search,       setSearch]       = useState("");
@@ -128,7 +128,14 @@ const PromotionsPage = () => {
 	return (
 		<div className="flex flex-col h-screen overflow-hidden bg-[#f5f5f5]">
 			{showForm && (
-				<PromotionCreateOverlay mode="create" onClose={() => setShowForm(false)} onCreated={() => { setShowForm(false); refresh(); }} />
+				<PromotionCreateOverlay
+					mode="create"
+					onClose={() => setShowForm(false)}
+					onCreated={async () => {
+						setShowForm(false);
+						await refresh();
+					}}
+				/>
 			)}
 			{editTarget && (
 				<PromotionCreateOverlay mode="edit" offer={editTarget} onSave={handleEdit} onClose={() => setEditTarget(null)} />

@@ -337,7 +337,7 @@ const PromotionCreateOverlay = ({ mode = "create", offer = null, onSave, onClose
     if (!validate()) return;
     setSaving(true);
     const selectedProductId = productId;
-    const basePayload = {
+    const offerPayload = {
       ...(isEdit && offer ? { id: offer.id } : {}),
       title: title.trim(),
       description: description.trim() || null,
@@ -347,13 +347,12 @@ const PromotionCreateOverlay = ({ mode = "create", offer = null, onSave, onClose
       end_date: new Date(endDate).toISOString(),
       is_active: isActive,
       banner_image: bannerPreview.trim() || null,
-      product_id: productId,
     };
 
     const payload = bannerFile
       ? (() => {
           const formData = new FormData();
-          Object.entries(basePayload).forEach(([key, value]) => {
+          Object.entries(offerPayload).forEach(([key, value]) => {
             if (key === "banner_image") return;
             if (value === null || typeof value === "undefined") return;
             formData.append(key, value);
@@ -361,7 +360,7 @@ const PromotionCreateOverlay = ({ mode = "create", offer = null, onSave, onClose
           formData.append("banner_image", bannerFile);
           return formData;
         })()
-      : basePayload;
+      : offerPayload;
 
     try {
       if (isEdit) {
@@ -374,20 +373,25 @@ const PromotionCreateOverlay = ({ mode = "create", offer = null, onSave, onClose
 
       // Create mode: use local hook to create the offer
       const created = await createOffer(payload);
+      const createdOfferId = created?.id ?? created?.offer_id ?? created?.offerId ?? null;
 
       // If a product was chosen, try attaching it
-      if (selectedProductId && created?.id) {
+      if (selectedProductId && createdOfferId) {
         try {
-          await attachProduct(created.id, selectedProductId);
+          await attachProduct(createdOfferId, selectedProductId);
         } catch (err) {
           console.error("Failed to attach product to offer:", err);
           // don't block on attachment failure
         }
       }
 
-      // Notify caller and close
-      if (typeof onCreated === "function") onCreated(created);
-      else onClose?.();
+      // Notify caller and let the parent refresh the page state.
+      if (typeof onCreated === "function") {
+        await onCreated(created);
+      } else {
+        onClose?.();
+      }
+
       setSaving(false);
     } catch (err) {
       setSaving(false);

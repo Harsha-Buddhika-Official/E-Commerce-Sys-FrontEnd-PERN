@@ -5,7 +5,7 @@ import VisibilityOutlinedIcon      from "@mui/icons-material/VisibilityOutlined"
 import CalendarTodayOutlinedIcon   from "@mui/icons-material/CalendarTodayOutlined";
 import PercentOutlinedIcon         from "@mui/icons-material/PercentOutlined";
 import AttachMoneyOutlinedIcon     from "@mui/icons-material/AttachMoneyOutlined";
-import InventoryOutlinedIcon       from "@mui/icons-material/InventoryOutlined";
+// Inventory icon removed — product count no longer shown
 import ToggleOnIcon                from "@mui/icons-material/ToggleOn";
 import ToggleOffIcon               from "@mui/icons-material/ToggleOff";
 import BrokenImageOutlinedIcon     from "@mui/icons-material/BrokenImageOutlined";
@@ -121,16 +121,7 @@ const PromotionCard = ({ offer, onView, onEdit, onDelete, onToggle }) => {
             {isPercent ? "Percentage" : "Fixed Amount"}
           </span>
 
-          {/* Product count */}
-          {offer.product_count != null && (
-            <span
-              className="flex items-center gap-1 px-2 py-0.5 rounded-md"
-              style={{ ...INTER, fontSize: 10, fontWeight: 700, backgroundColor: "#f0f0f0", color: "#555" }}
-            >
-              <InventoryOutlinedIcon style={{ fontSize: 11 }} />
-              {offer.product_count} product{offer.product_count !== 1 ? "s" : ""}
-            </span>
-          )}
+          {/* Single-product offers — product count removed */}
         </div>
 
         {/* Date range */}

@@ -1,9 +1,39 @@
 import API from "../../../../../api/client";
 import { handleApiError } from "../../../../../utils/apiError";
 
+// for create offer in offer page
+export const createOffer = async (payload) => {
+  if (!payload) {
+    throw new Error("Offer payload is required");
+  }
+  try {
+    const isMultipart = typeof FormData !== "undefined" && payload instanceof FormData;
+    const res = await API.post("/offers/admin/", payload, isMultipart ? { timeout: 30000 } : undefined);
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to create offer");
+  }
+};
+
+// for create offer in offer page
+export const attachProductToOffer = async (offerId, productId) => {
+  if (!offerId) {
+    throw new Error("Offer ID is required");
+  }
+  if (!productId) {
+    throw new Error("Product ID is required");
+  }
+  try {
+    const res = await API.post(`/offers/admin/products/${offerId}`, { product_id: productId });
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to attach product to offer");
+  }
+};
+
 export const fetchAllOffers = async () => {
   try {
-    const res = await API.get("/offers");
+    const res = await API.get("/offers/admin");
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to fetch offers");
@@ -24,7 +54,7 @@ export const fetchOfferById = async (offerId) => {
     throw new Error("Offer ID is required");
   }
   try {
-    const res = await API.get(`/offers/${offerId}`);
+    const res = await API.get(`/offers/admin/${offerId}`);
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to fetch offer details");
@@ -40,19 +70,6 @@ export const fetchOfferProducts = async (offerId) => {
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to fetch offer products");
-  }
-};
-
-export const createOffer = async (payload) => {
-  if (!payload) {
-    throw new Error("Offer payload is required");
-  }
-  try {
-    const isMultipart = typeof FormData !== "undefined" && payload instanceof FormData;
-    const res = await API.post("/offers/admin/", payload, isMultipart ? { timeout: 30000 } : undefined);
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to create offer");
   }
 };
 
@@ -111,35 +128,5 @@ export const deleteOffer = async (offerId) => {
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to delete offer");
-  }
-};
-
-export const attachProductToOffer = async (offerId, productId) => {
-  if (!offerId) {
-    throw new Error("Offer ID is required");
-  }
-  if (!productId) {
-    throw new Error("Product ID is required");
-  }
-  try {
-    const res = await API.post(`/offers/admin/products/${offerId}`, { product_id: productId });
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to attach product to offer");
-  }
-};
-
-export const detachProductFromOffer = async (offerId, productId) => {
-  if (!offerId) {
-    throw new Error("Offer ID is required");
-  }
-  if (!productId) {
-    throw new Error("Product ID is required");
-  }
-  try {
-    const res = await API.delete(`/offers/admin/${offerId}/products/${productId}`);
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to detach product from offer");
   }
 };
