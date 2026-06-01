@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { createOfferService } from "../service/offers.service.js";
 
-/**
- * Hook to create a new offer
- * Returns: { creating, error, createOffer }
- */
 export const useCreateOffer = () => {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState(null);

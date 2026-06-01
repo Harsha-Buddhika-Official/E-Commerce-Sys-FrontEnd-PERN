@@ -1,10 +1,6 @@
 import API from "../../../../../api/client";
 import { handleApiError } from "../../../../../utils/apiError";
 
-/**
- * Fetch all offers with mapped products
- * GET /api/offers
- */
 export const fetchAllOffers = async () => {
   try {
     const res = await API.get("/offers");
@@ -14,10 +10,6 @@ export const fetchAllOffers = async () => {
   }
 };
 
-/**
- * Fetch active offers only
- * GET /api/offers/active
- */
 export const fetchActiveOffers = async () => {
   try {
     const res = await API.get("/offers/active");
@@ -27,10 +19,6 @@ export const fetchActiveOffers = async () => {
   }
 };
 
-/**
- * Fetch a single offer by ID
- * GET /api/offers/:id
- */
 export const fetchOfferById = async (offerId) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -43,10 +31,6 @@ export const fetchOfferById = async (offerId) => {
   }
 };
 
-/**
- * Fetch products attached to an offer
- * GET /api/offers/:id/products
- */
 export const fetchOfferProducts = async (offerId) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -59,10 +43,6 @@ export const fetchOfferProducts = async (offerId) => {
   }
 };
 
-/**
- * Create a new offer
- * POST /api/offers/admin/
- */
 export const createOffer = async (payload) => {
   if (!payload) {
     throw new Error("Offer payload is required");
@@ -76,10 +56,6 @@ export const createOffer = async (payload) => {
   }
 };
 
-/**
- * Update an existing offer
- * PUT /api/offers/admin/:id
- */
 export const updateOffer = async (offerId, payload) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -96,10 +72,6 @@ export const updateOffer = async (offerId, payload) => {
   }
 };
 
-/**
- * Toggle an offer's active status
- * PUT /api/offers/admin/:id/toggle-active
- */
 export const toggleOfferActive = async (offerId) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -112,11 +84,6 @@ export const toggleOfferActive = async (offerId) => {
   }
 };
 
-/**
- * Set an offer's active status explicitly
- * PUT /api/offers/admin/:id/activation
- * Body: { is_active: boolean }
- */
 export const setOfferActivation = async (offerId, isActive) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -135,10 +102,6 @@ export const setOfferActivation = async (offerId, isActive) => {
   }
 };
 
-/**
- * Delete an offer
- * DELETE /api/offers/admin/:id
- */
 export const deleteOffer = async (offerId) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -151,11 +114,6 @@ export const deleteOffer = async (offerId) => {
   }
 };
 
-/**
- * Attach a product to an offer
- * POST /api/offers/admin/products/:id
- * Body: { product_id: number }
- */
 export const attachProductToOffer = async (offerId, productId) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -171,10 +129,6 @@ export const attachProductToOffer = async (offerId, productId) => {
   }
 };
 
-/**
- * Detach a product from an offer
- * DELETE /api/offers/admin/:id/products/:productId
- */
 export const detachProductFromOffer = async (offerId, productId) => {
   if (!offerId) {
     throw new Error("Offer ID is required");

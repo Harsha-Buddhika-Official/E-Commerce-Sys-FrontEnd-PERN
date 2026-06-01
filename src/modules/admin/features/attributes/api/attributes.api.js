@@ -1,6 +1,7 @@
 import API from "../../../../../api/client";
 import { handleApiError } from "../../../../../utils/apiError";
 
+// Create a new attribute
 export const createAttribute = async (attributeData) => {
      try{
         const res = await API.post("/attributes", attributeData);
@@ -10,6 +11,7 @@ export const createAttribute = async (attributeData) => {
      }
 }
 
+// Create a new value for a specific attribute
 export const createAttributeValue = async (attributeId, valueData) => {
   try {
     const res = await API.post(`/attributes/${attributeId}/value`, valueData);
@@ -29,6 +31,7 @@ export const fetchAttributesCatalog = async () => {
   }
 };
 
+// for delete attribute in attribute page
 export const deleteAttribute = async(attributeId) => {
   try{
     const res = await API.delete(`/attributes/${attributeId}`);;
@@ -38,6 +41,7 @@ export const deleteAttribute = async(attributeId) => {
   }
 }
 
+// for delete attribute value in attribute page
 export const deleteAttributeValue = async (attributeId, attributeValueId) => {
   try {
     const res = await API.delete(`/attributes/${attributeId}/value/${attributeValueId}`);

@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { toggleOfferActiveService } from "../service/offers.service.js";
 
-/**
- * Hook to toggle an offer's active status
- * Returns: { toggling, error, toggleOfferActive }
- */
 export const useToggleOffer = () => {
   const [toggling, setToggling] = useState(false);
   const [error, setError] = useState(null);
