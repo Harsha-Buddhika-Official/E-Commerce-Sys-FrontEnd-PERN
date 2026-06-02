@@ -28,6 +28,7 @@ export const useOffers = () => {
     offers,
     loading,
     error,
-    fetchOffers
+    fetchOffers,
+    refresh: fetchOffers,
   };
 };

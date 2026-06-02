@@ -5,9 +5,12 @@ import FilterListOutlinedIcon    from "@mui/icons-material/FilterListOutlined";
 import LocalOfferOutlinedIcon    from "@mui/icons-material/LocalOfferOutlined";
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import CloseIcon                 from "@mui/icons-material/Close";
+
 import PromotionCard             from "../../components/promotion/PromotionCard.jsx";
 import PromotionCreateOverlay    from "../../overlay/PromotionCreateOverlay.jsx";
 import PromotionDetailPage       from "./PromotionDetailPage.jsx";
+import PromotionEditOverlay      from "../../overlay/PromotionEditOverlay.jsx";
+
 import { useOffers }             from "../../features/offers/hooks/useOffers.js";
 import { useUpdateOffer }        from "../../features/offers/hooks/useUpdateOffer.js";
 import { useDeleteOffer }        from "../../features/offers/hooks/useDeleteOffer.js";
@@ -82,7 +85,6 @@ const PromotionsPage = () => {
 				? payload.get("id")
 				: payload.id;
 			await updateOffer(offerId, payload);
-			setEditTarget(null);
 			refresh();
 		} catch (err) {
 			window.alert(err?.message || "Failed to update offer");
@@ -138,7 +140,7 @@ const PromotionsPage = () => {
 				/>
 			)}
 			{editTarget && (
-				<PromotionCreateOverlay mode="edit" offer={editTarget} onSave={handleEdit} onClose={() => setEditTarget(null)} />
+				<PromotionEditOverlay offer={editTarget} onSave={handleEdit} onClose={() => setEditTarget(null)} />
 			)}
 			{deleteTarget && (
 				<DeleteModal offer={deleteTarget} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} />

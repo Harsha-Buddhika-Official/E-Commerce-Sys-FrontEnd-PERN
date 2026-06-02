@@ -1,38 +1,40 @@
 import { useState } from "react";
 import { updateOfferService } from "../service/offers.service.js";
 
-/**
- * Hook to update an offer
- * Returns: { updating, error, updateOffer }
- */
 export const useUpdateOffer = () => {
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(null);
 
   const updateOffer = async (offerId, payload) => {
     if (!offerId) {
-      const err = new Error("Offer ID is required");
-      setError(err);
-      throw err;
+      const message = "Offer ID is required";
+      setError(message);
+      throw new Error(message);
     }
+
     if (!payload) {
-      const err = new Error("Offer payload is required");
-      setError(err);
-      throw err;
+      const message = "Offer payload is required";
+      setError(message);
+      throw new Error(message);
     }
 
     setUpdating(true);
     setError(null);
+
     try {
-      const res = await updateOfferService(offerId, payload);
-      setUpdating(false);
-      return res;
+      return await updateOfferService(offerId, payload);
     } catch (err) {
-      setError(err);
-      setUpdating(false);
+      const message = err?.message || "Failed to update offer";
+      setError(message);
       throw err;
+    } finally {
+      setUpdating(false);
     }
   };
 
-  return { updating, error, updateOffer };
+  return {
+    updating,
+    error,
+    updateOffer,
+  };
 };

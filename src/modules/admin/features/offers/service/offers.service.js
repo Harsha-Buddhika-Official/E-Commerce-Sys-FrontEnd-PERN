@@ -71,6 +71,7 @@ const normalizeOfferDetail = (offer) => {
   };
 };
 
+// for creating offer in offer page //successfully
 export const createOfferService = async (payload) => {
   if (!payload) throw new Error("Offer payload is required");
   try {
@@ -86,6 +87,7 @@ export const createOfferService = async (payload) => {
   }
 };
 
+// for attaching product to offer in offer page //successfully
 export const attachProductService = async (offerId, productId) => {
   if (!offerId) throw new Error("Offer ID is required");
   if (!productId) throw new Error("Product ID is required");
@@ -101,23 +103,11 @@ export const attachProductService = async (offerId, productId) => {
   }
 };
 
-export const deleteOfferService = async (offerId) => {
-  if (!offerId) throw new Error("Offer ID is required");
-  try {
-    const response = await apiDeleteOffer(offerId);
-    if (!response || typeof response !== "object") throw new Error("Invalid delete response");
-    return response;
-  } catch (error) {
-    throw handleServiceError(error, "Failed to delete offer", {
-      service: "offers",
-      operation: "deleteOfferService",
-    });
-  }
-};
-
+// for fetching all offers in offer page //successfully
 export const getAllOffers = async () => {
   try {
     const response = await fetchAllOffers();
+    console.log("Fetched offers response", response);
 
     if (!response || typeof response !== "object") {
       throw new Error("Invalid response structure from API");
@@ -174,10 +164,14 @@ export const getActiveOffers = async () => {
 export const updateOfferService = async (offerId, payload) => {
   if (!offerId) throw new Error("Offer ID is required");
   if (!payload) throw new Error("Offer payload is required");
+
   try {
     const response = await apiUpdateOffer(offerId, payload);
-    if (!response || typeof response !== "object") throw new Error("Invalid update response");
-    if (response.success !== true) throw new Error(response.message || "Failed to update offer");
+
+    if (!response?.success) {
+      throw new Error(response?.message || "Failed to update offer");
+    }
+
     return response.data;
   } catch (error) {
     throw handleServiceError(error, "Failed to update offer", {
@@ -187,6 +181,8 @@ export const updateOfferService = async (offerId, payload) => {
   }
 };
 
+
+// for get one single offer full details for offer details page //successfully
 export const getOfferDetail = async (offerId) => {
   try {
     const response = await fetchOfferById(offerId);
@@ -218,6 +214,21 @@ export const toggleOfferActiveService = async (offerId, isActive) => {
     throw handleServiceError(error, "Failed to set offer activation", {
       service: "offers",
       operation: "toggleOfferActiveService",
+    });
+  }
+};
+
+// for deleting offer in offer page //successfully
+export const deleteOfferService = async (offerId) => {
+  if (!offerId) throw new Error("Offer ID is required");
+  try {
+    const response = await apiDeleteOffer(offerId);
+    if (!response || typeof response !== "object") throw new Error("Invalid delete response");
+    return response;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to delete offer", {
+      service: "offers",
+      operation: "deleteOfferService",
     });
   }
 };

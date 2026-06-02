@@ -1,33 +1,35 @@
 import { useState } from "react";
 import { deleteOfferService } from "../service/offers.service.js";
 
-/**
- * Hook to delete an offer
- * Returns: { deleting, error, deleteOffer }
- */
 export const useDeleteOffer = () => {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
 
   const deleteOffer = async (offerId) => {
     if (!offerId) {
-      const err = new Error("Offer ID is required");
-      setError(err);
-      throw err;
+      const message = "Offer ID is required";
+      setError(message);
+      throw new Error(message);
     }
 
     setDeleting(true);
     setError(null);
+
     try {
-      const res = await deleteOfferService(offerId);
-      setDeleting(false);
-      return res;
+      return await deleteOfferService(offerId);
+      
     } catch (err) {
-      setError(err);
-      setDeleting(false);
+      const message = err?.message || "Failed to delete offer";
+      setError(message);
       throw err;
+    } finally {
+      setDeleting(false);
     }
   };
 
-  return { deleting, error, deleteOffer };
+  return {
+    deleting,
+    error,
+    deleteOffer,
+  };
 };

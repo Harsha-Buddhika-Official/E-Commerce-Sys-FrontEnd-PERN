@@ -1,7 +1,7 @@
 import API from "../../../../../api/client";
 import { handleApiError } from "../../../../../utils/apiError";
 
-// for create offer in offer page
+// for create offer in offer create overlay //successfully
 export const createOffer = async (payload) => {
   if (!payload) {
     throw new Error("Offer payload is required");
@@ -15,7 +15,20 @@ export const createOffer = async (payload) => {
   }
 };
 
-// for create offer in offer page
+// for get all products to product dropdown in offer create overlay //successfully
+export const fetchOfferProducts = async (offerId) => {
+  if (!offerId) {
+    throw new Error("Offer ID is required");
+  }
+  try {
+    const res = await API.get(`/offers/${offerId}/products`);
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch offer products");
+  }
+};
+
+// for attach product to offer in offer page //successfully
 export const attachProductToOffer = async (offerId, productId) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -31,6 +44,7 @@ export const attachProductToOffer = async (offerId, productId) => {
   }
 };
 
+//for get all offers in offer page //successfully
 export const fetchAllOffers = async () => {
   try {
     const res = await API.get("/offers/admin");
@@ -40,15 +54,7 @@ export const fetchAllOffers = async () => {
   }
 };
 
-export const fetchActiveOffers = async () => {
-  try {
-    const res = await API.get("/offers/active");
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to fetch active offers");
-  }
-};
-
+// get one single offer full details for offer details page
 export const fetchOfferById = async (offerId) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -61,15 +67,12 @@ export const fetchOfferById = async (offerId) => {
   }
 };
 
-export const fetchOfferProducts = async (offerId) => {
-  if (!offerId) {
-    throw new Error("Offer ID is required");
-  }
+export const fetchActiveOffers = async () => {
   try {
-    const res = await API.get(`/offers/${offerId}/products`);
+    const res = await API.get("/offers/active");
     return res.data;
   } catch (error) {
-    throw handleApiError(error, "Failed to fetch offer products");
+    throw handleApiError(error, "Failed to fetch active offers");
   }
 };
 
@@ -119,6 +122,7 @@ export const setOfferActivation = async (offerId, isActive) => {
   }
 };
 
+// for delete offer in offer page //successfully
 export const deleteOffer = async (offerId) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
