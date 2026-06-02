@@ -7,7 +7,7 @@ import {
   fetchOfferById,
   attachProductToOffer as apiAttachProduct,
   setOfferActivation as apiSetOfferActivation,
-} from "../api/offers.api";
+} from "../api/offers.api.js";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 
 const toNumber = (value) => {
@@ -107,7 +107,6 @@ export const attachProductService = async (offerId, productId) => {
 export const getAllOffers = async () => {
   try {
     const response = await fetchAllOffers();
-    console.log("Fetched offers response", response);
 
     if (!response || typeof response !== "object") {
       throw new Error("Invalid response structure from API");
@@ -161,6 +160,7 @@ export const getActiveOffers = async () => {
   }
 };
 
+// for updating offer in offer page //successfully
 export const updateOfferService = async (offerId, payload) => {
   if (!offerId) throw new Error("Offer ID is required");
   if (!payload) throw new Error("Offer payload is required");
@@ -197,23 +197,18 @@ export const getOfferDetail = async (offerId) => {
   }
 };
 
-export const toggleOfferActiveService = async (offerId, isActive) => {
-  if (!offerId) throw new Error("Offer ID is required");
+export const toggleOfferService = async (offerId, isActive) => {
+  if (!offerId) {
+    throw new Error("Offer ID is required");
+  }
   try {
-    const response = await apiSetOfferActivation(offerId, isActive);
-    if (!response || typeof response !== "object") throw new Error("Invalid activation response");
+    const response = await apiSetOfferActivation(offerId,isActive);
     if (response.success !== true) throw new Error(response.message || "Failed to set offer activation");
-    return response.data;
+    return true;
   } catch (error) {
-    if (error?.response?.status === 404 && typeof isActive === "boolean") {
-      const fallbackResponse = await apiUpdateOffer(offerId, { is_active: isActive });
-      if (!fallbackResponse || typeof fallbackResponse !== "object") throw new Error("Invalid update response");
-      if (fallbackResponse.success !== true) throw new Error(fallbackResponse.message || "Failed to set offer activation");
-      return fallbackResponse.data;
-    }
-    throw handleServiceError(error, "Failed to set offer activation", {
-      service: "offers",
-      operation: "toggleOfferActiveService",
+    throw handleServiceError(error,"Failed to set offer activation",{
+        service: "offers",
+        operation: "toggleOfferService",
     });
   }
 };

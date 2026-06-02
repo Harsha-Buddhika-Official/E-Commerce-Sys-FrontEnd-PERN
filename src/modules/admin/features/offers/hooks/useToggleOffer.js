@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toggleOfferActiveService } from "../service/offers.service.js";
+import { toggleOfferService } from "../service/offers.service.js";
 
 export const useToggleOffer = () => {
   const [toggling, setToggling] = useState(false);
@@ -7,24 +7,24 @@ export const useToggleOffer = () => {
 
   const toggleOfferActive = async (offerId, isActive) => {
     if (!offerId) {
-      const err = new Error("Offer ID is required");
-      setError(err);
-      throw err;
+      const message = "Offer ID is required";
+      setError(message);
+      throw new Error(message);
     }
 
     setToggling(true);
     setError(null);
 
     try {
-      const res = await toggleOfferActiveService(offerId, isActive);
-      setToggling(false);
-      return res;
+      return await toggleOfferService(offerId, isActive);
     } catch (err) {
-      setError(err);
-      setToggling(false);
+      const message = err?.message || "Failed to update offer status";
+      setError(message);
       throw err;
+    } finally {
+      setToggling(false);
     }
   };
 
-  return { toggling, error, toggleOfferActive };
+  return {toggling,error,toggleOfferActive,};
 };

@@ -147,9 +147,7 @@ const PromotionEditOverlay = ({ offer = null, onSave, onClose }) => {
     || (offer?.product_id
       ? { product_id: offer.product_id, name: offer.product_name, category_name: offer.category_name, selling_price: offer.selling_price }
       : null);
-
-    console.log("PromotionEditOverlay render", { offer, linkedProduct });
-
+      
   const [title, setTitle] = useState(offer?.title || "");
   const [description, setDescription] = useState(offer?.description || "");
   const [discountType, setDiscountType] = useState(offer?.discount_type || "percentage");

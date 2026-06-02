@@ -28,7 +28,7 @@ export const fetchOfferProducts = async (offerId) => {
   }
 };
 
-// for attach product to offer in offer page //successfully
+// for attach product to offer in offer create page //successfully
 export const attachProductToOffer = async (offerId, productId) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -104,18 +104,11 @@ export const toggleOfferActive = async (offerId) => {
   }
 };
 
+// for toggle offer active in offer page
 export const setOfferActivation = async (offerId, isActive) => {
-  if (!offerId) {
-    throw new Error("Offer ID is required");
-  }
-
-  if (typeof isActive !== "boolean") {
-    throw new Error("isActive must be a boolean");
-  }
-
   try {
     const payload = { is_active: isActive };
-    const res = await API.put(`/offers/admin/${offerId}/activation`, payload);
+    const res = await API.put(`/offers/admin/${offerId}/toggle`, payload);
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to set offer activation");
