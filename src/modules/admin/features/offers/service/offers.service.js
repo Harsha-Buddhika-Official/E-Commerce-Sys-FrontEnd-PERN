@@ -1,6 +1,5 @@
 import {
   fetchAllOffers,
-  fetchActiveOffers,
   createOffer as apiCreateOffer,
   updateOffer as apiUpdateOffer,
   deleteOffer as apiDeleteOffer,
@@ -14,6 +13,7 @@ const toNumber = (value) => {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : 0;
 };
+
 
 const normalizeOfferProduct = (linkedProduct) => {
   const product = linkedProduct?.product || linkedProduct || null;
@@ -134,32 +134,6 @@ export const getAllOffers = async () => {
   }
 };
 
-export const getActiveOffers = async () => {
-  try {
-    const response = await fetchActiveOffers();
-
-    if (!response || typeof response !== "object") {
-      throw new Error("Invalid response structure from API");
-    }
-
-    let offers = [];
-    if (Array.isArray(response)) {
-      offers = response;
-    } else if (response.data && Array.isArray(response.data)) {
-      offers = response.data;
-    } else {
-      throw new Error("No offers data found in response");
-    }
-
-    return offers.filter((o) => o && typeof o === "object").map(normalizeOfferDetail).filter((o) => o);
-  } catch (error) {
-    throw handleServiceError(error, "Failed to fetch active offers", {
-      service: "offers",
-      operation: "getActiveOffers",
-    });
-  }
-};
-
 // for updating offer in offer page //successfully
 export const updateOfferService = async (offerId, payload) => {
   if (!offerId) throw new Error("Offer ID is required");
@@ -197,6 +171,7 @@ export const getOfferDetail = async (offerId) => {
   }
 };
 
+// for toggle offer active in offer page //successfully
 export const toggleOfferService = async (offerId, isActive) => {
   if (!offerId) {
     throw new Error("Offer ID is required");

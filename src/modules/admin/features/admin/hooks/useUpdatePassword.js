@@ -1,64 +1,47 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { updateAdminPassword } from "../service/admin.service.js";
-import { handleApiError } from "../../../../../utils/apiError.js";
+import { getCurrentAdminId } from "../utils/auth.js";
 
-/**
- * Hook to handle admin password updates
- * @returns {Object} - { saving, saved, errors, updatePassword, clearErrors }
- */
 export const useUpdatePassword = () => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [error, setError] = useState(null);
 
-  // Extract current admin ID from JWT token
-  const getAdminId = () => {
-    try {
-      const token = localStorage.getItem("admin_token");
-      if (token) {
-        const parts = token.split(".");
-        if (parts.length === 3) {
-          const payload = JSON.parse(atob(parts[1]));
-          return payload.adminId;
-        }
-      }
-    } catch (e) {
-      console.error("Failed to parse admin_token:", e);
-    }
-    return null;
-  };
+  const updatePassword = useCallback(async (passwordData) => {
+    const adminId = getCurrentAdminId();
 
-  const handleUpdate = async (passwordData) => {
-    const adminId = getAdminId();
     if (!adminId) {
-      setErrors({ general: "Unable to identify admin. Please log in again." });
+      const message = "Unable to identify admin. Please log in again.";
+      setError(message);
       return false;
     }
 
     setSaving(true);
-    setErrors({});
+    setError(null);
+    setSaved(false);
 
     try {
       await updateAdminPassword(adminId, passwordData);
+
       setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+
+      setTimeout(() => {
+        setSaved(false);
+      }, 3000);
+
       return true;
-    } catch (error) {
-      const apiError = handleApiError(error, "Failed to update password");
-      setErrors({ general: apiError.message || "Failed to update password" });
+    } catch (err) {
+      setError(err?.message || "Failed to update password");
       return false;
     } finally {
       setSaving(false);
     }
-  };
+  }, []);
 
-  const clearErrors = () => setErrors({});
+  const reset = useCallback(() => {
+    setError(null);
+    setSaved(false);
+  }, []);
 
-  return {
-    saving,
-    saved,
-    errors,
-    updatePassword: handleUpdate,
-    clearErrors
-  };
+  return {saving,saved,error,updatePassword,reset,};
 };

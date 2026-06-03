@@ -1,31 +1,31 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { createNewAdmin } from "../service/admin.service.js";
 
-/**
- * Hook to create a new admin
- * @returns {Object} { loading, error, success, createAdmin }
- */
 export const useCreateAdmin = () => {
+    const [createdAdmin, setCreatedAdmin] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
 
-    const create = async (payload) => {
+    const createAdmin = useCallback(async (payload) => {
         setLoading(true);
         setError(null);
-        setSuccess(false);
+
         try {
-            const newAdmin = await createNewAdmin(payload);
-            setSuccess(true);
-            return newAdmin;
+            const admin = await createNewAdmin(payload);
+            setCreatedAdmin(admin);
+            return admin;
         } catch (err) {
-            const message = err.message || "Failed to create admin";
-            setError(message);
+            setError(err?.message || "Failed to create admin");
             throw err;
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    return { loading, error, success, createAdmin: create };
+    const reset = useCallback(() => {
+        setCreatedAdmin(null);
+        setError(null);
+    }, []);
+
+    return { createdAdmin, loading, error, createAdmin, reset };
 };

@@ -1,31 +1,33 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { deleteAdmin as deleteAdminService } from "../service/admin.service.js";
 
-/**
- * Hook to delete an admin
- * @returns {Object} { loading, error, success, deleteAdmin }
- */
 export const useDeleteAdmin = () => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const deleteAdminAccount = async (email) => {
-        setLoading(true);
-        setError(null);
-        setSuccess(false);
-        try {
-            const deletedAdmin = await deleteAdminService(email);
-            setSuccess(true);
-            return deletedAdmin;
-        } catch (err) {
-            const message = err.message || "Failed to delete admin";
-            setError(message);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
+  const deleteAdmin = useCallback(async (email) => {
+    if (!email?.trim()) {
+      const message = "Email is required";
+      setError(message);
+      throw new Error(message);
+    }
 
-    return { loading, error, success, deleteAdmin: deleteAdminAccount };
+    setLoading(true);
+    setError(null);
+
+    try {
+      return await deleteAdminService(email);
+    } catch (err) {
+      setError(err?.message || "Failed to delete admin");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const reset = useCallback(() => {
+    setError(null);
+  }, []);
+
+  return {loading,error,deleteAdmin,reset,};
 };

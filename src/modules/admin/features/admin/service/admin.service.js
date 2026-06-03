@@ -1,27 +1,56 @@
-import { createAdmin as createAdminAPI, deleteAdminByEmail, getAllAdmins, updatePassword } from "../api/admin.api";
+import {
+  createAdmin as createAdminAPI,
+  deleteAdminByEmail,
+  getAllAdmins,
+  updatePassword,
+  updateAdminRole as updateAdminRoleAPI,
+} from "../api/admin.api";
+
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 
-/**
- * Create a new admin account
- * Maps frontend form (fullName) to backend field (fullname)
- * @param {Object} payload - { fullName, email, password, role }
- * @returns {Object} Created admin record without password_hash
- */
+import {
+  safeNumber,
+  safeText,
+  safeDate,
+  normalizePassword,
+  normalizeRole,
+  normalizeBoolean,
+} from "../../../../../utils/normalizers.js";
+
+  //  CREATE ADMIN
 export const createNewAdmin = async (payload) => {
   try {
+    if (!payload || typeof payload !== "object") {
+      throw new Error("Admin payload is required");
+    }
+
     const normalized = {
-      fullname: payload.fullName || payload.fullname || "",
-      email: payload.email || "",
-      password: payload.password || "",
-      role: payload.role || "manager",
+      fullname:
+        safeText(payload.fullName) ||
+        safeText(payload.fullname) ||
+        "",
+
+      email:
+        safeText(payload.email) ||
+        "",
+
+      password:
+        normalizePassword(payload.password) ||
+        "",
+
+      role:
+        normalizeRole(payload.role) ||
+        "manager",
     };
 
-    if (!normalized.fullname.trim()) {
+    if (!normalized.fullname) {
       throw new Error("Full name is required");
     }
-    if (!normalized.email.trim()) {
+
+    if (!normalized.email) {
       throw new Error("Email is required");
     }
+
     if (!normalized.password) {
       throw new Error("Password is required");
     }
@@ -41,18 +70,17 @@ export const createNewAdmin = async (payload) => {
   }
 };
 
-/**
- * Delete an admin account by email
- * @param {string} email - Admin email to delete
- * @returns {Object} Deleted admin record
- */
+
+  //  DELETE ADMIN
 export const deleteAdmin = async (email) => {
   try {
-    if (!email || !email.trim()) {
+    const normalizedEmail = safeText(email);
+
+    if (!normalizedEmail) {
       throw new Error("Email is required to delete an admin");
     }
 
-    const result = await deleteAdminByEmail(email);
+    const result = await deleteAdminByEmail(normalizedEmail);
 
     if (!result || typeof result !== "object") {
       throw new Error("Invalid response structure from API");
@@ -67,6 +95,8 @@ export const deleteAdmin = async (email) => {
   }
 };
 
+
+  //  FETCH ALL ADMINS
 export const fetchAllAdmins = async () => {
   try {
     const admins = await getAllAdmins();
@@ -75,20 +105,41 @@ export const fetchAllAdmins = async () => {
       throw new Error("Invalid response structure from API");
     }
 
-    // Normalize backend admin shape to frontend-friendly fields
-    const normalize = (a) => ({
-      admin_id: typeof a.admin_id === "number" ? a.admin_id : Number(a.admin_id) || null,
-      name: a.full_name || a.name || "",
-      username: a.username || (a.email ? a.email.split("@")[0] : ""),
-      email: a.email || "",
-      role: (a.role).toUpperCase(),
-      is_active: Boolean(a.is_active),
-      last_login: a.last_login || null,
-      created_at: a.created_at || null,
-      updated_at: a.updated_at || null,
+    const normalizeAdmin = (a = {}) => ({
+      admin_id: safeNumber(a.admin_id),
+
+      name:
+        safeText(a.full_name) ||
+        safeText(a.name) ||
+        "",
+
+      username:
+        safeText(a.username) ||
+        (safeText(a.email)
+          ? a.email.split("@")[0]
+          : ""),
+
+      email:
+        safeText(a.email) ||
+        "",
+
+      role:
+        (normalizeRole(a.role) || "manager").toUpperCase(),
+
+      is_active:
+        normalizeBoolean(a.is_active),
+
+      last_login:
+        safeDate(a.last_login),
+
+      created_at:
+        safeDate(a.created_at),
+
+      updated_at:
+        safeDate(a.updated_at),
     });
 
-    return admins.map((it) => normalize(it));
+    return admins.map(normalizeAdmin);
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch admins", {
       service: "admin",
@@ -97,19 +148,79 @@ export const fetchAllAdmins = async () => {
   }
 };
 
-/**
- * Update admin password
- * @param {number} adminId
- * @param {Object} passwordData
- * @returns {Promise<Object>}
- */
+
+  //  UPDATE PASSWORD
 export const updateAdminPassword = async (adminId, passwordData) => {
   try {
-    return await updatePassword(adminId, passwordData);
+    if (adminId == null) {
+      throw new Error("Admin ID is required");
+    }
+
+    if (!passwordData || typeof passwordData !== "object") {
+      throw new Error("Password data is required");
+    }
+
+    const oldPassword = normalizePassword(passwordData.oldPassword);
+    const newPassword = normalizePassword(passwordData.newPassword);
+    const confirmPassword = normalizePassword(passwordData.confirmPassword);
+
+    if (!oldPassword) {
+      throw new Error("Current password is required");
+    }
+
+    if (!newPassword) {
+      throw new Error("New password is required");
+    }
+
+    if (!confirmPassword) {
+      throw new Error("Password confirmation is required");
+    }
+
+    if (newPassword !== confirmPassword) {
+      throw new Error("Passwords do not match");
+    }
+
+    const response = await updatePassword(adminId, {
+      oldPassword,
+      newPassword,
+      confirmPassword,
+    });
+
+    if (!response || typeof response !== "object") {
+      throw new Error("Invalid response structure from API");
+    }
+
+    return response;
   } catch (error) {
     throw handleServiceError(error, "Failed to update password", {
       service: "admin",
       operation: "updateAdminPassword",
+    });
+  }
+};
+
+//  UPDATE ROLE
+export const updateAdminRole = async (adminId, newRole) => {
+  try {
+    if (adminId == null) {
+      throw new Error("Admin ID is required");
+    }
+    if (!newRole) {
+      throw new Error("New role is required");
+    }
+    const normalizedRole = normalizeRole(newRole);
+    if (!normalizedRole) {
+      throw new Error("Invalid role value");
+    }
+    const response = await updateAdminRoleAPI(adminId, normalizedRole);
+    if (!response || typeof response !== "object") {
+      throw new Error("Invalid response structure from API");
+    }
+    return response;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to update admin role", {
+      service: "admin",
+      operation: "updateAdminRole",
     });
   }
 };

@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { deleteOfferService } from "../service/offers.service.js";
 
 export const useDeleteOffer = () => {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
 
-  const deleteOffer = async (offerId) => {
-    if (!offerId) {
+  const deleteOffer = useCallback(async (offerId) => {
+    if (offerId == null) {
       const message = "Offer ID is required";
       setError(message);
       throw new Error(message);
@@ -25,7 +25,7 @@ export const useDeleteOffer = () => {
     } finally {
       setDeleting(false);
     }
-  };
+  },[]);
 
   return {
     deleting,

@@ -67,15 +67,7 @@ export const fetchOfferById = async (offerId) => {
   }
 };
 
-export const fetchActiveOffers = async () => {
-  try {
-    const res = await API.get("/offers/active");
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to fetch active offers");
-  }
-};
-
+// for update offer in offer page //successfully
 export const updateOffer = async (offerId, payload) => {
   if (!offerId) {
     throw new Error("Offer ID is required");
@@ -92,19 +84,7 @@ export const updateOffer = async (offerId, payload) => {
   }
 };
 
-export const toggleOfferActive = async (offerId) => {
-  if (!offerId) {
-    throw new Error("Offer ID is required");
-  }
-  try {
-    const res = await API.put(`/offers/admin/${offerId}/toggle-active`);
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to toggle offer status");
-  }
-};
-
-// for toggle offer active in offer page
+// for toggle offer active in offer page //successfully
 export const setOfferActivation = async (offerId, isActive) => {
   try {
     const payload = { is_active: isActive };

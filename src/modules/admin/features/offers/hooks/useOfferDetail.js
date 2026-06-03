@@ -1,57 +1,36 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import { getOfferDetail } from "../service/offers.service.js";
 
-const INITIAL_STATE = {
-  offer: null,
-  loading: true,
-  error: null,
-};
+export const useOfferDetail = (offerId) => {
+  const [offer, setOffer] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-export const useOfferDetail = (offerIdFromArg) => {
-  const params = useParams();
-  const offerId = offerIdFromArg ?? params.id;
-  const [state, setState] = useState(() => (
-    offerId
-      ? INITIAL_STATE
-      : { offer: null, loading: false, error: "Offer ID is required" }
-  ));
-
-  const loadOffer = () => getOfferDetail(offerId);
-
-  useEffect(() => {
+  const fetchOffer = useCallback(async () => {
     if (!offerId) {
+      setOffer(null);
+      setError("Offer ID is required");
+      setLoading(false);
       return;
     }
 
-    let cancelled = false;
+    setLoading(true);
+    setError(null);
 
-    loadOffer()
-      .then((offer) => {
-        if (!cancelled) {
-          setState({ offer, loading: false, error: null });
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setState({ offer: null, loading: false, error: err.message });
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
+    try {
+      const offerData = await getOfferDetail(offerId);
+      setOffer(offerData);
+    } catch (err) {
+      setOffer(null);
+      setError(err?.message || "Failed to fetch offer");
+    } finally {
+      setLoading(false);
+    }
   }, [offerId]);
 
-  return {
-    ...state,
-    refresh: () => {
-      if (offerId) {
-        setState((prev) => ({ ...prev, loading: true, error: null }));
-        loadOffer()
-          .then((offer) => setState({ offer, loading: false, error: null }))
-          .catch((err) => setState({ offer: null, loading: false, error: err.message }));
-      }
-    },
-  };
+  useEffect(() => {
+    fetchOffer();
+  }, [fetchOffer]);
+
+  return {offer,loading,error,refresh: fetchOffer,};
 };

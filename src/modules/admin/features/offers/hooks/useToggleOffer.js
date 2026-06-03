@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toggleOfferService } from "../service/offers.service.js";
 
 export const useToggleOffer = () => {
   const [toggling, setToggling] = useState(false);
   const [error, setError] = useState(null);
 
-  const toggleOfferActive = async (offerId, isActive) => {
+  const toggleOfferActive = useCallback(async (offerId, isActive) => {
     if (!offerId) {
       const message = "Offer ID is required";
       setError(message);
@@ -24,7 +24,7 @@ export const useToggleOffer = () => {
     } finally {
       setToggling(false);
     }
-  };
+  },[]);
 
   return {toggling,error,toggleOfferActive,};
 };
