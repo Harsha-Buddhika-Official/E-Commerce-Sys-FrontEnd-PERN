@@ -1,6 +1,7 @@
 import API from "../../../../../api/client";
 import { handleApiError } from "../../../../../utils/apiError";
 
+// to create a new admin in admin management page //successful
 export const createAdmin = async (payload) => {
     try {
         const res = await API.post("/admin/register", payload);
@@ -10,6 +11,7 @@ export const createAdmin = async (payload) => {
     }
 };
 
+// to get all admins in admin management page //successful
 export const getAllAdmins = async () => {
     try {
         const res = await API.get("/admin");
@@ -19,6 +21,7 @@ export const getAllAdmins = async () => {
     }
 };
 
+// to update admin role in admin management page //successful
 export const updateAdminRole = async (adminId, newRole) => {
     try {
         const res = await API.put("/admin/updateRole", { adminId, newRole });
@@ -28,6 +31,7 @@ export const updateAdminRole = async (adminId, newRole) => {
     }
 };
 
+// to update admin password in admin settings page //successful
 export const updatePassword = async (adminId, passwordData) => {
     try{
         const res = await API.put(`/admin/settings/updatePassword/${adminId}`, {
@@ -41,6 +45,7 @@ export const updatePassword = async (adminId, passwordData) => {
     }
 };
 
+// to delete an admin by email in admin management page //successful
 export const deleteAdminByEmail = async (email) => {
     try {
         const res = await API.delete("/admin/delete", { data: { email } });

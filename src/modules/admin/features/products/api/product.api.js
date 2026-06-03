@@ -1,10 +1,7 @@
 import API from "../../../../../api/client";
 import { handleApiError } from "../../../../../utils/apiError";
 
-/**
- * Fetch all products with limited details from admin endpoint
- * Returns: {success: true, data: [...], message: string}
- */
+
 export const fetchAllProductsLimited = async () => {
   try {
     const res = await API.get("/products/admin/limited-details");

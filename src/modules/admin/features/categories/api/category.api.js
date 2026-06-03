@@ -10,12 +10,11 @@ export const getCategories = async () => {
   }
 };
 
-export const getCategory = async () => {
+export const getCategoryNames = async () => {
   try {
     const response = await API.get("/categories/names");
     return response.data;
   } catch (error) {
-    handleApiError(error);
-    throw error;
+    throw handleApiError(error, "Failed to fetch category names");
   }
 };

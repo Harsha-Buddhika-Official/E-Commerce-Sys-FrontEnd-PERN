@@ -55,6 +55,7 @@ export const fetchOrderDetail = async (orderId) => {
   }
 };
 
+// for order page order status update
 export const updateOrderStatus = async (orderId, newStatus) => {
   if (!orderId) throw new Error("orderId is required");
   if (!newStatus) throw new Error("newStatus is required");
