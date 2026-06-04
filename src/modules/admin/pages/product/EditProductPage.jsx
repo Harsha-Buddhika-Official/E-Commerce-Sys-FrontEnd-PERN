@@ -226,7 +226,6 @@ const EditProductPage = ({
 
   const handleCategorySelect = (value) => {
     const option = categoryOptions.find((o) => String(o.value) === String(value));
-    console.log(option)
     setCategoryId(String(value));
     setCategoryName(option?.label || value);
     markDirty();
@@ -234,7 +233,6 @@ const EditProductPage = ({
 
   const handleBrandSelect = (value) => {
     const option = brandOptions.find((o) => String(o.value) === String(value));
-    console.log(option)
     setBrandId(String(value));
     setBrandName(option?.label || value);
     markDirty();
@@ -250,15 +248,7 @@ const EditProductPage = ({
     ];
     return acc;
   }, {});
-
-  // Ensure the select has an option for the current brandId (inject temp option if needed)
-  // const brandOptions = (() => {
-  //   if (!brandId) return baseBrandOptions;
-  //   const found = baseBrandOptions.find((o) => String(o.value) === String(brandId));
-  //   if (found) return baseBrandOptions;
-  //   return [{ value: brandId, label: brandName || brandId }, ...baseBrandOptions];
-  // })();
-
+  
   if (!sourceProduct && detailLoading) return <LoadingState />;
 
   if (!sourceProduct && detailError) return <NotFoundState error={detailError} onBack={handleBack} />;
