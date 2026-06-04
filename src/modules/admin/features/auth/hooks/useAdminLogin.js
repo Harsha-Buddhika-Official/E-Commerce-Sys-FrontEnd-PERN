@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAdmin } from "../service/auth.service";
+import { loginAdminService } from "../service/auth.service";
 
 const INITIAL_STATE = {
-    AdminData: null,
+    adminData: null,
     loading: false,
     error: null,
 };
@@ -13,25 +13,34 @@ export const useAdminLogin = () => {
     const navigate = useNavigate();
 
     const login = async ({ email, password }) => {
-        setState((prev) => ({ ...prev, loading: true, error: null }));
+        setState((prev) => ({
+            ...prev,
+            loading: true,
+            error: null,
+        }));
 
         try {
-            const AdminData = await loginAdmin({ email, password });
-            setState((prev) => ({ ...prev, AdminData, loading: false, error: null }));
+            const adminData = await loginAdminService({email,password,});
+
+            setState({adminData,loading: false,error: null,});
+
             navigate("/admin/dashboard", {
                 state: {
-                    role: AdminData?.admin?.role ?? "admin",
-                    email: AdminData?.admin?.email ?? "admin@example.com",
+                    role: adminData.admin?.role,
+                    email: adminData.admin?.email,
                 },
             });
-        } catch (err) {
+        } catch (error) {
             setState({
-                AdminData: null,
+                adminData: null,
                 loading: false,
-                error: err.message ?? "Login failed. Please check your credentials.",
+                error:error.message ||"Login failed. Please check your credentials.",
             });
         }
     };
 
-    return { ...state, login };
+    return {
+        ...state,
+        login,
+    };
 };

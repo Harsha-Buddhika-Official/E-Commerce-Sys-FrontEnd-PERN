@@ -1,38 +1,30 @@
-import { getAdminLogin } from "../api/auth.api";
+import { loginAdmin } from "../api/auth.api";
 import { isTokenExpired } from "../utils/token.utils";
 
 const TOKEN_KEY = "admin_token";
 
-/**
- * Sends credentials to the backend and stores the returned JWT.
- * @param {{ email: string, password: string }} credentials
- * @returns {Promise<{ token: string, admin: object }>}
- */
-export const loginAdmin = async (credentials) => {
-    const response = await getAdminLogin(credentials);
+const saveToken = (token) => {
+    localStorage.setItem(TOKEN_KEY, token);
+};
 
-    const token = response?.data?.token ?? response?.data?.data?.token ?? null;
-    
+export const loginAdminService = async (credentials) => {
+    const { token, admin } = await loginAdmin(credentials);
     if (!token) {
         throw new Error("Invalid response from server. Please try again.");
     }
 
-    // Store token for subsequent authenticated requests.
-    localStorage.setItem(TOKEN_KEY, token);
+    saveToken(token);
     
     return {
         token,
-        admin: response?.data?.admin ?? response?.data?.data?.admin ?? null,
+        admin,
     };
 };
 
-/** Removes the stored token (logout). */
 export const logoutAdmin = () => localStorage.removeItem(TOKEN_KEY);
 
-/** Returns the stored JWT or null if not logged in. */
 export const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
 
-/** Returns true if a valid, unexpired token exists in storage. */
 export const isAuthenticated = () => {
     const token = getStoredToken();
     return Boolean(token) && !isTokenExpired(token);
