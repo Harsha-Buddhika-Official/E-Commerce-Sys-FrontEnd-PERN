@@ -5,7 +5,7 @@ import { useCategories } from "../../features/categories/hooks/useCategories.js"
 import { useBrandNames } from "../../features/brands/hooks/useBrandNames.js";
 import { normalizeOptions } from "./components/AddProductUi.jsx";
 import { normalizeProductForForm } from "../../features/products/service/products.service.js";
-import { useUpdateProduct } from "../../features/products/hooks/useUpdateProduct.js";
+import  { useUpdateProduct } from "../../features/products/hooks/useUpdateProduct.js";
 import { useProductAttributes } from "../../features/products/hooks/useProductAttributes.js";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import {
@@ -216,15 +216,17 @@ const EditProductPage = ({
 
   const handleBack = () => { if (dirty) setShowDiscard(true); else onBack(); };
 
-  const fetchedBrandOptions = normalizeOptions(brandList, ["brand_name", "name", "label", "brand_id", "id"], ["brand_name", "name", "label"]);
-  const fallbackBrandOptions = [];
-  const baseBrandOptions = (Array.isArray(fetchedBrandOptions) && fetchedBrandOptions.length) ? fetchedBrandOptions : fallbackBrandOptions;
+  const fetchedBrandOptions = normalizeOptions(brandList, ["brand_id", "id"], ["brand_name", "name", "label"]);
   const fetchedCategoryOptions = normalizeOptions(categoryList, ["category_id", "id"], ["category_name", "name", "label"]);
+  const fallbackBrandOptions = [];
   const fallbackCategoryOptions = [];
   const categoryOptions = (Array.isArray(fetchedCategoryOptions) && fetchedCategoryOptions.length) ? fetchedCategoryOptions : fallbackCategoryOptions;
+  const brandOptions = (Array.isArray(fetchedBrandOptions) && fetchedBrandOptions.length) ? fetchedBrandOptions : fallbackBrandOptions;
+
 
   const handleCategorySelect = (value) => {
     const option = categoryOptions.find((o) => String(o.value) === String(value));
+    console.log(option)
     setCategoryId(String(value));
     setCategoryName(option?.label || value);
     markDirty();
@@ -232,8 +234,9 @@ const EditProductPage = ({
 
   const handleBrandSelect = (value) => {
     const option = brandOptions.find((o) => String(o.value) === String(value));
+    console.log(option)
+    setBrandId(String(value));
     setBrandName(option?.label || value);
-    setBrandId(option?.value || value);
     markDirty();
   };
   const discPriceError  = discPrice && Number(discPrice) > Number(sellingPrice);
@@ -248,29 +251,13 @@ const EditProductPage = ({
     return acc;
   }, {});
 
-  // If we hydrated only `brand_name` (no numeric id), try to resolve it to an option value
-  useEffect(() => {
-    if (brandId) return; // already set
-    if (!brandName) return;
-
-    const match = baseBrandOptions.find((o) => String(o.label) === String(brandName) || String(o.value) === String(brandName));
-    if (match) {
-      setBrandId(String(match.value));
-    } else {
-      // inject a temporary option by setting brandId to brandName — will be handled when rendering options
-      setBrandId(String(brandName));
-    }
-    // don't mark dirty when auto-resolving
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [baseBrandOptions, brandName]);
-
   // Ensure the select has an option for the current brandId (inject temp option if needed)
-  const brandOptions = (() => {
-    if (!brandId) return baseBrandOptions;
-    const found = baseBrandOptions.find((o) => String(o.value) === String(brandId));
-    if (found) return baseBrandOptions;
-    return [{ value: brandId, label: brandName || brandId }, ...baseBrandOptions];
-  })();
+  // const brandOptions = (() => {
+  //   if (!brandId) return baseBrandOptions;
+  //   const found = baseBrandOptions.find((o) => String(o.value) === String(brandId));
+  //   if (found) return baseBrandOptions;
+  //   return [{ value: brandId, label: brandName || brandId }, ...baseBrandOptions];
+  // })();
 
   if (!sourceProduct && detailLoading) return <LoadingState />;
 
@@ -302,11 +289,12 @@ const EditProductPage = ({
             onNameChange={handleNameChange}
             description={description}
             onDescriptionChange={(value) => { setDescription(value); markDirty(); }}
+
             brandId={brandId}
             brandOptions={brandOptions}
             onBrandChange={handleBrandSelect}
+
             categoryId={categoryId}
-            categoryName={categoryName}
             categoryOptions={categoryOptions}
             onCategoryChange={handleCategorySelect}
           />

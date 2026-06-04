@@ -14,13 +14,15 @@ const normalizeCategory = (category = {}) => ({
 export const fetchCategories = async () => {
   try {
     const response = await getCategories();
+    
+    const categories = response?.data;
 
-    if (!Array.isArray(response)) {
+    if (!Array.isArray(categories)) {
       throw new Error("Invalid categories response");
     }
 
-    return response
-      .filter((category) => category && typeof category === "object")
+    return categories
+      .filter(category => category && typeof category === "object")
       .map(normalizeCategory);
 
   } catch (error) {

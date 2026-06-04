@@ -4,7 +4,7 @@ import { handleApiError } from "../../../../../utils/apiError.js";
 // create a new brand for create product form and brands page
 export const createBrand = async (brandData) => {
   try {
-    const res = await API.post("/brands", brandData, {
+    const res = await API.post("/brands/admin", brandData, {
       timeout: 30000,
     });
     return res.data;
@@ -19,7 +19,7 @@ export const createBrand = async (brandData) => {
 // get all brands for listing in brands page
 export const getBrands = async () => {
   try {
-    const res = await API.get("/brands");
+    const res = await API.get("/brands/admin");
     return res.data;
   } catch (error) {
     throw handleApiError(
@@ -32,7 +32,7 @@ export const getBrands = async () => {
 //get brand name and id for create product form dropdown
 export const getBrandNames = async () => {
   try {
-    const res = await API.get("/brands/names");
+    const res = await API.get("/brands/admin/names");
     return res.data;
   } catch (error) {
     throw handleApiError(
@@ -45,7 +45,7 @@ export const getBrandNames = async () => {
 // delete a brand by id for brand details page
 export const deleteBrand = async (brandId) => {
   try {
-    const res = await API.delete(`/brands/${brandId}`);
+    const res = await API.delete(`/brands/admin/${brandId}`);
     return res.data;
   } catch (error) {
     throw handleApiError(

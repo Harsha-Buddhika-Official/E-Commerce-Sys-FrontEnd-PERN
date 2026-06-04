@@ -63,7 +63,7 @@ export const createProduct = async (payload) => {
   }
 
   try {
-    const res = await API.post("/products/without-attributes", payload, {timeout: 30000});
+    const res = await API.post("/products/admin/without-attributes", payload, {timeout: 30000});
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to create product");
@@ -80,7 +80,7 @@ export const updateProductFull = async (productId, payload) => {
   }
 
   try {
-    const res = await API.put(`/products/admin/products/${productId}/full-update`, payload, { timeout: 60000 });
+    const res = await API.put(`/products/admin/products/${productId}/full-update`, payload, { timeout: 30000 });
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to update product");
@@ -94,7 +94,7 @@ export const fetchProductAttributesByCategory = async (categoryId) => {
 
   try {
     try {
-      const res = await API.get(`/attributes/grouped/${categoryId}`);
+      const res = await API.get(`/attributes/admin/grouped/${categoryId}`);
       return res.data;
     } catch {
       const res = await API.get(`/products/attributes/by-category/${categoryId}`);
@@ -115,9 +115,7 @@ export const addProductAttribute = async (productId, payload) => {
   }
 
   try {
-    // API docs: POST /api/attributes/products/:productId/attributes
-    // Payload: { attribute_id, attribute_value_id }
-    const res = await API.post(`/attributes/products/${productId}/attributes`, payload, { timeout: 30000 });
+    const res = await API.post(`/attributes/admin/products/${productId}/attributes`, payload, { timeout: 30000 });
     return res.data;
   } catch (error) {
     throw handleApiError(error, "Failed to save product attribute");

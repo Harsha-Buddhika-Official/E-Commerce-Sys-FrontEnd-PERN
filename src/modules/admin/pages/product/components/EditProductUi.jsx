@@ -245,7 +245,7 @@ export function EditProductHeader({ productId, dirty, saved, saving, updateLoadi
   );
 }
 
-export function ProductBasicsSection({ name, onNameChange, description, onDescriptionChange, brandId, brandOptions, onBrandChange, categoryId, categoryName, categoryOptions, onCategoryChange }) {
+export function ProductBasicsSection({ name, onNameChange, description, onDescriptionChange, brandId, brandOptions, onBrandChange, categoryId, categoryOptions, onCategoryChange }) {
   return (
     <SectionCard>
       <SectionTitle icon={<EditOutlinedIcon style={{ fontSize: 16 }} />}>
@@ -282,11 +282,11 @@ export function ProductBasicsSection({ name, onNameChange, description, onDescri
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <FieldLabel required>Brand</FieldLabel>
-            <SelectInput value={brandId || ""} onChange={onBrandChange} options={brandOptions} />
+            <SelectInput value={brandId} onChange={onBrandChange} options={brandOptions} />
           </div>
           <div>
             <FieldLabel required>Category</FieldLabel>
-            <SelectInput value={categoryId || categoryName} onChange={onCategoryChange} options={categoryOptions} />
+            <SelectInput value={categoryId} onChange={onCategoryChange} options={categoryOptions} />
           </div>
         </div>
       </div>
