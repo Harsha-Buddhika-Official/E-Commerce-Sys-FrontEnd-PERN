@@ -8,10 +8,6 @@ const INITIAL_STATE = {
   error: null,
 };
 
-/**
- * Hook for loading a single product detail record.
- * Accepts an explicit productId or falls back to the route param.
- */
 export const useProductDetail = (productIdFromArg) => {
   const params = useParams();
   const productId = productIdFromArg ?? params.id;

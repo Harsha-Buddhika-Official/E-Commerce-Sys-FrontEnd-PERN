@@ -1,16 +1,65 @@
 import API from "../../../../../api/client";
+import { handleApiError } from "../../../../../utils/apiError";
+import {extractArrayPayload,extractObjectPayload,} from "../../../../../utils/payloadExtractors.js";
 
-export const getAllOffers = () =>
-  API.get("/offers/user");
+// GET ALL OFFERS
+export const getAllOffers = async () => {
+  try {
+    const response = await API.get("/offers/user");
+    return extractArrayPayload(response.data);
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch offers");
+  }
+};
 
-export const getActiveOffers = () =>
-  API.get("/offers/active");
+// GET ALL OFFERS
+export const getOffers = async (status) => {
+  try {
+    const response = await API.get("/offers", {
+      params: status ? { status } : {}
+    });
+    return extractArrayPayload(response.data);
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch offers");
+  }
+};
 
-export const getUpcomingOffers = () =>
-  API.get("/offers/upcoming");
+// GET ACTIVE OFFERS
+export const getActiveOffers = async () => {
+  try {
+    const response = await API.get("/offers/active");
+    return extractArrayPayload(response.data);
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch active offers");
+  }
+};
 
-export const getOfferById = (id) =>
-  API.get(`/offers/user/${id}`);
+// GET UPCOMING OFFERS
+export const getUpcomingOffers = async () => {
+  try {
+    const response = await API.get("/offers/upcoming");
+    return extractArrayPayload(response.data);
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch upcoming offers");
+  }
+};
 
-export const getOfferProducts = (offerId) =>
-  API.get(`/offers/user/${offerId}/products`);
+// GET OFFER BY ID
+export const getOfferById = async (id) => {
+  try {
+    const response = await API.get(`/offers/user/${id}`);
+    return extractObjectPayload(response.data);
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch offer details");
+  }
+};
+
+// GET OFFER PRODUCTS
+export const getOfferProducts = async (offerId) => {
+  try {
+    const response = await API.get(`/offers/user/${offerId}/products`);
+    return extractArrayPayload(response.data);
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch offer products");
+  }
+};

@@ -24,7 +24,6 @@ export const useProducts = () => {
     }
   };
 
-  // Fetch on mount
   useEffect(() => {
     fetchProducts();
   }, []);

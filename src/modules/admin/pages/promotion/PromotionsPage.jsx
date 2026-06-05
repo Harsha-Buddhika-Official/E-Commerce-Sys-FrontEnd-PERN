@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AddOutlinedIcon           from "@mui/icons-material/AddOutlined";
 import SearchOutlinedIcon        from "@mui/icons-material/SearchOutlined";
-import FilterListOutlinedIcon    from "@mui/icons-material/FilterListOutlined";
+// import FilterListOutlinedIcon    from "@mui/icons-material/FilterListOutlined";
 import LocalOfferOutlinedIcon    from "@mui/icons-material/LocalOfferOutlined";
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import CloseIcon                 from "@mui/icons-material/Close";
@@ -18,7 +18,7 @@ import { useToggleOffer }        from "../../features/offers/hooks/useToggleOffe
 import { getStatus }             from "../../utils/promotionStatus.js";
 import { SORA, INTER }           from "../../../../styles/fonts";
 
-const STATUS_FILTERS = ["All", "Active", "Scheduled", "Expired", "Inactive"];
+// const STATUS_FILTERS = ["All", "Active", "Scheduled", "Expired", "Inactive"];
 
 function DeleteModal({ offer, onConfirm, onCancel }) {
 	return (
@@ -186,7 +186,7 @@ const PromotionsPage = () => {
 							)}
 						</div>
 
-						<div className="flex items-center gap-2 flex-wrap">
+						{/* <div className="flex items-center gap-2 flex-wrap">
 							<FilterListOutlinedIcon style={{ fontSize: 17, color: "#bbb" }} />
 							{STATUS_FILTERS.map((f) => (
 								<button
@@ -198,7 +198,7 @@ const PromotionsPage = () => {
 									{f}
 								</button>
 							))}
-						</div>
+						</div> */}
 					</div>
 
 					<p className="mb-4" style={{ ...INTER, fontSize: 12, color: "#aaa" }}>

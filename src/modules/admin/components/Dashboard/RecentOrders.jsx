@@ -2,7 +2,7 @@ import { useState } from "react";
 import OpenInNewOutlinedIcon  from "@mui/icons-material/OpenInNewOutlined";
 import KeyboardArrowLeftIcon  from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
+// import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 import { useRecentOrders } from "../../features/orders/hooks/useRecentOrders";
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
@@ -31,7 +31,7 @@ function StatusBadge({ status }) {
 
 
 const ROWS_PER_PAGE  = 10;
-const STATUS_FILTERS = ["All", "Paid", "Pending", "Processing", "Cancelled"];
+// const STATUS_FILTERS = ["All", "Paid", "Pending", "Processing", "Cancelled"];
 
 const COLUMNS = [
   { key: "id",       label: "Order ID",     w: "18%" },
@@ -55,7 +55,7 @@ const RecentOrders = ({
   const startIdx   = (page - 1) * ROWS_PER_PAGE;
   const pageOrders = filtered.slice(startIdx, startIdx + ROWS_PER_PAGE);
 
-  const handleFilter = (s) => { setStatusFilter(s); setPage(1); };
+  // const handleFilter = (s) => { setStatusFilter(s); setPage(1); };
   const handlePage   = (p) => { if (p >= 1 && p <= totalPages) setPage(p); };
 
   const pageNums = () => {
@@ -106,7 +106,7 @@ const RecentOrders = ({
         </h2>
 
         {/* Filter pills */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* <div className="flex items-center gap-2 flex-wrap">
           <FilterListOutlinedIcon style={{ fontSize: 18, color: "#bbb" }} />
           {STATUS_FILTERS.map((s) => (
             <button
@@ -122,7 +122,7 @@ const RecentOrders = ({
               {s}
             </button>
           ))}
-        </div>
+        </div> */}
       </div>
 
       {/* ── Table — horizontally scrollable on small screens ── */}

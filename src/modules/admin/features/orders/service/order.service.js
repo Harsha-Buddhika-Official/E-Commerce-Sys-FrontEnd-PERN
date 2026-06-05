@@ -40,6 +40,9 @@ export const getOrderStatusCounts = async () => {
 
     const counts = {
       pendingOrders: safeNumber(data.pendingOrders) ?? 0,
+      paidOrders: safeNumber(data.paidOrders) ?? 0,
+      processingOrders: safeNumber(data.processingOrders) ?? 0,
+      shippedOrders: safeNumber(data.shippedOrders) ?? 0,
       completeOrders: safeNumber(data.completedOrders) ?? 0,
       cancelledOrders: safeNumber(data.cancelledOrders) ?? 0,
     };

@@ -4,6 +4,9 @@ import { useEffect,useState } from "react";
 export  const useOrderStatus = () => {
     const [orderStatus, setOrderStatus] = useState({
         pendingOrders: 0,
+        paidOrders: 0,
+        processingOrders: 0,
+        shippedOrders: 0,
         completeOrders: 0,
         cancelledOrders: 0,
     });

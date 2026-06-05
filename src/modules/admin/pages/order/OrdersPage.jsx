@@ -13,8 +13,11 @@ const OrdersPage = () => {
 	return (
 		<main className="h-full overflow-y-auto p-5 lg:p-6 min-w-0">
 			<div className="mb-6"><p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Catalogue / Orders</p><h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>Orders</h1></div>
-			<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+			<div className="grid grid-cols-1 sm:grid-cols-6 gap-4 mb-6">
 					<OrderStatCard label="Pending Orders" count={orderStatus?.pendingOrders} preset="pending" loading={orderStatusLoading} error={orderStatusError} />
+					<OrderStatCard label="Paid Orders" count={orderStatus?.paidOrders} preset="paid" loading={orderStatusLoading} error={orderStatusError} />
+					<OrderStatCard label="Processing Orders" count={orderStatus?.processingOrders} preset="processing" loading={orderStatusLoading} error={orderStatusError} />
+					<OrderStatCard label="Shipped Orders" count={orderStatus?.shippedOrders} preset="shipped" loading={orderStatusLoading} error={orderStatusError} />
 					<OrderStatCard label="Completed orders" count={orderStatus?.completeOrders} preset="completed" loading={orderStatusLoading} error={orderStatusError} />
 					<OrderStatCard label="Cancelled orders" count={orderStatus?.cancelledOrders} preset="cancelled" loading={orderStatusLoading} error={orderStatusError} />
 				</div>

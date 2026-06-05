@@ -4,6 +4,7 @@ import {
   getOfferProducts,
   getActiveOffers,
   getUpcomingOffers,
+  getOffers,
 } from "../api/offers.api.js";
 
 const toNumber = (value) => {
@@ -109,6 +110,19 @@ export const fetchAllOffers = async () => {
   }
 };
 
+export const fetchOffers = async (status) => {
+  try {
+    const offers = await getOffers(status);
+
+    if (!Array.isArray(offers)) return [];
+
+    return offers.map((offer) => normalizeOffer(offer, status));
+  } catch (error) {
+    console.error("Failed to fetch offers:", error);
+    return [];
+  }
+};
+
 export const fetchActiveOffers = async () => {
   try {
     const response = await getActiveOffers();
@@ -138,6 +152,7 @@ export const fetchUpcomingOffers = async () => {
 export const fetchOfferById = async (offerId) => {
   try {
     const response = await getOfferById(offerId);
+    console.log("Raw offer response:", response);
     const offer = unwrapResponse(response);
     return offer ? normalizeOffer(offer) : null;
   } catch (error) {

@@ -1,34 +1,34 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { deleteProductService } from "../service/products.service.js";
 
-/**
- * Hook to perform product deletion.
- * Returns: { deleting, error, deleteProduct }
- */
 export const useDeleteProduct = () => {
 	const [deleting, setDeleting] = useState(false);
 	const [error, setError] = useState(null);
 
-	const deleteProduct = async (productId) => {
+	const deleteProduct = useCallback(async (productId) => {
 		if (!productId) {
-			const err = new Error("Product ID is required");
-			setError(err);
-			throw err;
+			const message = "Product ID is required";
+			setError(message);
+			throw new Error(message);
 		}
 
 		setDeleting(true);
 		setError(null);
+
 		try {
-			const res = await deleteProductService(productId);
-			setDeleting(false);
-			return res;
+			return await deleteProductService(productId);
 		} catch (err) {
-			setError(err);
-			setDeleting(false);
+			const message =
+				err?.response?.data?.message ||
+				err?.message ||
+				"Failed to delete product";
+
+			setError(message);
 			throw err;
+		} finally {
+			setDeleting(false);
 		}
-	};
+	}, []);
 
-	return { deleting, error, deleteProduct };
+	return {deleting,error,deleteProduct,};
 };
-
