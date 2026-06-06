@@ -41,20 +41,28 @@ export default function AdminRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
+            
             <Route path="orders" element={<Orders />} />
             <Route path="orders/:id" element={<OrderDetailPage />} />
+
             <Route path="products" element={<Products />} />
             <Route path="products/add" element={<AddProductBasicPage />} />
             <Route path="products/add/attributes" element={<AddProductAttributes />} />
             <Route path="products/:id" element={<ProductInfoPage />} />
             <Route path="products/:id/edit" element={<EditProductPage product={location.state?.product} />} />
+
             <Route path="brands" element={<BrandsManagement />} />
+
             <Route path="admin" element={<AdminManagement />} />
             <Route path="admin/create" element={<AdminCreatePage />} />
+
             <Route path="promotions" element={<PromotionsPage />} />
             <Route path="promotions/:id" element={<PromotionDetailPage />} />
+
             <Route path="attributes" element={<AttributesPage />} />
+
             <Route path="settings" element={<SettingsPage />} />
+
             <Route path="banners" element={<BannerListPage />} />
             <Route path="banners/view/:id" element={<ViewBannerPage />} />
           </Route>
