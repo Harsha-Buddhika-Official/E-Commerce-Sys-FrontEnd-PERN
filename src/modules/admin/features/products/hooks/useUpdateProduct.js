@@ -8,7 +8,6 @@ export const useUpdateProduct = () => {
   const updateProduct = async (productId, payload, images = []) => {
     setLoading(true);
     setError(null);
-
     try {
       return await updateProductFull(productId, payload, images);
     } catch (err) {

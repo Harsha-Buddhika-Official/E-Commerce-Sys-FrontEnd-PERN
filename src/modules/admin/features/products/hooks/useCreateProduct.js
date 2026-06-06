@@ -8,6 +8,7 @@ export const useCreateProduct = () => {
   const createProduct = async (payload) => {
     setLoading(true);
     setError(null);
+    console.log("Creating product with payload:", payload);
     try {
       const res = await createProductService(payload);
       return res;

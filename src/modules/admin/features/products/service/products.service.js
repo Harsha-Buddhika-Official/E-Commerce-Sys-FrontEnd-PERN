@@ -180,17 +180,17 @@ export const updateProductFull = async (productId, payload, images = []) => {
     }
 
     // No file uploads: include images metadata if provided as objects
-    if (Array.isArray(images) && images.length) {
-      payload = {
-        ...payload,
-        images: images.map((image) => ({
-          image_url: image.image_url,
-          is_primary: Boolean(image.is_primary),
-          alt_text: image.alt_text || "",
-          sort_order: Number(image.sort_order ?? 0),
-        })),
-      };
-    }
+    // if (Array.isArray(images) && images.length) {
+    //   payload = {
+    //     ...payload,
+    //     images: images.map((image) => ({
+    //       image_url: image.image_url,
+    //       is_primary: Boolean(image.is_primary),
+    //       alt_text: image.alt_text || "",
+    //       sort_order: Number(image.sort_order ?? 0),
+    //     })),
+    //   };
+    // }
 
     const response = await apiUpdateProductFull(productId, payload);
     if (!response || typeof response !== "object") throw new Error("Invalid update product response");

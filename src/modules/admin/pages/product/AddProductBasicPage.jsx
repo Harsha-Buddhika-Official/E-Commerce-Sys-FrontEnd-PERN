@@ -196,7 +196,7 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
       if (form.warranty_months !== "") payload.append("warranty_months", String(parseInt(form.warranty_months, 10)));
       if (form.product_tag) payload.append("product_tag", form.product_tag);
       images.forEach(({ file }) => payload.append("images", file));
-
+            
       const created = await createProduct(payload);
       const createdData = created?.data ?? created ?? {};
       const productId = createdData.product_id ?? createdData.id ?? createdData.productId;

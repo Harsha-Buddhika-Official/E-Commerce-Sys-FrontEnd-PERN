@@ -131,6 +131,29 @@ const EditProductPage = ({
     if (!sellingPrice) { alert("Selling price is required."); return; }
     if (Number(discPrice) > Number(sellingPrice)) { alert("Discounted price cannot exceed selling price."); return; }
     const localFiles = images.filter((img) => img._file || String(img.image_url || "").startsWith("blob:"));
+    
+    
+    const existingImages = images
+    .filter((img) => !img._file)
+    .map((img, index) => ({
+      image_id: img.image_id,
+      image_url: img.image_url,
+      alt_text: img.alt_text || "",
+      is_primary: Boolean(img.is_primary),
+      sort_order: index,
+    }));
+
+    const newImages = images
+      .filter((img) => img._file)
+      .map((img, index) => ({
+        _file: img._file,          // ← was `file: img._file`
+        alt_text: img.alt_text || "",
+        is_primary: Boolean(img.is_primary),
+        sort_order: existingImages.length + index,
+      }));
+
+    // console.log("UI debuging ",newImages); //debug
+    
 
     setSaving(true);
 
@@ -181,7 +204,9 @@ const EditProductPage = ({
       }
 
       console.debug("Updating product with payload and images metadata:", { payload, images });
-      updated = await updateProduct(productId, payload, images);
+      // console.log("New images:", newImages); //DEBUG
+      updated = await updateProduct(productId, {...payload, images: existingImages}, newImages);
+      // updated = await updateProduct(productId, {payload}, images);
       setSaving(false);
       setSaved(true);
       setDirty(false);

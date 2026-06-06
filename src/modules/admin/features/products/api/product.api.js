@@ -61,7 +61,7 @@ export const createProduct = async (payload) => {
   if (!payload) {
     throw new Error("Product payload is required");
   }
-
+  // console.log("Creating product with payload:", payload);
   try {
     const res = await API.post("/products/admin/without-attributes", payload, {timeout: 30000});
     return res.data;
@@ -71,6 +71,8 @@ export const createProduct = async (payload) => {
 };
 
 export const updateProductFull = async (productId, payload) => {
+  // console.log("Updating product with ID:", productId);
+  // console.log("Payload:", payload);
   if (!productId) {
     throw new Error("Product ID is required");
   }
@@ -78,7 +80,6 @@ export const updateProductFull = async (productId, payload) => {
   if (!payload || typeof payload !== "object") {
     throw new Error("Product payload is required");
   }
-
   try {
     const res = await API.put(`/products/admin/products/${productId}/full-update`, payload, { timeout: 30000 });
     return res.data;
