@@ -1,17 +1,6 @@
 import ProductCard from "./ProductCard";
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
 
-/**
- * ProductsGrid
- * Renders a responsive grid of ProductCard components.
- * Handles empty and loading states internally.
- *
- * @param {Array}    products  - Array of product objects
- * @param {Boolean}  loading   - Whether data is being fetched
- * @param {Function} onView    - Passed to each ProductCard
- * @param {Function} onEdit    - Passed to each ProductCard
- * @param {Function} onDelete  - Passed to each ProductCard
- */
 const ProductsGrid = ({ products = [], loading = false, onView, onEdit, onDelete }) => {
   if (loading) return <GridSkeleton />;
 

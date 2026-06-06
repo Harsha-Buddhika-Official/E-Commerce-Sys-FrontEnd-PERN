@@ -26,6 +26,9 @@ import PromotionDetailPage from "../../modules/admin/pages/promotion/PromotionDe
 
 import SettingsPage from "../../modules/admin/pages/settings/SettingsPage.jsx";
 
+import BannerListPage from "../../modules/admin/pages/banners/BannerListPage.jsx";
+import ViewBannerPage from "../../modules/admin/pages/banners/ViewBannerPage.jsx";
+
 
 export default function AdminRoutes() {
   const location = useLocation();
@@ -52,6 +55,8 @@ export default function AdminRoutes() {
             <Route path="promotions/:id" element={<PromotionDetailPage />} />
             <Route path="attributes" element={<AttributesPage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="banners" element={<BannerListPage />} />
+            <Route path="banners/view/:id" element={<ViewBannerPage />} />
           </Route>
         </Route>
 
