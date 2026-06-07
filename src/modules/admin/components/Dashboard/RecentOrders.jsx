@@ -10,25 +10,38 @@ import { SORA, INTER } from "../../../../styles/fonts";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_STYLE = {
-  Paid:       { bg: "#dcfce7", color: "#16a34a" },
-  Pending:    { bg: "#fef9c3", color: "#ca8a04" },
-  Processing: { bg: "#dbeafe", color: "#1d4ed8" },
-  Cancelled:  { bg: "#fee2e2", color: "#dc2626" },
-  Refunded:   { bg: "#f3e8ff", color: "#7c3aed" },
+  Pending:    { bg: "#fef9c3", color: "#ca8a04" }, // yellow — keep
+  Paid:       { bg: "#dcfce7", color: "#16a34a" }, // green — keep
+  Processing: { bg: "#dbeafe", color: "#1d4ed8" }, // blue — keep
+  Shipped:    { bg: "#f5f3ff", color: "#7c3aed" }, // ← purple (was amber, too close to Pending)
+  Delivered:  { bg: "#ecfeff", color: "#0e7490" }, // ← cyan (was teal green, too close to Paid)
+  Cancelled:  { bg: "#fee2e2", color: "#dc2626" }, // red — keep
 };
 
+
+function normalizeStatus(status) {
+  return status?.charAt(0).toUpperCase() + status?.slice(1).toLowerCase();
+}
+
 function StatusBadge({ status }) {
-  const s = STATUS_STYLE[status] || STATUS_STYLE.Pending;
+  const normalized = normalizeStatus(status);
+  const s = STATUS_STYLE[normalized] || STATUS_STYLE.Pending;
+
   return (
     <span
       className="inline-flex items-center px-4 py-1 rounded-full whitespace-nowrap"
-      style={{ ...INTER, fontSize: 14, fontWeight: 600, backgroundColor: s.bg, color: s.color }}
+      style={{
+        ...INTER,
+        fontSize: 14,
+        fontWeight: 600,
+        backgroundColor: s.bg,
+        color: s.color,
+      }}
     >
-      {status}
+      {normalized}
     </span>
   );
 }
-
 
 const ROWS_PER_PAGE  = 10;
 // const STATUS_FILTERS = ["All", "Paid", "Pending", "Processing", "Cancelled"];

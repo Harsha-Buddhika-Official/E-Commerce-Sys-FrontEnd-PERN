@@ -7,7 +7,7 @@ export const getAllBannersApi = async () =>{
 
 // Get banner by id
 export const getBannerByIdApi = async (id) =>{
-  console.log("Fetching banner with ID:", id);
+  // console.log("Fetching banner with ID:", id);
   return API.get(`/banners/${id}`);
 } 
 

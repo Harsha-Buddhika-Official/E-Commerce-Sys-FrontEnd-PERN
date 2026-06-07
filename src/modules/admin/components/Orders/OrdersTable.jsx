@@ -12,12 +12,12 @@ const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_STYLE = {
-  Pending:    { bg: "#fef9c3", color: "#ca8a04" },
-  Paid:       { bg: "#dcfce7", color: "#16a34a" },
-  Processing: { bg: "#dbeafe", color: "#1d4ed8" },
-  Shipped:    { bg: "#fef3c7", color: "#d97706" },
-  Delivered:  { bg: "#d1fae5", color: "#059669" },
-  Cancelled:  { bg: "#fee2e2", color: "#dc2626" },
+  Pending:    { bg: "#fef9c3", color: "#ca8a04" }, // yellow — keep
+  Paid:       { bg: "#dcfce7", color: "#16a34a" }, // green — keep
+  Processing: { bg: "#dbeafe", color: "#1d4ed8" }, // blue — keep
+  Shipped:    { bg: "#f5f3ff", color: "#7c3aed" }, // ← purple (was amber, too close to Pending)
+  Delivered:  { bg: "#ecfeff", color: "#0e7490" }, // ← cyan (was teal green, too close to Paid)
+  Cancelled:  { bg: "#fee2e2", color: "#dc2626" }, // red — keep
 };
 
 function StatusBadge({ status }) {
