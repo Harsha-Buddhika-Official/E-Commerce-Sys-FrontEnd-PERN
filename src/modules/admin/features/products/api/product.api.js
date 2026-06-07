@@ -142,7 +142,7 @@ export const addProductImages = async (productId, files) => {
 
 // Remove single image
 export const removeProductImage = async (productId, imageId) => {
-  console.log("API: Removing image with ID:", imageId, "from product with ID:", productId);
+  console.log("Removing image with ID:", imageId, "from product ID:", productId);
   try {
     const res = await API.delete(
       `/products/admin/products/${productId}/images/${imageId}`
