@@ -122,3 +122,60 @@ export const addProductAttribute = async (productId, payload) => {
     throw handleApiError(error, "Failed to save product attribute");
   }
 };
+
+
+// Add images — multipart
+export const addProductImages = async (productId, files) => {
+  const fd = new FormData();
+  files.forEach((file) => fd.append("images", file, file.name));
+  try {
+    const res = await API.post(
+      `/products/admin/products/${productId}/images`,
+      fd,
+      { timeout: 30000 }
+    );
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to add product images");
+  }
+};
+
+// Remove single image
+export const removeProductImage = async (productId, imageId) => {
+  console.log("API: Removing image with ID:", imageId, "from product with ID:", productId);
+  try {
+    const res = await API.delete(
+      `/products/admin/products/${productId}/images/${imageId}`
+    );
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to remove product image");
+  }
+};
+
+// Reorder / set primary
+export const reorderProductImages = async (productId, primaryImageId, order) => {
+  try {
+    const res = await API.patch(
+      `/products/admin/products/${productId}/images/reorder`,
+      { primary_image_id: primaryImageId, order }
+    );
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to reorder product images");
+  }
+};
+
+// Product data only — pure JSON no images
+export const updateProductDetails = async (productId, payload) => {
+  try {
+    const res = await API.put(
+      `/products/admin/products/${productId}/full-update`,
+      payload,
+      { timeout: 30000 }
+    );
+    return res.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to update product details");
+  }
+};

@@ -7,6 +7,10 @@ import {
   createProduct as apiCreateProduct,
   fetchProductAttributesByCategory as apiFetchAttributesByCategory,
   addProductAttribute as apiAddProductAttribute,
+  updateProductDetails as apiUpdateProductDetails,  // ← new
+  addProductImages as apiAddProductImages,           // ← new
+  removeProductImage as apiRemoveProductImage,       // ← new
+  reorderProductImages as apiReorderProductImages,   // ← new
 } from "../api/product.api.js";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 
@@ -179,19 +183,6 @@ export const updateProductFull = async (productId, payload, images = []) => {
       return response.data;
     }
 
-    // No file uploads: include images metadata if provided as objects
-    // if (Array.isArray(images) && images.length) {
-    //   payload = {
-    //     ...payload,
-    //     images: images.map((image) => ({
-    //       image_url: image.image_url,
-    //       is_primary: Boolean(image.is_primary),
-    //       alt_text: image.alt_text || "",
-    //       sort_order: Number(image.sort_order ?? 0),
-    //     })),
-    //   };
-    // }
-
     const response = await apiUpdateProductFull(productId, payload);
     if (!response || typeof response !== "object") throw new Error("Invalid update product response");
     if (response.success !== true) throw new Error(response.message || "Failed to update product");
@@ -248,6 +239,72 @@ export const addAttributeToProduct = async (productId, payload) => {
     throw handleServiceError(error, "Failed to add attribute to product", {
       service: "products",
       operation: "addAttributeToProduct",
+    });
+  }
+};
+
+// 1. Update product fields only — pure JSON
+export const updateProductDetails = async (productId, payload) => {
+  if (!productId) throw new Error("productId is required");
+  try {
+    const response = await apiUpdateProductDetails(productId, payload);
+    if (!response || typeof response !== "object") throw new Error("Invalid response");
+    if (response.success !== true) throw new Error(response.message || "Failed to update product");
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to update product details", {
+      service: "products",
+      operation: "updateProductDetails",
+    });
+  }
+};
+
+// 2. Add images — sends raw File objects
+export const addProductImages = async (productId, files) => {
+  if (!productId) throw new Error("productId is required");
+  if (!files || files.length === 0) return [];
+  try {
+    const response = await apiAddProductImages(productId, files);
+    if (!response || typeof response !== "object") throw new Error("Invalid response");
+    if (response.success !== true) throw new Error(response.message || "Failed to add images");
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to add product images", {
+      service: "products",
+      operation: "addProductImages",
+    });
+  }
+};
+
+// 3. Remove single image
+export const removeProductImage = async (productId, imageId) => {
+  if (!productId || !imageId) throw new Error("productId and imageId are required");
+  try {
+    const response = await apiRemoveProductImage(productId, imageId);
+    if (!response || typeof response !== "object") throw new Error("Invalid response");
+    if (response.success !== true) throw new Error(response.message || "Failed to remove image");
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to remove product image", {
+      service: "products",
+      operation: "removeProductImage",
+    });
+  }
+};
+
+// 4. Reorder images / set primary
+export const reorderProductImages = async (productId, primaryImageId, order) => {
+  if (!productId) throw new Error("productId is required");
+  if (!Array.isArray(order) || order.length === 0) throw new Error("order array is required");
+  try {
+    const response = await apiReorderProductImages(productId, primaryImageId, order);
+    if (!response || typeof response !== "object") throw new Error("Invalid response");
+    if (response.success !== true) throw new Error(response.message || "Failed to reorder images");
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(error, "Failed to reorder product images", {
+      service: "products",
+      operation: "reorderProductImages",
     });
   }
 };

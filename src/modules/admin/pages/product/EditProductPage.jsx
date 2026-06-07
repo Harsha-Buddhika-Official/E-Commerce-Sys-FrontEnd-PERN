@@ -1,12 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useProductDetail } from "../../features/products/hooks/useProductDetail";
-import { useCategories } from "../../features/categories/hooks/useCategories.js";
-import { useBrandNames } from "../../features/brands/hooks/useBrandNames.js";
-import { normalizeOptions } from "./components/AddProductUi.jsx";
+import { useProductDetail }        from "../../features/products/hooks/useProductDetail";
+import { useCategories }           from "../../features/categories/hooks/useCategories.js";
+import { useBrandNames }           from "../../features/brands/hooks/useBrandNames.js";
+import { normalizeOptions }        from "./components/AddProductUi.jsx";
 import { normalizeProductForForm } from "../../features/products/service/products.service.js";
-import  { useUpdateProduct } from "../../features/products/hooks/useUpdateProduct.js";
-import { useProductAttributes } from "../../features/products/hooks/useProductAttributes.js";
+import { useUpdateProductDetails } from "../../features/products/hooks/useUpdateProductDetails.js";
+import { useAddProductImages }     from "../../features/products/hooks/useAddProductImages.js";
+import { useRemoveProductImage }   from "../../features/products/hooks/useRemoveProductImage.js";
+import { useReorderProductImages } from "../../features/products/hooks/useReorderProductImages.js";
+import { useProductAttributes }    from "../../features/products/hooks/useProductAttributes.js";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import {
   DiscardModal,
@@ -22,59 +25,64 @@ import {
   ProductPricingSection,
 } from "./components/EditProductUi.jsx";
 
-const SORA = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
-// normalization helpers moved to service layer
-
-// ══════════════════════════════════════════════════════════════════════════════
-// EDIT PRODUCT PAGE
-// ══════════════════════════════════════════════════════════════════════════════
 const EditProductPage = ({
   product = null,
   onBack  = () => {},
   onSave  = () => {},
 }) => {
   const { id: routeProductId } = useParams();
-  const fileInputRef  = useRef(null);
-  const hydratedRef   = useRef(null);
+  const hydratedRef = useRef(null);
 
   const [dirty,       setDirty]       = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
   const [saving,      setSaving]      = useState(false);
   const [saved,       setSaved]       = useState(false);
 
-  const productId = product?.product_id ?? product?.id ?? routeProductId;
+  const productId     = product?.product_id ?? product?.id ?? routeProductId;
   const { product: fetchedProduct, loading: detailLoading, error: detailError } = useProductDetail(productId);
   const sourceProduct = fetchedProduct ?? product;
-  const { categories: categoryList, loading: categoriesLoading } = useCategories();
-  const { brandNames: brandList, loading: brandsLoading } = useBrandNames();
-  const { updateProduct, loading: updateLoading } = useUpdateProduct();
 
-  // ── Form state ────────────────────────────────────────────────────────────
-  const [name,           setName]           = useState("");
-  const [description,    setDescription]    = useState("");
-  const [brandName,      setBrandName]      = useState("");
-  const [brandId,        setBrandId]        = useState("");
-  const [categoryId,     setCategoryId]     = useState("");
-  const [categoryName,   setCategoryName]   = useState("");
-  const [basePrice,      setBasePrice]      = useState("");
-  const [sellingPrice,   setSellingPrice]   = useState("");
-  const [discPrice,      setDiscPrice]      = useState("");
-  const [stockQty,       setStockQty]       = useState(0);
-  const [warrantyMonths, setWarrantyMonths] = useState(12);
-  const [images,         setImages]         = useState([]);
+  const { categories: categoryList } = useCategories();
+  const { brandNames: brandList }    = useBrandNames();
+
+  const { updateDetails, loading: updateLoading }                            = useUpdateProductDetails();
+  const { addImages,     loading: addImagesLoading }     = useAddProductImages();
+  const { removeImage: removeImageApi }                  = useRemoveProductImage();
+  const { reorderImages, loading: reorderImagesLoading } = useReorderProductImages();
+
+  const [pendingImageAdds,    setPendingImageAdds]    = useState([]); // File[]
+  const [pendingImageRemoves, setPendingImageRemoves] = useState([]); // image_id[]
+
+  // ── Form state ────────────────────────────────────────────────
+  const [name,                setName]                = useState("");
+  const [description,         setDescription]         = useState("");
+  const [brandName,           setBrandName]           = useState("");
+  const [brandId,             setBrandId]             = useState("");
+  const [categoryId,          setCategoryId]          = useState("");
+  const [categoryName,        setCategoryName]        = useState("");
+  const [basePrice,           setBasePrice]           = useState("");
+  const [sellingPrice,        setSellingPrice]        = useState("");
+  const [discPrice,           setDiscPrice]           = useState("");
+  const [stockQty,            setStockQty]            = useState(0);
+  const [warrantyMonths,      setWarrantyMonths]      = useState(12);
+  const [images,              setImages]              = useState([]);
   const [attributeSelections, setAttributeSelections] = useState({});
 
-  
-
-  // ── Hydrate from API ──────────────────────────────────────────────────────
+  // ── Hydrate ───────────────────────────────────────────────────
   useEffect(() => {
     if (!sourceProduct || dirty || hydratedRef.current === sourceProduct) return;
     const n = normalizeProductForForm(sourceProduct);
-    setName(n.name); setDescription(n.description);
-    setBrandName(n.brand_name); setBrandId(String(n.brand_id ?? "")); setCategoryName(n.category_name); setCategoryId(String(n.category_id ?? ""));
-    setBasePrice(n.base_price); setSellingPrice(n.selling_price); setDiscPrice(n.discounted_price);
+    setName(n.name);
+    setDescription(n.description);
+    setBrandName(n.brand_name);
+    setBrandId(String(n.brand_id ?? ""));
+    setCategoryName(n.category_name);
+    setCategoryId(String(n.category_id ?? ""));
+    setBasePrice(n.base_price);
+    setSellingPrice(n.selling_price);
+    setDiscPrice(n.discounted_price);
     setStockQty(Number(n.stock_quantity));
     setWarrantyMonths(Number(n.warranty_months));
     setImages(n.images);
@@ -85,169 +93,22 @@ const EditProductPage = ({
       }
     });
     setAttributeSelections(nextSelections);
-    setDirty(false); setSaved(false);
+    setDirty(false);
+    setSaved(false);
     hydratedRef.current = sourceProduct;
   }, [sourceProduct, dirty]);
 
   const productCategoryId = categoryId || sourceProduct?.category_id || "";
   const { attributes: catalogAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(productCategoryId);
 
-  const markDirty = () => { setDirty(true); setSaved(false); };
-  const field = (setter) => (val) => { setter(val); markDirty(); };
+  const markDirty = ()       => { setDirty(true); setSaved(false); };
+  const field     = (setter) => (val) => { setter(val); markDirty(); };
 
-  const handleNameChange = (val) => { setName(val); markDirty(); };
-
-  // Attribute direct-edit helpers removed; attributes are selected via catalog-driven UI
-
-  // ── Image ops ─────────────────────────────────────────────────────────────
-  // (URL-based image addition removed — uploads only)
-  const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const newImgs = files.map((f, i) => ({ _key: Date.now() + i, image_id: null, image_url: URL.createObjectURL(f), alt_text: f.name.replace(/\.[^.]+$/, ""), is_primary: images.length === 0 && i === 0, sort_order: images.length + i, _file: f }));
-    setImages((p) => [...p, ...newImgs]); markDirty();
-  };
-  const setPrimary  = (key) => { setImages((p) => p.map((img) => ({ ...img, is_primary: img._key === key }))); markDirty(); };
-  const updateAlt   = (key, val) => { setImages((p) => p.map((img) => img._key === key ? { ...img, alt_text: val } : img)); markDirty(); };
-  const removeImage = (key) => {
-    setImages((p) => {
-      const f = p.filter((img) => img._key !== key);
-      if (!f.some((img) => img.is_primary) && f.length > 0) f[0].is_primary = true;
-      return f.map((img, i) => ({ ...img, sort_order: i }));
-    }); markDirty();
-  };
-  const moveImage = (key, dir) => {
-    setImages((p) => {
-      const idx = p.findIndex((img) => img._key === key);
-      if ((dir === -1 && idx === 0) || (dir === 1 && idx === p.length - 1)) return p;
-      const next = [...p];
-      [next[idx], next[idx + dir]] = [next[idx + dir], next[idx]];
-      return next.map((img, i) => ({ ...img, sort_order: i }));
-    }); markDirty();
-  };
-
-  // ── Save ──────────────────────────────────────────────────────────────────
-  const handleSave = async () => {
-    if (!name.trim())  { alert("Product name is required."); return; }
-    if (!sellingPrice) { alert("Selling price is required."); return; }
-    if (Number(discPrice) > Number(sellingPrice)) { alert("Discounted price cannot exceed selling price."); return; }
-    const localFiles = images.filter((img) => img._file || String(img.image_url || "").startsWith("blob:"));
-    
-    
-    const existingImages = images
-    .filter((img) => !img._file)
-    .map((img, index) => ({
-      image_id: img.image_id,
-      image_url: img.image_url,
-      alt_text: img.alt_text || "",
-      is_primary: Boolean(img.is_primary),
-      sort_order: index,
-    }));
-
-    const newImages = images
-      .filter((img) => img._file)
-      .map((img, index) => ({
-        _file: img._file,          // ← was `file: img._file`
-        alt_text: img.alt_text || "",
-        is_primary: Boolean(img.is_primary),
-        sort_order: existingImages.length + index,
-      }));
-
-    // console.log("UI debuging ",newImages); //debug
-    
-
-    setSaving(true);
-
-    const normalizedAttributes = (Array.isArray(catalogAttributes) ? catalogAttributes : [])
-      .map((attribute) => {
-        const selectedValue = attributeSelections[String(attribute.attribute_id)];
-        const matchedValue = (attribute.values || []).find((value) =>
-          String(value.attribute_value_id) === String(selectedValue) || String(value.value) === String(selectedValue),
-        );
-
-        return matchedValue?.attribute_value_id
-          ? {
-              attribute_id: Number(attribute.attribute_id),
-              attribute_value_id: Number(matchedValue.attribute_value_id),
-            }
-          : null;
-      })
-        .filter((attr) => attr && Number.isInteger(attr.attribute_id) && attr.attribute_id > 0 && Number.isInteger(attr.attribute_value_id) && attr.attribute_value_id > 0);
-
-    const payload = {
-      product_id: Number(productId),
-      name: name || undefined,
-      description: description || undefined,
-      brand_id: brandId ? Number(brandId) : undefined,
-      brand_name:  brandName ? brandName : undefined,
-      category_id: categoryId ? Number(categoryId) : undefined,
-      category_name: !categoryId ? categoryName || undefined : undefined,
-      base_price: basePrice !== "" ? Number(basePrice) : undefined,
-      selling_price: sellingPrice !== "" ? Number(sellingPrice) : undefined,
-      discounted_price: discPrice !== "" ? Number(discPrice) : undefined,
-      stock_quantity: stockQty !== "" ? Number(stockQty) : undefined,
-      warranty_months: warrantyMonths === "" || warrantyMonths === null ? null : Number(warrantyMonths),
-    };
-
-    if (normalizedAttributes.length) {
-      payload.attributes = normalizedAttributes;
-    }
-
-    try {
-      let updated;
-
-      // Let the service layer handle FormData creation and uploads;
-      // pass payload and images array so service can determine upload strategy.
-      if (localFiles.length > 0 && localFiles.length > 3) {
-        alert("You can upload up to 3 images only.");
-        setSaving(false);
-        return;
-      }
-
-      console.debug("Updating product with payload and images metadata:", { payload, images });
-      // console.log("New images:", newImages); //DEBUG
-      updated = await updateProduct(productId, {...payload, images: existingImages}, newImages);
-      // updated = await updateProduct(productId, {payload}, images);
-      setSaving(false);
-      setSaved(true);
-      setDirty(false);
-      onSave(updated);
-    } catch (error) {
-      const body = error?.cause?.body ?? error?.body ?? error?.cause?.response?.data ?? error?.response?.data;
-      console.error("Product update failed:", { error, body, payload });
-
-      // Build detailed message
-      let message = body?.message || error?.message || "Failed to update product";
-      if (Array.isArray(body?.error) && body.error.length) {
-        try {
-          message = body.error.map((it) => {
-            if (typeof it === "string") return it;
-            if (it?.message) return it.message;
-            return JSON.stringify(it);
-          }).join("; ");
-        } catch (e) {
-          // fallback
-          message = JSON.stringify(body.error);
-        }
-      }
-
-      // If FormData was used, additionally log that fact
-      if (localFiles.length > 0) console.error("Request used multipart/form-data with files:", localFiles.map((f) => f._file?.name || f.image_url));
-
-      alert(`Failed to update product: ${message}`);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleBack = () => { if (dirty) setShowDiscard(true); else onBack(); };
-
-  const fetchedBrandOptions = normalizeOptions(brandList, ["brand_id", "id"], ["brand_name", "name", "label"]);
+  // ── Options ───────────────────────────────────────────────────
+  const fetchedBrandOptions    = normalizeOptions(brandList,    ["brand_id",    "id"], ["brand_name",    "name", "label"]);
   const fetchedCategoryOptions = normalizeOptions(categoryList, ["category_id", "id"], ["category_name", "name", "label"]);
-  const fallbackBrandOptions = [];
-  const fallbackCategoryOptions = [];
-  const categoryOptions = (Array.isArray(fetchedCategoryOptions) && fetchedCategoryOptions.length) ? fetchedCategoryOptions : fallbackCategoryOptions;
-  const brandOptions = (Array.isArray(fetchedBrandOptions) && fetchedBrandOptions.length) ? fetchedBrandOptions : fallbackBrandOptions;
-
+  const brandOptions    = fetchedBrandOptions.length    ? fetchedBrandOptions    : [];
+  const categoryOptions = fetchedCategoryOptions.length ? fetchedCategoryOptions : [];
 
   const handleCategorySelect = (value) => {
     const option = categoryOptions.find((o) => String(o.value) === String(value));
@@ -262,21 +123,108 @@ const EditProductPage = ({
     setBrandName(option?.label || value);
     markDirty();
   };
-  const discPriceError  = discPrice && Number(discPrice) > Number(sellingPrice);
+
+
+
+  // ── Save product fields only ──────────────────────────────────
+  const handleSave = async () => {
+    if (!name.trim())  { alert("Product name is required."); return; }
+    if (!sellingPrice) { alert("Selling price is required."); return; }
+    if (Number(discPrice) > Number(sellingPrice)) {
+      alert("Discounted price cannot exceed selling price.");
+      return;
+    }
+
+    const remainingImages = images.filter(img => !pendingImageRemoves.includes(img.image_id));
+    if (remainingImages.length + pendingImageAdds.length > 3) {
+      alert("Total images cannot exceed 3.");
+      return;
+    }
+
+    setSaving(true);
+
+    const normalizedAttributes = (Array.isArray(catalogAttributes) ? catalogAttributes : [])
+      .map((attribute) => {
+        const selectedValue = attributeSelections[String(attribute.attribute_id)];
+        const matchedValue  = (attribute.values || []).find((value) =>
+          String(value.attribute_value_id) === String(selectedValue) ||
+          String(value.value)              === String(selectedValue)
+        );
+        return matchedValue?.attribute_value_id
+          ? { attribute_id: Number(attribute.attribute_id), attribute_value_id: Number(matchedValue.attribute_value_id) }
+          : null;
+      })
+      .filter((attr) =>
+        attr &&
+        Number.isInteger(attr.attribute_id)       && attr.attribute_id > 0 &&
+        Number.isInteger(attr.attribute_value_id) && attr.attribute_value_id > 0
+      );
+
+    const payload = {
+      product_id:       Number(productId),
+      name:             name        || undefined,
+      description:      description || undefined,
+      brand_id:         brandId     ? Number(brandId)    : undefined,
+      brand_name:       brandName   || undefined,
+      category_id:      categoryId  ? Number(categoryId) : undefined,
+      category_name:    !categoryId ? categoryName || undefined : undefined,
+      base_price:       basePrice       !== "" ? Number(basePrice)       : undefined,
+      selling_price:    sellingPrice    !== "" ? Number(sellingPrice)    : undefined,
+      discounted_price: discPrice       !== "" ? Number(discPrice)       : undefined,
+      stock_quantity:   stockQty        !== "" ? Number(stockQty)        : undefined,
+      warranty_months:  warrantyMonths  === "" || warrantyMonths === null ? null : Number(warrantyMonths),
+    };
+
+    if (normalizedAttributes.length) payload.attributes = normalizedAttributes;
+
+    try {
+      await updateDetails(productId, payload);
+      // Apply deferred image removes
+      for (const imageId of pendingImageRemoves) {
+        await removeImageApi(productId, imageId);
+      }
+
+      // Apply deferred image adds
+      let updatedImages = images.filter(img => !pendingImageRemoves.includes(img.image_id));
+      if (pendingImageAdds.length > 0) {
+        const added = await addImages(productId, pendingImageAdds);
+        updatedImages = [...updatedImages, ...added.map((img, i) => ({ ...img, _key: img.image_id ?? i }))];
+      }
+
+      setImages(updatedImages);
+      setPendingImageAdds([]);
+      setPendingImageRemoves([]);
+      setSaved(true);
+      setDirty(false);
+      onSave();
+    } catch (error) {
+      const body    = error?.cause?.body ?? error?.body ?? error?.response?.data;
+      const message = body?.message || error?.message || "Failed to update product";
+      console.error("Product update failed:", error);
+      alert(`Failed to update product: ${message}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleBack     = () => { if (dirty) setShowDiscard(true); else onBack(); };
+  const discPriceError = discPrice && Number(discPrice) > Number(sellingPrice);
 
   const attributeOptionsById = (Array.isArray(catalogAttributes) ? catalogAttributes : []).reduce((acc, attribute) => {
     acc[String(attribute.attribute_id)] = [
       { value: "", label: "Select value" },
       ...(Array.isArray(attribute.values)
-        ? attribute.values.map((value) => ({ value: String(value.attribute_value_id), label: value.value || String(value.attribute_value_id) }))
+        ? attribute.values.map((value) => ({
+            value: String(value.attribute_value_id),
+            label: value.value || String(value.attribute_value_id),
+          }))
         : []),
     ];
     return acc;
   }, {});
-  
-  if (!sourceProduct && detailLoading) return <LoadingState />;
 
-  if (!sourceProduct && detailError) return <NotFoundState error={detailError} onBack={handleBack} />;
+  if (!sourceProduct && detailLoading) return <LoadingState />;
+  if (!sourceProduct && detailError)   return <NotFoundState error={detailError} onBack={handleBack} />;
 
   return (
     <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
@@ -301,27 +249,28 @@ const EditProductPage = ({
         <div className="xl:col-span-2 flex flex-col gap-5">
           <ProductBasicsSection
             name={name}
-            onNameChange={handleNameChange}
+            onNameChange={(val) => { setName(val); markDirty(); }}
             description={description}
-            onDescriptionChange={(value) => { setDescription(value); markDirty(); }}
-
+            onDescriptionChange={(val) => { setDescription(val); markDirty(); }}
             brandId={brandId}
             brandOptions={brandOptions}
             onBrandChange={handleBrandSelect}
-
             categoryId={categoryId}
             categoryOptions={categoryOptions}
             onCategoryChange={handleCategorySelect}
           />
 
+          {/* ── Images: independent, instant API calls ── */}
           <ProductImagesSection
+            productId={productId}
             images={images}
-            onFileUpload={handleFileUpload}
-            onSetPrimary={setPrimary}
-            onUpdateAlt={updateAlt}
-            onRemoveImage={removeImage}
-            onMoveImage={moveImage}
-            fileInputRef={fileInputRef}
+            onImagesChange={setImages}
+            reorderImages={reorderImages}
+            reorderImagesLoading={reorderImagesLoading}
+            pendingAdds={pendingImageAdds}
+            onPendingAddsChange={(files) => { setPendingImageAdds(files); markDirty(); }}
+            pendingRemoves={pendingImageRemoves}
+            onPendingRemovesChange={(ids) => { setPendingImageRemoves(ids); markDirty(); }}
           />
 
           <ProductAttributesSection
@@ -362,9 +311,9 @@ const EditProductPage = ({
             </SectionTitle>
             <div className="flex flex-col gap-0">
               {[
-                { label: "Brand", value: brandName || brandId || "—" },
-                { label: "Category", value: categoryName || categoryId || "—" },
-                { label: "Images", value: String(images.length) },
+                { label: "Brand",      value: brandName    || brandId    || "—" },
+                { label: "Category",   value: categoryName || categoryId || "—" },
+                { label: "Images",     value: `${images.length} / 3` },
                 { label: "Attributes", value: String(Array.isArray(catalogAttributes) ? catalogAttributes.length : 0) },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between py-2.5 border-b border-[#f8f8f8] last:border-0">
