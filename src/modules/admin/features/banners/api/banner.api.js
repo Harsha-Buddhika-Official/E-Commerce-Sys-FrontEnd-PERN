@@ -13,10 +13,10 @@ export const getBannerByIdApi = async (id) =>{
 
 // Create banner
 export const createBannerApi = async (formData) => {
+  
   return API.post("/banners/admin", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+    headers: {"Content-Type": "multipart/form-data",},
+    timeout: 30000,
   });
 }
 
