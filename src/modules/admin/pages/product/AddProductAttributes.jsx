@@ -1,16 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState,useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+
 import { useProductAttributes } from "../../features/products/hooks/useProductAttributes.js";
 import { addAttributeToProduct } from "../../features/products/service/products.service.js";
+import { useCategories } from "../../features/categories/hooks/useCategories.js";
+
 import AttributeCreateOverlay from "../../overlay/AttributeCreateOverlay.jsx";
 import CreateAttributeValueOverlay from "../../overlay/CreateAttributeValueOverlay.jsx";
-import { useCategories } from "../../features/categories/hooks/useCategories.js";
 import {
   ErrorBanner,
   FieldLabel,
@@ -40,11 +43,13 @@ const AddProductAttributes = () => {
   const [errors, setErrors] = useState({});
   const [showAttrCreate, setShowAttrCreate] = useState(false);
   const [createValueFor, setCreateValueFor] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const normalizedCategoryId = categoryId === "" || categoryId === null || typeof categoryId === "undefined"
     ? ""
     : Number(categoryId);
-  const { attributes: rawAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(normalizedCategoryId);
+  // const { attributes: rawAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(normalizedCategoryId);
+  const { attributes: rawAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(normalizedCategoryId, refreshKey);
   const attributes = useMemo(() => normalizeAttributes(rawAttributes), [rawAttributes]);
   const { categories } = useCategories();
 
@@ -54,8 +59,16 @@ const AddProductAttributes = () => {
     }
   }, [navigate, normalizedCategoryId, productId]);
 
+  // useEffect(() => {
+  //   setAttributeSelections({});
+  // }, [categoryId]);
+  
+  const prevCategoryId = useRef(categoryId);
   useEffect(() => {
-    setAttributeSelections({});
+    if (prevCategoryId.current !== categoryId) {
+      prevCategoryId.current = categoryId;
+      setAttributeSelections({});
+    }
   }, [categoryId]);
 
   const handleCancel = () => {
@@ -71,7 +84,8 @@ const AddProductAttributes = () => {
 
   const handleCreateValue = () => {
     setCreateValueFor(null);
-    window.location.reload();
+    setRefreshKey((k) => k + 1);
+    // window.location.reload();
   };
 
   const handleSaveAttributes = async () => {
@@ -179,8 +193,9 @@ const AddProductAttributes = () => {
           defaultCategoryId={normalizedCategoryId}
           onCreated={() => {
             setShowAttrCreate(false);
+            setRefreshKey((k) => k + 1);
             // refresh attributes to show newly created attribute
-            window.location.reload();
+            // window.location.reload();
           }}
           onClose={() => setShowAttrCreate(false)}
         />

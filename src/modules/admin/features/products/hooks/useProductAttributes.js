@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchAttributesByCategory } from "../service/products.service.js";
 
-export const useProductAttributes = (categoryId) => {
+export const useProductAttributes = (categoryId, refreshKey = 0) => {
   const [attributes, setAttributes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -41,7 +41,7 @@ export const useProductAttributes = (categoryId) => {
     return () => {
       mounted = false;
     };
-  }, [categoryId]);
+  }, [categoryId, refreshKey]);
 
   return { attributes, loading, error };
 };
