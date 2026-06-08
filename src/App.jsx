@@ -4,10 +4,11 @@ import CartSuccessToast from "./modules/public/components/Notifications/CartSucc
 
 function App() {
   useAutoLogout();
+
   return (
     <>
-      <CartSuccessToast />
       <AppRouter />
+      <CartSuccessToast />
     </>
   );
 }

@@ -17,3 +17,14 @@ export const getTokenExpiryTime = (token) => {
         return 0;
     }
 };
+
+export const getRoleFromToken = () => {
+    try {
+        const token = localStorage.getItem("admin_token");
+        if (!token) return null;
+        const decoded = jwtDecode(token);
+        return decoded.role ?? decoded.admin?.role ?? null;
+    } catch {
+        return null;
+    }
+};

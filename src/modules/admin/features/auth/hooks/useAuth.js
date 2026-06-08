@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getTokenExpiryTime } from "../utils/token.utils";
+import { getTokenExpiryTime, getRoleFromToken } from "../utils/token.utils";
+import { isAuthenticated } from "../service/auth.service";
 const TOKEN_KEY = "admin_token";
 
 export const useAutoLogout = () => {
@@ -35,4 +36,31 @@ export const logout = (navigate = null) => {
     } else {
         window.location.href = "/admin";
     }
+};
+
+const ROLE_HIERARCHY = ["manager", "admin", "super_admin"];
+
+export const useAuth = () => {
+    const role          = getRoleFromToken();
+    const authenticated = isAuthenticated();
+
+    const hasRole = (...allowedRoles) => {
+        if (!role) return false;
+        return allowedRoles.includes(role);
+    };
+
+    const hasMinRole = (minRole) => {
+        if (!role) return false;
+        return ROLE_HIERARCHY.indexOf(role) >= ROLE_HIERARCHY.indexOf(minRole);
+    };
+
+    return {
+        role,
+        authenticated,
+        hasRole,
+        hasMinRole,
+        isSuperAdmin: role === "super_admin",
+        isAdmin:      role === "admin" || role === "super_admin",
+        isManager:    role === "manager" || role === "admin" || role === "super_admin",
+    };
 };
