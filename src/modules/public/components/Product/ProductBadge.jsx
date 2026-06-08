@@ -1,35 +1,31 @@
-const ProductBadge = ({ label }) => {
-  // Calculate font size based on text length
-  const fontSize = 10;
-
+const ProductBadge = ({ label, color = '#FE1801' }) => {
   const words = label.split(' ');
-  const hasSpace = label.includes(' ');
 
   return (
-    <div 
-      className="absolute top-[10px] left-[10px] rounded-full bg-[#FE1801] flex items-center justify-center z-10"
-      style={{ width: '60px', height: '60px' }}
+    <div
+      className="absolute top-0 left-0 overflow-hidden z-10"
+      style={{ width: '80px', height: '80px', borderTopLeftRadius: '16px' }}
     >
-      <span 
-        className="font-bold text-center uppercase text-white px-2"
-        style={{ 
-          fontFamily: 'Inter, sans-serif', 
-          fontSize: `${fontSize}px`,
-          lineHeight: '1.1',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'
+      <div
+        style={{
+          position: 'absolute',
+          top: '18px',
+          left: '-22px',
+          width: '100px',
+          background: color,
+          color: '#fff',
+          textAlign: 'center',
+          fontSize: '9.5px',
+          fontWeight: 700,
+          letterSpacing: '0.04em',
+          textTransform: 'uppercase',
+          padding: '5px 0',
+          transform: 'rotate(-45deg)',
+          lineHeight: 1.2,
         }}
       >
-        {hasSpace ? (
-          words.map((word, index) => (
-            <div key={index}>{word}</div>
-          ))
-        ) : (
-          label
-        )}
-      </span>
+        {words.map((w, i) => <div key={i}>{w}</div>)}
+      </div>
     </div>
   );
 };

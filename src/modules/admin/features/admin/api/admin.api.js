@@ -23,8 +23,9 @@ export const getAllAdmins = async () => {
 
 // to update admin role in admin management page //successful
 export const updateAdminRole = async (adminId, newRole) => {
+    // console.log("API call to update admin role with data:", { adminId, newRole });
     try {
-        const res = await API.put("/admin/updateRole", { adminId, newRole });
+        const res = await API.put(`/admin/updateRole/${adminId}`, {newRole });
         return res.data;
     } catch (error) {
         throw handleApiError(error, "Failed to update admin role");
@@ -33,12 +34,9 @@ export const updateAdminRole = async (adminId, newRole) => {
 
 // to update admin password in admin settings page //successful
 export const updatePassword = async (adminId, passwordData) => {
+    // console.log("API call to update password with data:", { adminId, passwordData });
     try{
-        const res = await API.put(`/admin/settings/updatePassword/${adminId}`, {
-            oldPassword: passwordData.oldPassword || passwordData.currentPassword,
-            newPassword: passwordData.newPassword,
-            confirmPassword: passwordData.confirmPassword
-        });
+        const res = await API.put(`/admin/settings/updatePassword/${adminId}`, {passwordData});
         return res.data;
     } catch (error) {
         throw handleApiError(error, "Failed to update password");

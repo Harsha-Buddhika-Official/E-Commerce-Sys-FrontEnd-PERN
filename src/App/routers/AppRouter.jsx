@@ -5,7 +5,7 @@ import AdminRoutes from "./AdminRoutes";
 function AppRouter() {
   return (
     <Routes>
-      <Route path="*" element={<PublicRoutes />} />
+      <Route path="/*" element={<PublicRoutes />} />
       <Route path="/admin/*" element={<AdminRoutes />} />
     </Routes>
   );
