@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useBanner } from '../features/banners/hooks/useBanner.js';
+import { useImageBanner } from '../features/banners/hooks/useImageBanner.js';
 
 export default function ImageSlider() {
-    const { banners, loading, error } = useBanner();
+    const { banners, loading, error } = useImageBanner();
     const [current, setCurrent] = useState(0);
 
     const slides = banners.map(banner => banner.media_url);

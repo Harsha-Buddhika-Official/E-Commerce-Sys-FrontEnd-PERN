@@ -1,15 +1,28 @@
-import { getBanners } from '../api/banner.api.js';
+import { getImageBanners, getVideoBanners } from '../api/banner.api.js';
 import { handleServiceError } from '../../../../../utils/serviceError.js';
 
-export const fetchBanners = async () => {
+export const fetchImageBanners = async () => {
     try {
-        const response = await getBanners();
+        const response = await getImageBanners();
 
         return response.data || [];
     } catch (error) {
-        throw handleServiceError(error, 'Failed to fetch banners', {
+        throw handleServiceError(error, 'Failed to fetch image banners', {
             service: 'banner',
-            operation: 'fetchBanners'
+            operation: 'fetchImageBanners'
+        });
+    }
+};
+
+export const fetchVideoBanners = async () => {
+    try {
+        const response = await getVideoBanners();
+
+        return response.data || [];
+    } catch (error) {
+        throw handleServiceError(error, 'Failed to fetch video banners', {
+            service: 'banner',
+            operation: 'fetchVideoBanners'
         });
     }
 };

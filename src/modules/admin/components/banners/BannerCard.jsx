@@ -1,11 +1,14 @@
-import VisibilityOutlinedIcon  from "@mui/icons-material/VisibilityOutlined";
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import ImageOutlinedIcon        from "@mui/icons-material/ImageOutlined";
+import VisibilityOutlinedIcon    from "@mui/icons-material/VisibilityOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import ImageOutlinedIcon         from "@mui/icons-material/ImageOutlined";
+import VideocamOutlinedIcon      from "@mui/icons-material/VideocamOutlined";
 
-import { SORA, INTER }          from "../../../../styles/fonts";
+import { SORA, INTER }           from "../../../../styles/fonts";
 
 export default function BannerCard({ banner, onView, onDelete }) {
-  const { banner_id, title, media_url } = banner;
+  const { banner_id, title, media_url, media_type } = banner;
+
+  const isVideo = media_type === "video";
 
   return (
     <div
@@ -15,24 +18,58 @@ export default function BannerCard({ banner, onView, onDelete }) {
         boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
       }}
     >
-      {/* ── Image ── */}
+      {/* ── Media ── */}
       <div
         className="relative w-full flex items-center justify-center overflow-hidden"
         style={{ height: 180, backgroundColor: "#f7f7f7", borderBottom: "1px solid #f0f0f0" }}
       >
         {media_url ? (
-          <img
-            src={media_url}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
+          isVideo ? (
+            <video
+              src={media_url}
+              className="w-full h-full object-cover"
+              muted
+              playsInline
+              loop
+              autoPlay
+            />
+          ) : (
+            <img
+              src={media_url}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          )
         ) : (
           <div className="flex flex-col items-center gap-2">
-            <ImageOutlinedIcon style={{ fontSize: 36, color: "#ddd" }} />
-            <span style={{ ...INTER, fontSize: 11, color: "#ccc", fontWeight: 600 }}>No Image</span>
+            {isVideo
+              ? <VideocamOutlinedIcon style={{ fontSize: 36, color: "#ddd" }} />
+              : <ImageOutlinedIcon   style={{ fontSize: 36, color: "#ddd" }} />
+            }
+            <span style={{ ...INTER, fontSize: 11, color: "#ccc", fontWeight: 600 }}>
+              No {isVideo ? "Video" : "Image"}
+            </span>
           </div>
         )}
 
+        {/* Media type badge */}
+        {media_url && (
+          <div
+            className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-1 rounded-lg"
+            style={{
+              backgroundColor: isVideo ? "rgba(37,99,235,0.85)" : "rgba(0,0,0,0.45)",
+              backdropFilter: "blur(4px)",
+            }}
+          >
+            {isVideo
+              ? <VideocamOutlinedIcon style={{ fontSize: 11, color: "#fff" }} />
+              : <ImageOutlinedIcon   style={{ fontSize: 11, color: "#fff" }} />
+            }
+            <span style={{ ...INTER, fontSize: 10, fontWeight: 700, color: "#fff" }}>
+              {isVideo ? "Video" : "Image"}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* ── Body ── */}

@@ -12,7 +12,7 @@ export const useBanners = () => {
       setError(null);
 
       const data = await getAllBanners();
-
+      // console.log("Fetched Banners Data:", data); // Debug log
       setBanners(data);
     } catch (err) {
       setError(err.message);

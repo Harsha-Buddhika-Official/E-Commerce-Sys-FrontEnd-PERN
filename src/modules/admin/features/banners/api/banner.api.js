@@ -15,7 +15,7 @@ export const getBannerByIdApi = async (id) =>{
 export const createBannerApi = async (formData) => {
   return API.post("/banners/admin", formData, {
     headers: {"Content-Type": "multipart/form-data",},
-    timeout: 40000,
+    timeout: 100000,
   });
 }
 

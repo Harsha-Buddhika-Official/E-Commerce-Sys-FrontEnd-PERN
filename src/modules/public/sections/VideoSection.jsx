@@ -1,6 +1,15 @@
-import Cyborg from "../../../assets/video/cyborg.mp4";
+import { useVideoBanner } from "../features/banners/hooks/useVideoBanner.js";
 
 export default function VideoSection() {
+  const { banners, loading, error } = useVideoBanner();
+
+  if (loading) return null;
+  if (error) return null;
+
+  const videoUrl = banners[0]?.media_url;
+
+  if (!videoUrl) return null;
+
   return (
     <div>
       <div className="relative w-full h-[100vh] overflow-hidden">
@@ -12,12 +21,12 @@ export default function VideoSection() {
             loop
             playsInline
           >
-            <source src={Cyborg} type="video/mp4" />
+            <source src={videoUrl} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
 
-        {/* Optional: Overlay for better text readability if needed */}
+        {/* Optional: Overlay for better text readability */}
         <div className="absolute inset-0 bg-black opacity-30"></div>
       </div>
     </div>
