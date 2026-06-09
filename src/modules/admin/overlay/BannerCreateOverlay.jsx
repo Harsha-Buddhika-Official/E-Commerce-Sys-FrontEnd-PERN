@@ -1,16 +1,16 @@
-import { useState, useRef }           from "react";
-import { useNavigate, useLocation }   from "react-router-dom";
-import { SORA, INTER }                from "../../../styles/fonts.js";
+import { useState, useRef, useEffect }  from "react";
+import { useNavigate, useLocation }     from "react-router-dom";
+import { SORA, INTER }                  from "../../../styles/fonts.js";
 
-import SaveOutlinedIcon               from "@mui/icons-material/SaveOutlined";
-import CheckCircleOutlinedIcon        from "@mui/icons-material/CheckCircleOutlined";
-import WarningAmberOutlinedIcon       from "@mui/icons-material/WarningAmberOutlined";
-import LabelOutlinedIcon              from "@mui/icons-material/LabelOutlined";
-import CloudUploadOutlinedIcon        from "@mui/icons-material/CloudUploadOutlined";
-import AddPhotoAlternateOutlinedIcon  from "@mui/icons-material/AddPhotoAlternateOutlined";
-import CloseIcon                      from "@mui/icons-material/Close";
+import SaveOutlinedIcon                 from "@mui/icons-material/SaveOutlined";
+import CheckCircleOutlinedIcon          from "@mui/icons-material/CheckCircleOutlined";
+import WarningAmberOutlinedIcon         from "@mui/icons-material/WarningAmberOutlined";
+import LabelOutlinedIcon                from "@mui/icons-material/LabelOutlined";
+import CloudUploadOutlinedIcon          from "@mui/icons-material/CloudUploadOutlined";
+import AddPhotoAlternateOutlinedIcon    from "@mui/icons-material/AddPhotoAlternateOutlined";
+import CloseIcon                        from "@mui/icons-material/Close";
 
-import { useCreateBanner }            from "../features/banners/hooks/useCreateBanner.js";
+import { useCreateBanner }              from "../features/banners/hooks/useCreateBanner.js";
 
 // ─── Shared field primitives (mirrors BrandCreateOverlay) ─────────────────────
 function FieldLabel({ children, required }) {
@@ -24,6 +24,7 @@ function FieldLabel({ children, required }) {
 
 function TextInput({ value, onChange, placeholder, icon, error }) {
   const [focused, setFocused] = useState(false);
+
   return (
     <div className="relative flex items-center">
       {icon && (
@@ -67,6 +68,20 @@ export default function BannerCreateOverlay({ isOpen = true, onClose = null, onC
   const [imageErr,    setImageErr]    = useState(false);
 
   const fileRef = useRef();
+
+
+  useEffect(() => {
+    if (isOpen) {
+      setTitle("");
+      setImageFile(null);
+      setPreview("");
+      setSaved(false);
+      setErrors({});
+      setApiError("");
+      setImageErr(false);
+      if (fileRef.current) fileRef.current.value = ""; // reset the actual file input
+    }
+  }, [isOpen]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleTitleChange = (v) => {

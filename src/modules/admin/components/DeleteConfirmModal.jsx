@@ -4,21 +4,36 @@ import WarningAmberOutlinedIcon          from "@mui/icons-material/WarningAmberO
 import CheckCircleOutlinedIcon           from "@mui/icons-material/CheckCircleOutlined";
 import ErrorOutlineOutlinedIcon          from "@mui/icons-material/ErrorOutlineOutlined";
 import CloseIcon                         from "@mui/icons-material/Close";
-import { SORA, INTER }                   from "../../../../styles/fonts";
+import { SORA, INTER }                   from "../../../styles/fonts.js";
 
-const AUTO_CLOSE_DELAY = 1800; // ms after success before auto-close
+const AUTO_CLOSE_DELAY = 1800;
 
-export default function DeleteBannerModal({ banner, onConfirm, onCancel, onDeleted, loading }) {
-  const [status, setStatus] = useState("idle"); // "idle" | "loading" | "success" | "error"
+/**
+ * Generic delete confirmation modal.
+ *
+ * Props
+ * ─────
+ * item       – { id, name, type, context, image_url? }
+ *               • id        – unique key to reset state when target changes
+ *               • name      – display label shown in the confirmation copy
+ *               • type      – entity label, e.g. "Banner", "Product", "Category"
+ *               • context   – breadcrumb prefix, e.g. "Banners", "Products / Edit"
+ *               • image_url – optional preview image
+ * onConfirm  – async () => void   — must throw on failure
+ * onCancel   – () => void
+ * onDeleted  – () => void         — called after success auto-close
+ */
+export default function DeleteConfirmModal({ item, onConfirm, onCancel, onDeleted }) {
+  const [status,   setStatus]   = useState("idle"); // "idle" | "loading" | "success" | "error"
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Reset state whenever a new banner is targeted
+  // Reset state whenever the targeted item changes
   useEffect(() => {
-    if (banner) {
+    if (item) {
       setStatus("idle");
       setErrorMsg("");
     }
-  }, [banner?.banner_id]);
+  }, [item?.id]);
 
   // Auto-close after success
   useEffect(() => {
@@ -34,12 +49,12 @@ export default function DeleteBannerModal({ banner, onConfirm, onCancel, onDelet
       await onConfirm();
       setStatus("success");
     } catch (err) {
-      setErrorMsg(err?.message || "Something went wrong. Please try again.");
+      setErrorMsg(err?.message ?? "Something went wrong. Please try again.");
       setStatus("error");
     }
   };
 
-  if (!banner) return null;
+  if (!item) return null;
 
   const isLocked  = status === "loading" || status === "success";
   const isSuccess = status === "success";
@@ -75,7 +90,7 @@ export default function DeleteBannerModal({ banner, onConfirm, onCancel, onDelet
             <div
               className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0"
               style={{
-                backgroundColor: isSuccess ? "#f0fdf4" : isError ? "#fff5f5" : "#fff5f5",
+                backgroundColor: isSuccess ? "#f0fdf4" : "#fff5f5",
                 transition: "background-color 0.3s ease",
               }}
             >
@@ -85,9 +100,11 @@ export default function DeleteBannerModal({ banner, onConfirm, onCancel, onDelet
               }
             </div>
             <div>
-              <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Banners / Delete</p>
+              <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>
+                {item.context} / Delete
+              </p>
               <h2 style={{ ...SORA, fontSize: 16, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>
-                {isSuccess ? "Banner Deleted" : "Delete Banner"}
+                {isSuccess ? `${item.type} Deleted` : `Delete ${item.type}`}
               </h2>
             </div>
           </div>
@@ -106,15 +123,15 @@ export default function DeleteBannerModal({ banner, onConfirm, onCancel, onDelet
         {/* ── Body ── */}
         <div className="px-6 py-5 flex flex-col gap-4">
 
-          {/* Banner image preview */}
-          {banner.image_url && (
+          {/* Optional image preview */}
+          {item.image_url && (
             <div
               className="w-full rounded-xl overflow-hidden"
               style={{ height: 110, border: "1px solid #f0f0f0" }}
             >
               <img
-                src={banner.image_url}
-                alt={banner.title}
+                src={item.image_url}
+                alt={item.name}
                 className="w-full h-full object-cover"
                 style={{
                   filter: isSuccess ? "grayscale(0.4) opacity(0.65)" : "none",
@@ -127,18 +144,18 @@ export default function DeleteBannerModal({ banner, onConfirm, onCancel, onDelet
           {/* Status message */}
           {isSuccess ? (
             <p style={{ ...INTER, fontSize: 13, color: "#555", lineHeight: 1.7 }}>
-              <span style={{ fontWeight: 700, color: "#15803d" }}>"{banner.title}"</span>{" "}
+              <span style={{ fontWeight: 700, color: "#15803d" }}>"{item.name}"</span>{" "}
               has been permanently deleted.
             </p>
           ) : (
             <p style={{ ...INTER, fontSize: 13, color: "#555", lineHeight: 1.7 }}>
               Are you sure you want to delete{" "}
-              <span style={{ fontWeight: 700, color: "#111" }}>"{banner.title}"</span>?{" "}
+              <span style={{ fontWeight: 700, color: "#111" }}>"{item.name}"</span>?{" "}
               This action cannot be undone.
             </p>
           )}
 
-          {/* Inline error message */}
+          {/* Inline error */}
           {isError && (
             <div
               className="flex items-start gap-2.5 px-4 py-3 rounded-xl"
@@ -195,7 +212,7 @@ export default function DeleteBannerModal({ banner, onConfirm, onCancel, onDelet
             ) : (
               <>
                 <DeleteOutlineOutlinedIcon style={{ fontSize: 16 }} />
-                Delete Banner
+                Delete {item.type}
               </>
             )}
           </button>

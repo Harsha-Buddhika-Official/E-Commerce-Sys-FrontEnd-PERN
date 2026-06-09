@@ -478,6 +478,7 @@ const OrderDetailPage = ({
               <SectionTitle icon={<PersonOutlinedIcon style={{ fontSize: 16 }} />}>
                 Customer Info
               </SectionTitle>
+              <InfoRow label="Name"   value={displayOrder.full_name}      copyable />
               <InfoRow label="Email"  value={displayOrder.customer_email} copyable />
               <InfoRow label="Phone"  value={displayOrder.phone_number}   copyable />
             </SectionCard>

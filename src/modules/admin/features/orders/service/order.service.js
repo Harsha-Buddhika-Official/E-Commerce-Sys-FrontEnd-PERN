@@ -120,6 +120,7 @@ export const getOrderDetail = async (orderId) => {
       order_id: safeNumber(data.order_id ?? data.orderId ?? data.id),
       tracking_code: safeText(data.tracking_code ?? data.trackingCode),
       customer_email: safeText(data.customer_email ?? data.customerEmail),
+      full_name: safeText(data.full_name ?? data.fullName),
       phone_number: safeText(data.phone_number ?? data.phoneNumber),
       total_amount: safeMoney(data.total_amount ?? data.totalAmount),
       order_status: normalizeStatus(data.order_status ?? data.orderStatus),
