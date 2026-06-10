@@ -12,7 +12,7 @@ export const useVideoBanner = () => {
             setError(null);
 
             const data = await fetchVideoBanners();
-            console.log('Fetched video banners:', data);
+            // console.log('Fetched video banners:', data);
             setBanners(data);
         } catch (error) {
             console.error('Error fetching video banners:', error);

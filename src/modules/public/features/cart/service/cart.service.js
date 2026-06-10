@@ -95,7 +95,7 @@ const emitAddSuccess = () => {
 
 export const fetchCart = async () => {
   const response = await getCart();
-  console.log(response);
+  // console.log(response);
   return normalizeCart(unwrapResponse(response));
 };
 

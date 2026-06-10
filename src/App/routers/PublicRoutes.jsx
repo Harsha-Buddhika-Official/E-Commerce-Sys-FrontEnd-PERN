@@ -11,6 +11,7 @@ import OfferDetailPage from "../../modules/public/pages/OfferDetailPage.jsx";
 import AboutPage from "../../modules/public/pages/AboutPage.jsx";
 import ContactPage from "../../modules/public/pages/ContactPage.jsx";
 import CheckoutPage from "../../modules/public/pages/CheckoutPage.jsx";
+import TrackOrderPage from "../../modules/public/pages/TrackOrderPage.jsx";
 
 export default function PublicRoutes() {
   // const [selectedCategory, setSelectedCategory] = useState(null);
@@ -29,6 +30,7 @@ export default function PublicRoutes() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/track-order" element={<TrackOrderPage />} />
       </Routes>
       <Footer />
     </>

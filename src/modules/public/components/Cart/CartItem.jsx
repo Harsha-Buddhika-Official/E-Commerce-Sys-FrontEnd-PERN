@@ -3,15 +3,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
-/**
- * CartItem — individual product row inside the Cart drawer.
- *
- * Props:
- *  - item: { id, name, price, quantity }
- *  - onIncrease(id)
- *  - onDecrease(id)
- *  - onRemove(id)
- */
+
 export default function CartItem({ item, onIncrease, onDecrease, onRemove }) {
   const lineTotal = (item.price * item.quantity).toLocaleString("en-LK", {
     minimumFractionDigits: 2,

@@ -6,17 +6,6 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import CartItem from "./CartItem";
 import { useCart } from "../../features/cart/hooks/useCart.js";
 
-// ─── Cart Drawer ──────────────────────────────────────────────────────────────
-/**
- * Cart
- *
- * Props:
- *  - open (bool)        – controlled open state
- *  - onClose (fn)       – called when overlay or × is clicked
- *
- * Or use it standalone (no props) — it manages its own open state via the
- * floating cart button rendered inside this component for demo purposes.
- */
 export default function Cart({ open: openProp, onClose: onCloseProp }) {
   // If used standalone (no props), manage own state
   const [internalOpen, setInternalOpen] = useState(false);
