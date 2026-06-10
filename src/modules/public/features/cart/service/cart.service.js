@@ -1,10 +1,4 @@
-import {
-  addCartItem,
-  clearCart as clearCartRequest,
-  getCart,
-  removeCartItem,
-  updateCartItem,
-} from "../api/cart.api.js";
+import {addCartItem,clearCart as clearCartRequest,getCart,removeCartItem,updateCartItem,} from "../api/cart.api.js";
 
 const toNumber = (value) => {
   const numeric = Number(value);
@@ -41,12 +35,7 @@ const normalizeCart = (payload) => {
     )
   );
 
-  return {
-    items,
-    total,
-    itemCount,
-    message: payload?.message ?? null,
-  };
+  return {items,total,itemCount,message: payload?.message ?? null,};
 };
 
 const unwrapResponse = (response) => {
@@ -95,7 +84,6 @@ const emitAddSuccess = () => {
 
 export const fetchCart = async () => {
   const response = await getCart();
-  // console.log(response);
   return normalizeCart(unwrapResponse(response));
 };
 

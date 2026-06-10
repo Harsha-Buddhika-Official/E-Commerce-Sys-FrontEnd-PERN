@@ -5,3 +5,10 @@ export const trackOrderAPI = async (payload) => {
     const response = await API.post("/orders/tracking", payload);
     return response.data;
 };
+
+
+// Create Order (Direct or Cart)
+export const createOrderApi = (payload) =>{
+    console.log("API call - Creating order with payload:", payload); // Debug log
+    return API.post("/orders/create", payload);
+}

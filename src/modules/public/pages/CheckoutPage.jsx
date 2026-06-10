@@ -8,14 +8,21 @@ import LocalPhoneOutlinedIcon            from "@mui/icons-material/LocalPhoneOut
 import LocationOnOutlinedIcon            from "@mui/icons-material/LocationOnOutlined";
 import LocationCityOutlinedIcon          from "@mui/icons-material/LocationCityOutlined";
 import MarkunreadMailboxOutlinedIcon     from "@mui/icons-material/MarkunreadMailboxOutlined";
-import CloudUploadOutlinedIcon           from "@mui/icons-material/CloudUploadOutlined";
-import InsertDriveFileOutlinedIcon       from "@mui/icons-material/InsertDriveFileOutlined";
 import CheckCircleOutlinedIcon           from "@mui/icons-material/CheckCircleOutlined";
 import WarningAmberOutlinedIcon          from "@mui/icons-material/WarningAmberOutlined";
 import SendOutlinedIcon                  from "@mui/icons-material/SendOutlined";
-import ReceiptLongOutlinedIcon           from "@mui/icons-material/ReceiptLongOutlined";
 import CloseIcon                         from "@mui/icons-material/Close";
+import InventoryOutlinedIcon             from "@mui/icons-material/InventoryOutlined";
+import TagOutlinedIcon                   from "@mui/icons-material/TagOutlined";
+import CloudUploadOutlinedIcon           from "@mui/icons-material/CloudUploadOutlined";
+import InsertDriveFileOutlinedIcon       from "@mui/icons-material/InsertDriveFileOutlined";
+import ReceiptLongOutlinedIcon           from "@mui/icons-material/ReceiptLongOutlined";
 
+import { useCart }        from "../features/cart/hooks/useCart.js";
+import { useCreateOrder } from "../features/orders/hooks/useCreateOrder.js";
+
+// ─── Feature flag ─────────────────────────────────────────────────────────────
+const RECEIPT_ENABLED = false; // flip to true to re-enable upload section
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
@@ -25,7 +32,6 @@ function SectionCard({ title, subtitle, icon, children }) {
       className="bg-white rounded-2xl overflow-hidden"
       style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
     >
-      {/* Card header */}
       <div
         className="flex items-center gap-3 px-6 py-4"
         style={{ borderBottom: "1px solid #f0f0f0" }}
@@ -104,69 +110,67 @@ function FieldError({ message }) {
   );
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatLKR(amount) {
+  return `LKR ${Number(amount).toLocaleString("en-LK", { minimumFractionDigits: 2 })}`;
+}
+
+const SHIPPING_THRESHOLD = 50000;
+const SHIPPING_FEE       = 500;
+
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function CheckoutPage() {
   const fileRef = useRef();
+  const { items, total, itemCount }                = useCart();
+  const { createOrder, loading, error: hookError } = useCreateOrder();
+
+  const shipping   = total >= SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const grandTotal = total + shipping;
 
   // ── Form state ──────────────────────────────────────────────────────────
   const [form, setForm] = useState({
-    name:     "",
-    email:    "",
-    phone:    "",
-    address:  "",
-    city:     "",
-    postal:   "",
+    name: "", email: "", phone: "", address: "", city: "", postal: "",
   });
 
-  // ── Receipt upload state ─────────────────────────────────────────────────
-  const [receiptFiles, setReceiptFiles]   = useState([]);   // [{ file, preview, type }]
-  const [uploadErr,    setUploadErr]      = useState("");
+  // ── Receipt state (kept so logic works when re-enabled) ──────────────────
+  const [receiptFiles, setReceiptFiles] = useState([]);
+  const [uploadErr,    setUploadErr]    = useState("");
 
   // ── Submission state ─────────────────────────────────────────────────────
-  const [errors,    setErrors]    = useState({});
-  const [apiError,  setApiError]  = useState("");
-  const [status,    setStatus]    = useState("idle"); // idle | loading | success
+  const [errors,      setErrors]      = useState({});
+  const [apiError,    setApiError]    = useState("");
+  const [orderResult, setOrderResult] = useState(null);
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (hookError) setApiError(hookError?.message || "Failed to place order. Please try again.");
+  }, [hookError]);
+
+  // ── Field handler ─────────────────────────────────────────────────────────
   const setField = (key) => (val) => {
     setForm((f) => ({ ...f, [key]: val }));
     setErrors((e) => { const n = { ...e }; delete n[key]; return n; });
     setApiError("");
   };
 
+  // ── File handlers ─────────────────────────────────────────────────────────
   const handleFiles = (incoming) => {
     setUploadErr("");
     const allowed = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
-    const maxSize = 10 * 1024 * 1024; // 10 MB
-
+    const maxSize = 10 * 1024 * 1024;
     const valid = [];
     for (const file of Array.from(incoming)) {
-      if (!allowed.includes(file.type)) {
-        setUploadErr("Only JPEG, PNG, WebP, or PDF files are allowed.");
-        return;
-      }
-      if (file.size > maxSize) {
-        setUploadErr(`"${file.name}" exceeds the 10 MB limit.`);
-        return;
-      }
+      if (!allowed.includes(file.type)) { setUploadErr("Only JPEG, PNG, WebP, or PDF files are allowed."); return; }
+      if (file.size > maxSize)          { setUploadErr(`"${file.name}" exceeds the 10 MB limit.`); return; }
       valid.push(file);
     }
-
-    // Max 5 files total
-    const combined = [...receiptFiles, ...valid].slice(0, 5);
+    const combined     = [...receiptFiles, ...valid].slice(0, 5);
     const withPreviews = combined.map((f) => {
-      if (f.preview !== undefined) return f; // already processed
+      if (f.preview !== undefined) return f;
       const isPdf = f.type === "application/pdf";
-      return {
-        file: f,
-        preview: isPdf ? null : URL.createObjectURL(f),
-        type: isPdf ? "pdf" : "image",
-        name: f.name,
-        size: f.size,
-      };
+      return { file: f, preview: isPdf ? null : URL.createObjectURL(f), type: isPdf ? "pdf" : "image", name: f.name, size: f.size };
     });
-
     setReceiptFiles(withPreviews);
     if (fileRef.current) fileRef.current.value = "";
   };
@@ -180,57 +184,53 @@ export default function CheckoutPage() {
     });
   };
 
-  // Drag and drop
-  const handleDrop = (e) => {
-    e.preventDefault();
-    handleFiles(e.dataTransfer.files);
-  };
+  const handleDrop = (e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); };
 
+  // ── Validation ────────────────────────────────────────────────────────────
   const validate = () => {
     const e = {};
     if (!form.name.trim())    e.name    = "Full name is required.";
     if (!form.email.trim())   e.email   = "Email address is required.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-                              e.email   = "Enter a valid email address.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Enter a valid email address.";
     if (!form.phone.trim())   e.phone   = "Phone number is required.";
     if (!form.address.trim()) e.address = "Shipping address is required.";
     if (!form.city.trim())    e.city    = "City is required.";
     if (!form.postal.trim())  e.postal  = "Postal code is required.";
-    if (receiptFiles.length === 0) e.receipt = "Please upload your deposit receipt.";
+    if (RECEIPT_ENABLED && receiptFiles.length === 0) e.receipt = "Please upload your deposit receipt.";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
+  // ── Submit ────────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
     if (!validate()) return;
-    setStatus("loading");
     setApiError("");
     try {
-      // Build FormData for your API
-      const payload = new FormData();
-      Object.entries(form).forEach(([k, v]) => payload.append(k, v));
-      receiptFiles.forEach(({ file }) => payload.append("receipts", file));
-
-      // await yourCheckoutService(payload);   ← plug in your service call here
-
-      await new Promise((r) => setTimeout(r, 1200)); // remove — demo delay only
-      setStatus("success");
-    } catch (err) {
-      setApiError(err?.message || "Failed to place order. Please try again.");
-      setStatus("idle");
+      const payload = {
+        type:             "cart",
+        full_name:        form.name,
+        customer_email:   form.email,
+        phone_number:     form.phone,
+        shipping_address: form.address,
+        city:             form.city,
+        postal_code:      form.postal,
+      };
+      const order = await createOrder(payload);
+      setOrderResult(order);
+    } catch {
+      // synced via useEffect on hookError
     }
   };
 
-  // Cleanup object URLs on unmount
   useEffect(() => {
     return () => receiptFiles.forEach(({ preview }) => preview && URL.revokeObjectURL(preview));
   }, []);
 
-  const isLocked   = status === "loading" || status === "success";
-  const hasErrors  = Object.keys(errors).length > 0 || !!apiError;
+  const isLocked  = loading || !!orderResult;
+  const hasErrors = Object.keys(errors).length > 0 || !!apiError;
 
-  // ── Success screen ──────────────────────────────────────────────────────
-  if (status === "success") {
+  // ── Success screen ────────────────────────────────────────────────────────
+  if (orderResult) {
     return (
       <div className="h-full overflow-y-auto bg-[#f5f5f5] flex items-center justify-center p-6">
         <div
@@ -243,32 +243,53 @@ export default function CheckoutPage() {
           >
             <CheckCircleOutlinedIcon style={{ fontSize: 36, color: "#16a34a" }} />
           </div>
+
           <div className="text-center">
             <h2 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>
               Order Placed!
             </h2>
             <p style={{ ...INTER, fontSize: 13, color: "#777", marginTop: 6, lineHeight: 1.7 }}>
-              Your order and deposit receipt have been submitted successfully.
-              We'll confirm your order shortly via email.
+              Your order has been submitted successfully. We'll confirm via email shortly.
             </p>
           </div>
+
+          {orderResult.tracking_code && (
+            <div
+              className="w-full flex items-center justify-between px-5 py-4 rounded-xl"
+              style={{ backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0" }}
+            >
+              <div className="flex items-center gap-2">
+                <TagOutlinedIcon style={{ fontSize: 16, color: "#16a34a" }} />
+                <span style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#15803d" }}>Tracking Code</span>
+              </div>
+              <span style={{ ...SORA, fontSize: 14, fontWeight: 900, color: "#111", letterSpacing: "0.05em" }}>
+                {orderResult.tracking_code}
+              </span>
+            </div>
+          )}
+
           <div
             className="w-full px-5 py-4 rounded-xl"
             style={{ backgroundColor: "#f9f9f9", border: "1px solid #ebebeb" }}
           >
             <p style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 10 }}>
-              Order Summary
+              Order Details
             </p>
             {[
-              ["Name",    form.name],
-              ["Email",   form.email],
-              ["Phone",   form.phone],
-              ["Address", `${form.address}, ${form.city} ${form.postal}`],
-              ["Receipts", `${receiptFiles.length} file${receiptFiles.length !== 1 ? "s" : ""} uploaded`],
+              ["Order ID", `#${orderResult.order_id}`],
+              ["Name",     form.name],
+              ["Email",    orderResult.customer_email],
+              ["Phone",    orderResult.phone_number],
+              ["Address",  `${orderResult.shipping_address}, ${orderResult.city} ${orderResult.postal_code}`],
+              ["Items",    `${itemCount} item${itemCount !== 1 ? "s" : ""}`],
+              ["Total",    formatLKR(orderResult.total_amount ?? grandTotal)],
+              ["Status",   orderResult.order_status ?? "pending"],
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between items-start py-1.5" style={{ borderBottom: "1px solid #f0f0f0" }}>
                 <span style={{ ...INTER, fontSize: 12, color: "#aaa", fontWeight: 600 }}>{label}</span>
-                <span style={{ ...INTER, fontSize: 12, color: "#111", fontWeight: 700, textAlign: "right", maxWidth: "60%" }}>{value}</span>
+                <span style={{ ...INTER, fontSize: 12, color: "#111", fontWeight: 700, textAlign: "right", maxWidth: "60%", textTransform: label === "Status" ? "capitalize" : "none" }}>
+                  {value}
+                </span>
               </div>
             ))}
           </div>
@@ -277,11 +298,11 @@ export default function CheckoutPage() {
     );
   }
 
-  // ── Main form ────────────────────────────────────────────────────────────
+  // ── Main form ─────────────────────────────────────────────────────────────
   return (
     <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
 
-      {/* ── Page header ── */}
+      {/* Page header */}
       <div className="flex items-center gap-3 mb-6">
         <div
           className="flex items-center justify-center w-9 h-9 rounded-xl"
@@ -291,13 +312,11 @@ export default function CheckoutPage() {
         </div>
         <div>
           <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Store / Checkout</p>
-          <h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>
-            Checkout
-          </h1>
+          <h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>Checkout</h1>
         </div>
       </div>
 
-      {/* ── Global error banner ── */}
+      {/* Error banner */}
       {hasErrors && (
         <div
           className="flex items-start gap-3 px-4 py-3 rounded-xl mb-5"
@@ -320,52 +339,41 @@ export default function CheckoutPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-        {/* ── Left col — forms ── */}
+        {/* Left col */}
         <div className="lg:col-span-2 flex flex-col gap-5">
 
-          {/* ── Personal Info ── */}
+          {/* Personal Info */}
           <SectionCard
             title="Personal Information"
             subtitle="Checkout / Contact"
             icon={<PersonOutlinedIcon style={{ fontSize: 18, color: "#fff" }} />}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-              {/* Full name */}
               <div className="sm:col-span-2">
                 <FieldLabel required>Full Name</FieldLabel>
                 <TextInput
-                  value={form.name}
-                  onChange={setField("name")}
+                  value={form.name} onChange={setField("name")}
                   placeholder="e.g. John Fernando"
                   icon={<PersonOutlinedIcon style={{ fontSize: 16 }} />}
                   error={errors.name}
                 />
                 <FieldError message={errors.name} />
               </div>
-
-              {/* Email */}
               <div>
                 <FieldLabel required>Email Address</FieldLabel>
                 <TextInput
-                  value={form.email}
-                  onChange={setField("email")}
-                  placeholder="john@example.com"
-                  type="email"
+                  value={form.email} onChange={setField("email")}
+                  placeholder="john@example.com" type="email"
                   icon={<EmailOutlinedIcon style={{ fontSize: 16 }} />}
                   error={errors.email}
                 />
                 <FieldError message={errors.email} />
               </div>
-
-              {/* Phone */}
               <div>
                 <FieldLabel required>Phone Number</FieldLabel>
                 <TextInput
-                  value={form.phone}
-                  onChange={setField("phone")}
-                  placeholder="+94 77 123 4567"
-                  type="tel"
+                  value={form.phone} onChange={setField("phone")}
+                  placeholder="+94 77 123 4567" type="tel"
                   icon={<LocalPhoneOutlinedIcon style={{ fontSize: 16 }} />}
                   error={errors.phone}
                 />
@@ -374,46 +382,37 @@ export default function CheckoutPage() {
             </div>
           </SectionCard>
 
-          {/* ── Shipping Address ── */}
+          {/* Shipping Address */}
           <SectionCard
             title="Shipping Address"
             subtitle="Checkout / Delivery"
             icon={<LocationOnOutlinedIcon style={{ fontSize: 18, color: "#fff" }} />}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-              {/* Address */}
               <div className="sm:col-span-2">
                 <FieldLabel required>Street Address</FieldLabel>
                 <TextInput
-                  value={form.address}
-                  onChange={setField("address")}
+                  value={form.address} onChange={setField("address")}
                   placeholder="123 Main Street, Apt 4B"
                   icon={<LocationOnOutlinedIcon style={{ fontSize: 16 }} />}
                   error={errors.address}
                 />
                 <FieldError message={errors.address} />
               </div>
-
-              {/* City */}
               <div>
                 <FieldLabel required>City</FieldLabel>
                 <TextInput
-                  value={form.city}
-                  onChange={setField("city")}
+                  value={form.city} onChange={setField("city")}
                   placeholder="Colombo"
                   icon={<LocationCityOutlinedIcon style={{ fontSize: 16 }} />}
                   error={errors.city}
                 />
                 <FieldError message={errors.city} />
               </div>
-
-              {/* Postal code */}
               <div>
                 <FieldLabel required>Postal Code</FieldLabel>
                 <TextInput
-                  value={form.postal}
-                  onChange={setField("postal")}
+                  value={form.postal} onChange={setField("postal")}
                   placeholder="10100"
                   icon={<MarkunreadMailboxOutlinedIcon style={{ fontSize: 16 }} />}
                   error={errors.postal}
@@ -423,157 +422,179 @@ export default function CheckoutPage() {
             </div>
           </SectionCard>
 
-          {/* ── Deposit Receipt Upload ── */}
-          <SectionCard
-            title="Deposit Receipt"
-            subtitle="Checkout / Payment Proof"
-            icon={<ReceiptLongOutlinedIcon style={{ fontSize: 18, color: "#fff" }} />}
-          >
-            {/* Drop zone */}
-            <label
-              className="relative flex flex-col items-center justify-center w-full rounded-xl cursor-pointer transition-all"
-              style={{
-                border: `2px dashed ${errors.receipt || uploadErr ? "#e53935" : "#ddd"}`,
-                backgroundColor: "#fafafa",
-                minHeight: 130,
-              }}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleDrop}
+          {/* Deposit Receipt — temporarily disabled */}
+          {RECEIPT_ENABLED && (
+            <SectionCard
+              title="Deposit Receipt"
+              subtitle="Checkout / Payment Proof"
+              icon={<ReceiptLongOutlinedIcon style={{ fontSize: 18, color: "#fff" }} />}
             >
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,application/pdf"
-                multiple
-                className="hidden"
-                onChange={(e) => handleFiles(e.target.files)}
-              />
-              <div className="flex flex-col items-center gap-2 py-8 px-6 text-center pointer-events-none">
-                <CloudUploadOutlinedIcon style={{ fontSize: 34, color: "#bbb" }} />
-                <p style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#666" }}>
-                  Click to upload or drag & drop
+              <label
+                className="relative flex flex-col items-center justify-center w-full rounded-xl cursor-pointer transition-all"
+                style={{
+                  border: `2px dashed ${errors.receipt || uploadErr ? "#e53935" : "#ddd"}`,
+                  backgroundColor: "#fafafa", minHeight: 130,
+                }}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}
+              >
+                <input
+                  ref={fileRef} type="file"
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  multiple className="hidden"
+                  onChange={(e) => handleFiles(e.target.files)}
+                />
+                <div className="flex flex-col items-center gap-2 py-8 px-6 text-center pointer-events-none">
+                  <CloudUploadOutlinedIcon style={{ fontSize: 34, color: "#bbb" }} />
+                  <p style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#666" }}>
+                    Click to upload or drag & drop
+                  </p>
+                  <p style={{ ...INTER, fontSize: 11, color: "#999" }}>
+                    JPEG, PNG, WebP or PDF · Max 10 MB per file · Up to 5 files
+                  </p>
+                </div>
+              </label>
+
+              {(errors.receipt || uploadErr) && (
+                <p className="flex items-center gap-1 mt-2" style={{ ...INTER, fontSize: 11, color: "#e53935" }}>
+                  <WarningAmberOutlinedIcon style={{ fontSize: 12 }} />
+                  {uploadErr || errors.receipt}
                 </p>
-                <p style={{ ...INTER, fontSize: 11, color: "#999" }}>
-                  JPEG, PNG, WebP or PDF · Max 10 MB per file · Up to 5 files
-                </p>
-              </div>
-            </label>
+              )}
 
-            {/* Upload error */}
-            {(errors.receipt || uploadErr) && (
-              <p className="flex items-center gap-1 mt-2" style={{ ...INTER, fontSize: 11, color: "#e53935" }}>
-                <WarningAmberOutlinedIcon style={{ fontSize: 12 }} />
-                {uploadErr || errors.receipt}
-              </p>
-            )}
-
-            {/* File previews */}
-            {receiptFiles.length > 0 && (
-              <div className="mt-4 flex flex-col gap-2">
-                {receiptFiles.map(({ preview, type, name, size }, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                    style={{ backgroundColor: "#f9f9f9", border: "1px solid #ebebeb" }}
-                  >
-                    {/* Thumbnail or PDF icon */}
-                    {type === "image" ? (
-                      <img
-                        src={preview}
-                        alt={name}
-                        className="rounded-lg object-cover shrink-0"
-                        style={{ width: 44, height: 44, border: "1px solid #ebebeb" }}
-                      />
-                    ) : (
-                      <div
-                        className="flex items-center justify-center rounded-lg shrink-0"
-                        style={{ width: 44, height: 44, backgroundColor: "#fff0f0", border: "1px solid #fecaca" }}
-                      >
-                        <InsertDriveFileOutlinedIcon style={{ fontSize: 22, color: "#e53935" }} />
-                      </div>
-                    )}
-
-                    {/* File info */}
-                    <div className="flex-1 min-w-0">
-                      <p style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#111" }}
-                         className="truncate">
-                        {name}
-                      </p>
-                      <p style={{ ...INTER, fontSize: 11, color: "#aaa" }}>
-                        {(size / 1024).toFixed(0)} KB · {type.toUpperCase()}
-                      </p>
-                    </div>
-
-                    {/* Remove */}
-                    <button
-                      onClick={() => removeFile(i)}
-                      className="flex items-center justify-center w-7 h-7 rounded-lg transition-all cursor-pointer shrink-0"
-                      style={{ backgroundColor: "#fff", border: "1px solid #ebebeb", color: "#bbb" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#e53935"; e.currentTarget.style.color = "#e53935"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#ebebeb"; e.currentTarget.style.color = "#bbb"; }}
+              {receiptFiles.length > 0 && (
+                <div className="mt-4 flex flex-col gap-2">
+                  {receiptFiles.map(({ preview, type, name, size }, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                      style={{ backgroundColor: "#f9f9f9", border: "1px solid #ebebeb" }}
                     >
-                      <CloseIcon style={{ fontSize: 14 }} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </SectionCard>
+                      {type === "image" ? (
+                        <img src={preview} alt={name} className="rounded-lg object-cover shrink-0"
+                             style={{ width: 44, height: 44, border: "1px solid #ebebeb" }} />
+                      ) : (
+                        <div className="flex items-center justify-center rounded-lg shrink-0"
+                             style={{ width: 44, height: 44, backgroundColor: "#fff0f0", border: "1px solid #fecaca" }}>
+                          <InsertDriveFileOutlinedIcon style={{ fontSize: 22, color: "#e53935" }} />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#111" }} className="truncate">{name}</p>
+                        <p style={{ ...INTER, fontSize: 11, color: "#aaa" }}>
+                          {(size / 1024).toFixed(0)} KB · {type.toUpperCase()}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => removeFile(i)}
+                        className="flex items-center justify-center w-7 h-7 rounded-lg transition-all cursor-pointer shrink-0"
+                        style={{ backgroundColor: "#fff", border: "1px solid #ebebeb", color: "#bbb" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#e53935"; e.currentTarget.style.color = "#e53935"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#ebebeb"; e.currentTarget.style.color = "#bbb"; }}
+                      >
+                        <CloseIcon style={{ fontSize: 14 }} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </SectionCard>
+          )}
         </div>
 
-        {/* ── Right col — order summary + submit ── */}
+        {/* Right col */}
         <div className="flex flex-col gap-5">
           <div
             className="bg-white rounded-2xl overflow-hidden sticky top-5"
             style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
           >
-            {/* Header */}
             <div
               className="flex items-center gap-3 px-6 py-4"
               style={{ borderBottom: "1px solid #f0f0f0" }}
             >
-              <div
-                className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0"
-                style={{ backgroundColor: "#111" }}
-              >
+              <div className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0" style={{ backgroundColor: "#111" }}>
                 <ShoppingCartOutlinedIcon style={{ fontSize: 18, color: "#fff" }} />
               </div>
               <div>
                 <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Checkout / Summary</p>
-                <h2 style={{ ...SORA, fontSize: 15, fontWeight: 900, color: "#111", letterSpacing: "-0.2px" }}>
-                  Order Summary
-                </h2>
+                <h2 style={{ ...SORA, fontSize: 15, fontWeight: 900, color: "#111", letterSpacing: "-0.2px" }}>Order Summary</h2>
               </div>
             </div>
 
             <div className="px-6 py-5 flex flex-col gap-4">
 
-              {/* Summary rows — plug in your cart items here */}
+              {/* Cart items */}
+              {items && items.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  {items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-start gap-3 py-2"
+                      style={{ borderBottom: "1px solid #f5f5f5" }}
+                    >
+                      <div
+                        className="flex items-center justify-center rounded-lg shrink-0"
+                        style={{ width: 36, height: 36, backgroundColor: "#f5f5f5", border: "1px solid #ebebeb" }}
+                      >
+                        <InventoryOutlinedIcon style={{ fontSize: 16, color: "#bbb" }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p style={{ ...INTER, fontSize: 11, fontWeight: 700, color: "#111", lineHeight: 1.4 }} className="line-clamp-2">
+                          {item.name}
+                        </p>
+                        {item.quantity && (
+                          <p style={{ ...INTER, fontSize: 10, color: "#aaa", marginTop: 2 }}>Qty: {item.quantity}</p>
+                        )}
+                      </div>
+                      <p style={{ ...INTER, fontSize: 11, fontWeight: 700, color: "#111", whiteSpace: "nowrap" }}>
+                        {formatLKR(item.price)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Pricing */}
               <div className="flex flex-col gap-2">
-                {[
-                  { label: "Subtotal",  value: "LKR 0.00" },
-                  { label: "Shipping",  value: "LKR 0.00" },
-                  { label: "Discount",  value: "— LKR 0.00" },
-                ].map(({ label, value }) => (
-                  <div key={label} className="flex items-center justify-between py-1.5"
-                       style={{ borderBottom: "1px solid #f5f5f5" }}>
-                    <span style={{ ...INTER, fontSize: 12, color: "#888", fontWeight: 600 }}>{label}</span>
-                    <span style={{ ...INTER, fontSize: 12, color: "#111", fontWeight: 700 }}>{value}</span>
-                  </div>
-                ))}
+                <div className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
+                  <span style={{ ...INTER, fontSize: 12, color: "#888", fontWeight: 600 }}>
+                    Subtotal ({itemCount} item{itemCount !== 1 ? "s" : ""})
+                  </span>
+                  <span style={{ ...INTER, fontSize: 12, color: "#111", fontWeight: 700 }}>{formatLKR(total)}</span>
+                </div>
+                <div className="flex items-center justify-between py-1.5" style={{ borderBottom: "1px solid #f5f5f5" }}>
+                  <span style={{ ...INTER, fontSize: 12, color: "#888", fontWeight: 600 }}>Shipping</span>
+                  {shipping === 0
+                    ? <span style={{ ...INTER, fontSize: 12, color: "#16a34a", fontWeight: 700 }}>Free</span>
+                    : <span style={{ ...INTER, fontSize: 12, color: "#111", fontWeight: 700 }}>{formatLKR(shipping)}</span>
+                  }
+                </div>
               </div>
 
-              {/* Total */}
+              {/* Free shipping nudge */}
+              {shipping > 0 && (
+                <div
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl"
+                  style={{ backgroundColor: "#fffbeb", border: "1px solid #fde68a" }}
+                >
+                  <WarningAmberOutlinedIcon style={{ fontSize: 13, color: "#d97706" }} />
+                  <p style={{ ...INTER, fontSize: 11, fontWeight: 600, color: "#92400e" }}>
+                    Add {formatLKR(SHIPPING_THRESHOLD - total)} more for free shipping
+                  </p>
+                </div>
+              )}
+
+              {/* Grand total */}
               <div
                 className="flex items-center justify-between px-4 py-3 rounded-xl"
                 style={{ backgroundColor: "#f5f5f5" }}
               >
                 <span style={{ ...SORA, fontSize: 13, fontWeight: 900, color: "#111" }}>Total</span>
-                <span style={{ ...SORA, fontSize: 16, fontWeight: 900, color: "#111" }}>LKR 0.00</span>
+                <span style={{ ...SORA, fontSize: 16, fontWeight: 900, color: "#111" }}>{formatLKR(grandTotal)}</span>
               </div>
 
-              {/* Receipt count badge */}
-              {receiptFiles.length > 0 && (
+              {/* Receipt badge — only when enabled */}
+              {RECEIPT_ENABLED && receiptFiles.length > 0 && (
                 <div
                   className="flex items-center gap-2 px-4 py-3 rounded-xl"
                   style={{ backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0" }}
@@ -585,21 +606,17 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* Submit button */}
+              {/* Submit */}
               <button
                 onClick={handleSubmit}
-                disabled={isLocked}
+                disabled={isLocked || !itemCount}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white
                            transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                style={{
-                  ...SORA, fontSize: 13, fontWeight: 700,
-                  backgroundColor: "#111",
-                  border: "none",
-                }}
+                style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}
                 onMouseEnter={(e) => { if (!isLocked) e.currentTarget.style.backgroundColor = "#333"; }}
                 onMouseLeave={(e) => { if (!isLocked) e.currentTarget.style.backgroundColor = "#111"; }}
               >
-                {status === "loading" ? (
+                {loading ? (
                   <>
                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Placing Order…

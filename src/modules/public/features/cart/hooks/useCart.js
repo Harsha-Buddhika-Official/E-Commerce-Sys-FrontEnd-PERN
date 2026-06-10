@@ -1,19 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  addProductToServer,
-  clearCart,
-  fetchCart,
-  removeFromCart,
-  updateCartQuantity,
-} from "../service/cart.service.js";
+import { addProductToServer, clearCart, fetchCart, removeFromCart, updateCartQuantity, } from "../service/cart.service.js";
 
-const INITIAL_STATE = {
-  items: [],
-  total: 0,
-  itemCount: 0,
-  loading: true,
-  error: null,
-};
+const INITIAL_STATE = { items: [], total: 0, itemCount: 0, loading: true, error: null, };
 
 export const useCart = () => {
   const [state, setState] = useState(INITIAL_STATE);
@@ -23,6 +11,7 @@ export const useCart = () => {
 
     try {
       const cart = await fetchCart();
+      console.log(cart);
       setState({
         items: cart.items,
         total: cart.total,

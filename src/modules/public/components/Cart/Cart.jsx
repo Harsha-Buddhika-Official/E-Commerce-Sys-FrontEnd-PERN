@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { IconButton, Divider } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -12,7 +13,6 @@ export default function Cart({ open: openProp, onClose: onCloseProp }) {
   const isControlled = openProp !== undefined;
   const open = isControlled ? openProp : internalOpen;
   const handleClose = isControlled ? onCloseProp : () => setInternalOpen(false);
-
   const {
     items,
     total,
@@ -22,7 +22,11 @@ export default function Cart({ open: openProp, onClose: onCloseProp }) {
     remove,
     clearAll,
   } = useCart();
-
+  const navigate = useNavigate();
+  const handleCheckout = () => {
+    handleClose();
+    navigate("/checkout");
+  }
   return (
     <>
       {/* ── Standalone trigger button (only when uncontrolled) ── */}
@@ -115,6 +119,7 @@ export default function Cart({ open: openProp, onClose: onCloseProp }) {
           <div className="flex gap-1.5 items-center">
             <button
               disabled={items.length === 0}
+              onClick={handleCheckout}
               className={`flex-1 py-3.5 px-4 border-none rounded-xl font-bold text-[15px] tracking-wide font-sora transition-all duration-200 flex items-center justify-center ${
                 items.length === 0
                   ? "bg-gray-300 text-white cursor-not-allowed"
