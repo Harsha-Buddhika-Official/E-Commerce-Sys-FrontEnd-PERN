@@ -25,7 +25,7 @@ export default function Cart({ open: openProp, onClose: onCloseProp }) {
   const navigate = useNavigate();
   const handleCheckout = () => {
     handleClose();
-    navigate("/checkout");
+    navigate("/checkout-cart");
   }
   return (
     <>

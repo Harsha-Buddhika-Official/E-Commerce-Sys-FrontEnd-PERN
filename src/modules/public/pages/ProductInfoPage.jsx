@@ -192,8 +192,17 @@ export default function ProductInfoPage() {
               type="button"
               onClick={async () => {
                 if (!product) return;
-                await addProductToServer(product.product_id ?? product.id);
-                navigate("/cart");
+                // await addProductToServer(product.product_id ?? product.id);
+                navigate("/checkout-direct", {
+                  state: {
+                      product_id: product.product_id,
+                      name: product.name,
+                      price: product.discounted_price ?? product.selling_price,
+                      image: productImages[0],
+                      quantity: 1,
+                      stock: product.stock_quantity,
+                  },
+                });
               }}
               className="flex min-w-37.5 flex-1 items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
             >

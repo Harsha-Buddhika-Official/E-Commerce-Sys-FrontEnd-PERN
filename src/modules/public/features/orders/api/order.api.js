@@ -9,6 +9,20 @@ export const trackOrderAPI = async (payload) => {
 
 // Create Order (Direct or Cart)
 export const createOrderApi = (payload) =>{
-    console.log("API call - Creating order with payload:", payload); // Debug log
+    // console.log("API call - Creating order with payload:", payload); // Debug log
     return API.post("/orders/create", payload);
 }
+
+export const uploadReceiptAPI = async (orderId, formData) => {
+    // console.log("API call - Uploading receipt for orderId:", orderId, "with formData:", formData); // Debug log
+    const { data } = await API.post(
+        `/orders/upload-receipt/${orderId}`,
+        formData,
+        {
+            headers: { "Content-Type": "multipart/form-data" },
+            timeout: 100000,
+        }
+    );
+
+    return data;
+};

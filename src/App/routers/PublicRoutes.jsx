@@ -10,7 +10,8 @@ import OffersPage from "../../modules/public/pages/OffersPage.jsx";
 import OfferDetailPage from "../../modules/public/pages/OfferDetailPage.jsx";
 import AboutPage from "../../modules/public/pages/AboutPage.jsx";
 import ContactPage from "../../modules/public/pages/ContactPage.jsx";
-import CheckoutPage from "../../modules/public/pages/CheckoutPage.jsx";
+import DirectCheckoutPage from "../../modules/public/pages/DirectCheckoutPage.jsx";
+import CartCheckoutPage from "../../modules/public/pages/CartCheckoutPage.jsx";
 import TrackOrderPage from "../../modules/public/pages/TrackOrderPage.jsx";
 
 export default function PublicRoutes() {
@@ -29,7 +30,8 @@ export default function PublicRoutes() {
         <Route path="/offers/:id" element={<OfferDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/checkout-direct" element={<DirectCheckoutPage />} />
+        <Route path="/checkout-cart" element={<CartCheckoutPage />} />
         <Route path="/track-order" element={<TrackOrderPage />} />
       </Routes>
       <Footer />

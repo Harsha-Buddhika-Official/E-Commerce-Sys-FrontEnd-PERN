@@ -1,4 +1,4 @@
-import { trackOrderAPI, createOrderApi } from "../api/order.api";
+import { trackOrderAPI, createOrderApi, uploadReceiptAPI } from "../api/order.api";
 import { extractObjectPayload } from "../../../../../utils/payloadExtractors.js";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 
@@ -12,8 +12,6 @@ export const trackOrderService = async ({ email, trackingCode }) => {
 
     return response.data;
 };
-
-
 
 export const createOrder = async (payload) => {
   try {
@@ -30,4 +28,37 @@ export const createOrder = async (payload) => {
       }
     );
   }
+};
+
+// export const uploadReceipt = async (orderId, files) => {
+//   try {
+//     const response = await UploadReceiptAPI(orderId, files);
+//     return extractObjectPayload(response.data);
+//   } catch (error) {
+//     throw handleServiceError(
+//       error,
+//       "Failed to upload receipt",
+//       {
+//         service: "OrderService",
+//         operation: "uploadReceipt",
+//       }
+//     );
+//   }
+// }
+
+export const uploadReceiptService = async (orderId, file) => {
+    // console.log("file:", file); // Debug log
+    try {
+        const formData = new FormData();
+        formData.append("media", file);
+        // console.log("FormData prepared for upload:", formData.get("media")); // Debug log
+        const response = await uploadReceiptAPI(orderId, formData);
+
+        return extractObjectPayload(response);
+    } catch (error) {
+        throw handleServiceError(error, "Failed to upload receipt", {
+            service: "OrderService",
+            operation: "uploadReceipt",
+        });
+    }
 };
