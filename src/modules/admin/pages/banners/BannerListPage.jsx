@@ -185,7 +185,7 @@ export default function BannerListPage() {
 
         <div className="flex items-center gap-2.5">
           {/* Refresh */}
-          <button
+          {/* <button
             onClick={refresh}
             className="flex items-center justify-center w-9 h-9 rounded-xl cursor-pointer transition-all"
             style={{ backgroundColor: "#fff", border: "1px solid #e8e8e8", color: "#888" }}
@@ -193,7 +193,7 @@ export default function BannerListPage() {
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e8e8e8"; e.currentTarget.style.color = "#888"; }}
           >
             <RefreshOutlinedIcon style={{ fontSize: 17 }} />
-          </button>
+          </button> */}
 
           {/* Single Add Banner button */}
           <button
@@ -228,6 +228,40 @@ export default function BannerListPage() {
           label="Videos"
           count={videoBanners.length}
         />
+      </div>
+
+      {/* ── Banner Notice ── */}
+      <div
+        className="mb-5 flex items-start gap-3 rounded-xl px-4 py-3"
+        style={{
+          backgroundColor: "#eff6ff",
+          border: "1px solid #bfdbfe",
+        }}
+      >
+        <div
+          className="flex items-center justify-center w-6 h-6 rounded-full flex-shrink-0"
+          style={{
+            backgroundColor: "#dbeafe",
+            color: "#2563eb",
+            fontSize: 12,
+            fontWeight: 700,
+          }}
+        >
+          i
+        </div>
+
+        <p
+          style={{
+            ...INTER,
+            fontSize: 13,
+            color: "#1e40af",
+            lineHeight: 1.5,
+          }}
+        >
+          {isImages
+            ? "Only the first 5 image banners will be displayed on the public website."
+            : "Only 1 video banner will be displayed on the public website."}
+        </p>
       </div>
 
       {/* ── Error state ── */}
