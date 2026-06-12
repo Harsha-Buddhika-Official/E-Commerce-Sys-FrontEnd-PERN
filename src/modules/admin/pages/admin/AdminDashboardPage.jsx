@@ -36,8 +36,6 @@ const AdminDashboard = () => {
 		shippedOrders,
 	});
 
-	const handleViewOrder = (orderId) => {};
-
 	return (
 		<main className="h-full overflow-y-auto p-5 lg:p-6">
 			<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
@@ -56,7 +54,7 @@ const AdminDashboard = () => {
 
 			<div className="flex flex-col lg:flex-row gap-5">
 				<div className="flex-1 min-w-0">
-					<RecentOrders onViewOrder={handleViewOrder} />
+					<RecentOrders />
 				</div>
 
 				<div className="w-full lg:w-70 xl:w-75 shrink-0">
