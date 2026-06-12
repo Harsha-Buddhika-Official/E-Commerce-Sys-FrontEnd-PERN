@@ -6,7 +6,7 @@ export const useUploadReceipt = () => {
     const [error, setError] = useState(null);
 
     const uploadReceipt = async (orderId, file) => {
-        // console.log("Uploading receipt for orderId:", orderId, "with file:", file); // Debug log
+        console.log("File data in Hook layer: ", file); // Debug log
         try {
             setLoading(true);
             setError(null);

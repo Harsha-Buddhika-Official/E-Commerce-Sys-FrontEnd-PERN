@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOrderDetail } from "../../features/orders/hooks/useOrderDetail";
 import { useChangeOrderStatus } from "../../features/orders/hooks/useChangeOrderStatus";
+import { useOrderReceipt } from "../../features/orders/hooks/useOrderReceipt";
 import ArrowBackOutlinedIcon        from "@mui/icons-material/ArrowBackOutlined";
 import ContentCopyOutlinedIcon      from "@mui/icons-material/ContentCopyOutlined";
 import CheckCircleOutlinedIcon      from "@mui/icons-material/CheckCircleOutlined";
@@ -15,13 +16,15 @@ import CategoryOutlinedIcon         from "@mui/icons-material/CategoryOutlined";
 import KeyboardArrowDownIcon        from "@mui/icons-material/KeyboardArrowDown";
 import AccessTimeOutlinedIcon       from "@mui/icons-material/AccessTimeOutlined";
 import TagOutlinedIcon              from "@mui/icons-material/TagOutlined";
+import ReceiptLongOutlinedIcon      from "@mui/icons-material/ReceiptLongOutlined";
+import OpenInNewOutlinedIcon        from "@mui/icons-material/OpenInNewOutlined";
+import InsertDriveFileOutlinedIcon  from "@mui/icons-material/InsertDriveFileOutlined";
 import { formatDate }               from "../../../../utils/dateFormatters";
 import { SORA, INTER }              from "../../../../styles/fonts";
 
-// NOTE: mock data removed — page fetches real order data from API via `useOrderDetail`.
-
 // ─── Status config ────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
+  pending_payment: { bg: "#fef9c3", color: "#ca8a04", border: "#fde047", label: "Pending Payment" },
   pending:    { bg: "#fef9c3", color: "#ca8a04", border: "#fde047", label: "Pending"    },
   paid:       { bg: "#dcfce7", color: "#16a34a", border: "#86efac", label: "Paid"        },
   processing: { bg: "#dbeafe", color: "#1d4ed8", border: "#93c5fd", label: "Processing" },
@@ -30,11 +33,13 @@ const STATUS_CONFIG = {
   cancelled:  { bg: "#fee2e2", color: "#dc2626", border: "#fca5a5", label: "Cancelled"  },
 };
 
-const STATUS_OPTIONS = ["pending", "paid", "processing", "shipped", "delivered", "cancelled"];
+const STATUS_OPTIONS = ["pending_payment", "pending", "paid", "processing", "shipped", "delivered", "cancelled"];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmt = (amount) =>
   new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR", maximumFractionDigits: 2 }).format(Number(amount) || 0);
+
+const isPdfUrl = (url) => typeof url === "string" && url.toLowerCase().endsWith(".pdf");
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -222,6 +227,83 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
   );
 }
 
+// ─── Payment receipt card ──────────────────────────────────────────────────────
+function PaymentReceiptCard({ receipt, loading, error }) {
+  return (
+    <SectionCard>
+      <SectionTitle icon={<ReceiptLongOutlinedIcon style={{ fontSize: 16 }} />}>
+        Payment Receipt
+      </SectionTitle>
+
+      {loading && (
+        <p style={{ ...INTER, fontSize: 12, color: "#aaa", fontWeight: 500 }}>
+          Loading receipt…
+        </p>
+      )}
+
+      {!loading && error && (
+        <p style={{ ...INTER, fontSize: 12, color: "#dc2626", fontWeight: 500 }}>
+          Failed to load receipt.
+        </p>
+      )}
+
+      {!loading && !error && !receipt?.media_url && (
+        <div
+          className="flex flex-col items-center justify-center gap-2 py-6 rounded-xl"
+          style={{ backgroundColor: "#f9f9f9", border: "1px dashed #e5e5e5" }}
+        >
+          <InsertDriveFileOutlinedIcon style={{ fontSize: 28, color: "#ccc" }} />
+          <p style={{ ...INTER, fontSize: 12, color: "#bbb", fontWeight: 600 }}>
+            No receipt uploaded
+          </p>
+        </div>
+      )}
+
+      {!loading && !error && receipt?.media_url && (
+        <div className="flex flex-col gap-3">
+          {/* Preview */}
+          <div
+            className="flex items-center justify-center rounded-xl overflow-hidden"
+            style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0", minHeight: 160 }}
+          >
+            {isPdfUrl(receipt.media_url) ? (
+              <div className="flex flex-col items-center gap-2 py-8">
+                <InsertDriveFileOutlinedIcon style={{ fontSize: 36, color: "#e53935" }} />
+                <span style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#555" }}>
+                  PDF Document
+                </span>
+              </div>
+            ) : (
+              <img
+                src={receipt.media_url}
+                alt="Payment receipt"
+                className="w-full max-h-64 object-contain"
+              />
+            )}
+          </div>
+
+          <a
+            href={receipt.media_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border transition-all cursor-pointer hover:opacity-80 no-underline"
+            style={{ ...INTER, fontSize: 12, fontWeight: 700, backgroundColor: "#111", color: "#fff", border: "none" }}
+          >
+            <OpenInNewOutlinedIcon style={{ fontSize: 15 }} />
+            Open Full Receipt
+          </a>
+
+          {receipt.created_at && (
+            <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500, textAlign: "center" }}>
+              Uploaded {formatDate(receipt.created_at)}
+            </p>
+          )}
+        </div>
+      )}
+    </SectionCard>
+  );
+}
+
 // ─── Product item row ─────────────────────────────────────────────────────────
 function ProductItem({ item }) {
   return (
@@ -313,16 +395,29 @@ const OrderDetailPage = ({
 
   const { order: fetchedOrder, loading, error, refresh } = useOrderDetail(orderId);
   const { changeStatus, loading: statusUpdating } = useChangeOrderStatus();
+  const { receipt, loading: receiptLoading, error: receiptError, fetchReceipt } = useOrderReceipt();
+
   const displayOrder = fetchedOrder || orderProp || {};
   const [manualStatus, setManualStatus] = useState(null);
   const orderStatus = manualStatus ?? displayOrder.order_status ?? "pending";
+
+  // FIX: `fetchReceipt` is stable (useCallback with no deps), so it's safe in
+  // the dep array. Guarding on `displayOrder.order_id` prevents calling with
+  // undefined on the first render before data arrives.
+  useEffect(() => {
+    if (displayOrder?.order_id) {
+      fetchReceipt(displayOrder.order_id);
+    }
+  }, [displayOrder?.order_id, fetchReceipt]);
 
   if (!loading && !displayOrder?.order_id) {
     return (
       <div className="h-full flex items-center justify-center p-8">
         <div className="bg-white rounded-2xl p-6" style={{ border: "1px solid #eee" }}>
           <p style={{ ...INTER, fontSize: 16, fontWeight: 700, color: "#111" }}>Order not found</p>
-          <p style={{ ...INTER, fontSize: 13, color: "#666", marginTop: 8 }}>No order data was returned for ID {orderId}</p>
+          <p style={{ ...INTER, fontSize: 13, color: "#666", marginTop: 8 }}>
+            No order data was returned for ID {orderId}
+          </p>
           <div className="mt-4 flex gap-2">
             <button onClick={() => navigate(-1)} className="px-4 py-2 rounded-lg border">Go back</button>
             <button onClick={() => refresh()} className="px-4 py-2 rounded-lg bg-[#1a73e8] text-white">Retry</button>
@@ -349,7 +444,6 @@ const OrderDetailPage = ({
       } catch (callbackError) {
         console.error("Order status callback failed:", callbackError);
       }
-
     } catch (err) {
       console.error("Failed to update order status:", err);
     }
@@ -370,7 +464,9 @@ const OrderDetailPage = ({
 
       {error && (
         <div className="absolute inset-0 z-50 flex items-center justify-center">
-          <div className="bg-white/90 rounded-xl p-6 text-red-600">Error loading order: {error.message}</div>
+          <div className="bg-white/90 rounded-xl p-6 text-red-600">
+            Error loading order: {error.message}
+          </div>
         </div>
       )}
 
@@ -429,10 +525,10 @@ const OrderDetailPage = ({
             style={{ backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}
           >
             {[
-              { label: "Total Amount",  value: fmt(displayOrder.total_amount), large: true },
-              { label: "Items",         value: `${totalItems} item${totalItems !== 1 ? "s" : ""}` },
-              { label: "Products",      value: `${items.length} SKU${items.length !== 1 ? "s" : ""}` },
-              { label: "Order Date",    value: formatDate(displayOrder.created_at).split("  ")[0] },
+              { label: "Total Amount", value: fmt(displayOrder.total_amount), large: true },
+              { label: "Items",        value: `${totalItems} item${totalItems !== 1 ? "s" : ""}` },
+              { label: "Products",     value: `${items.length} SKU${items.length !== 1 ? "s" : ""}` },
+              { label: "Order Date",   value: formatDate(displayOrder.created_at).split("  ")[0] },
             ].map(({ label, value, large }) => (
               <div key={label} className="flex flex-col gap-0.5">
                 <span style={{ ...INTER, fontSize: 11, fontWeight: 600, color: cfg.color, opacity: 0.7, textTransform: "uppercase", letterSpacing: "0.07em" }}>
@@ -458,9 +554,7 @@ const OrderDetailPage = ({
             </div>
 
             {/* Order total row */}
-            <div
-              className="flex items-center justify-between mt-4 pt-4 border-t border-[#f0f0f0]"
-            >
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#f0f0f0]">
               <span style={{ ...SORA, fontSize: 13, fontWeight: 800, color: "#111" }}>
                 Order Total
               </span>
@@ -499,8 +593,8 @@ const OrderDetailPage = ({
             <SectionTitle icon={<ReceiptOutlinedIcon style={{ fontSize: 16 }} />}>
               Order Details
             </SectionTitle>
-            <InfoRow label="Order ID"      value={`#${displayOrder.order_id}`}   copyable />
-            <InfoRow label="Tracking Code" value={displayOrder.tracking_code}    copyable mono />
+            <InfoRow label="Order ID"      value={`#${displayOrder.order_id}`}    copyable />
+            <InfoRow label="Tracking Code" value={displayOrder.tracking_code}     copyable mono />
             <InfoRow label="Total Amount"  value={fmt(displayOrder.total_amount)} accent />
             <InfoRow label="Created At"    value={formatDate(displayOrder.created_at)} />
             <InfoRow label="Updated At"    value={formatDate(displayOrder.updated_at)} />
@@ -519,6 +613,13 @@ const OrderDetailPage = ({
             />
           </SectionCard>
 
+          {/* Payment receipt */}
+          <PaymentReceiptCard
+            receipt={receipt}
+            loading={receiptLoading}
+            error={receiptError}
+          />
+
           {/* Timeline */}
           <SectionCard>
             <SectionTitle icon={<AccessTimeOutlinedIcon style={{ fontSize: 16 }} />}>
@@ -526,10 +627,10 @@ const OrderDetailPage = ({
             </SectionTitle>
             <div className="flex flex-col gap-0">
               {[
-                { label: "Order Placed",  date: displayOrder.created_at, done: true },
-                { label: "Processing",    date: ["processing","shipped","delivered"].includes(orderStatus) ? displayOrder.updated_at : null, done: ["processing","shipped","delivered"].includes(orderStatus) },
-                { label: "Shipped",       date: ["shipped","delivered"].includes(orderStatus) ? displayOrder.updated_at : null, done: ["shipped","delivered"].includes(orderStatus) },
-                { label: "Delivered",     date: orderStatus === "delivered" ? displayOrder.updated_at : null, done: orderStatus === "delivered" },
+                { label: "Order Placed", date: displayOrder.created_at, done: true },
+                { label: "Processing",   date: ["processing","shipped","delivered"].includes(orderStatus) ? displayOrder.updated_at : null, done: ["processing","shipped","delivered"].includes(orderStatus) },
+                { label: "Shipped",      date: ["shipped","delivered"].includes(orderStatus) ? displayOrder.updated_at : null, done: ["shipped","delivered"].includes(orderStatus) },
+                { label: "Delivered",    date: orderStatus === "delivered" ? displayOrder.updated_at : null, done: orderStatus === "delivered" },
               ].map(({ label, date, done }, i, arr) => (
                 <div key={label} className="flex gap-3">
                   {/* Dot + line */}
@@ -537,8 +638,8 @@ const OrderDetailPage = ({
                     <div
                       className="flex items-center justify-center w-7 h-7 rounded-full shrink-0 border-2 transition-all duration-300"
                       style={{
-                        backgroundColor: done ? "#111"     : "#f5f5f5",
-                        borderColor:     done ? "#111"     : "#e5e5e5",
+                        backgroundColor: done ? "#111"   : "#f5f5f5",
+                        borderColor:     done ? "#111"   : "#e5e5e5",
                       }}
                     >
                       {done && <CheckCircleOutlinedIcon style={{ fontSize: 14, color: "#fff" }} />}
@@ -585,9 +686,9 @@ const OrderDetailPage = ({
               Summary
             </SectionTitle>
             {[
-              { label: "Products",     value: `${items.length} SKU${items.length !== 1 ? "s" : ""}` },
-              { label: "Total Items",  value: `${totalItems} unit${totalItems !== 1 ? "s" : ""}` },
-              { label: "Order Total",  value: fmt(displayOrder.total_amount), accent: true },
+              { label: "Products",    value: `${items.length} SKU${items.length !== 1 ? "s" : ""}` },
+              { label: "Total Items", value: `${totalItems} unit${totalItems !== 1 ? "s" : ""}` },
+              { label: "Order Total", value: fmt(displayOrder.total_amount), accent: true },
             ].map(({ label, value, accent }) => (
               <InfoRow key={label} label={label} value={value} accent={accent} />
             ))}

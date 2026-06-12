@@ -4,6 +4,7 @@ import {
   fetchOrderDetail,
   fetchOrderStats,
   updateOrderStatus as apiUpdateOrderStatus,
+  getOrderReceiptAPI,
 } from "../api/order.api";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 import { safeNumber, safeMoney, safeText, safeDate, normalizeStatus } from "../../../../../utils/normalizers.js";
@@ -151,6 +152,7 @@ export const changeOrderStatus = async (orderId, newStatus) => {
   const normStatus = normalizeStatus(rawStatus);
 
   const ALLOWED_STATUSES = [
+    "pending_payment",
     "pending",
     "paid",
     "processing",
@@ -174,4 +176,19 @@ export const changeOrderStatus = async (orderId, newStatus) => {
       details: { orderId: id, newStatus: normStatus },
     });
   }
+};
+
+
+export const getOrderReceiptService = async (orderId) => {
+    try {
+        const response = await getOrderReceiptAPI(orderId);
+        return extractObjectPayload(response);
+    } catch (error) {
+        // A missing receipt (404) is a normal state, not an error to surface.
+        if (error?.response?.status === 404) return null;
+        throw handleServiceError(error, "Failed to fetch order receipt", {
+            service: "OrderService",
+            operation: "getOrderReceipt",
+        });
+    }
 };

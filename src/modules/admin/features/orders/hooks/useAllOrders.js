@@ -12,6 +12,7 @@ export const useAllOrders = () => {
             setLoading(true);
             setError(null);
             const data = await getAllOrders();
+            console.log("Fetched orders:", data);
             const formattedOrders = data.map(formatOrderForTable);
             setOrders(formattedOrders);
             return formattedOrders;
@@ -52,8 +53,12 @@ function capitalizeStatus(status) {
         return "Pending";
     }
 
-    return (
-        status.charAt(0).toUpperCase() +
-        status.slice(1).toLowerCase()
-    );
+    return status
+        .split("_")
+        .map(
+            word =>
+                word.charAt(0).toUpperCase() +
+                word.slice(1).toLowerCase()
+        )
+        .join(" ");
 }

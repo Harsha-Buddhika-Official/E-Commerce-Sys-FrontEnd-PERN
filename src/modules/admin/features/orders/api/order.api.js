@@ -69,3 +69,8 @@ export const updateOrderStatus = async (orderId, newStatus) => {
     );
   }
 };
+
+export const getOrderReceiptAPI = async (orderId) => {
+    const { data } = await API.get(`/orders/receipt/${orderId}`);
+    return data;
+};

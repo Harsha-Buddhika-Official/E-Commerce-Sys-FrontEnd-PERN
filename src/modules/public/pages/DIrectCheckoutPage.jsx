@@ -21,6 +21,7 @@ import ReceiptLongOutlinedIcon           from "@mui/icons-material/ReceiptLongOu
 import CloseIcon                         from "@mui/icons-material/Close";
 
 import { useCreateOrder }    from "../features/orders/hooks/useCreateOrder.js";
+import { useUploadReceipt }  from "../features/orders/hooks/useUploadReceipt.js";
 import OrderSuccessScreen    from "../components/order/OrderSuccessScreen.jsx";
 
 function formatLKR(amount) {
@@ -94,6 +95,7 @@ export default function DirectCheckoutPage() {
   const { state }                                  = useLocation();
   const navigate                                   = useNavigate();
   const { createOrder, loading, error: hookError } = useCreateOrder();
+  const { uploadReceipt, loading: uploadLoading, error: uploadHookError } = useUploadReceipt();
 
   useEffect(() => {
     if (!state?.product_id) navigate("/", { replace: true });
@@ -120,6 +122,10 @@ export default function DirectCheckoutPage() {
   useEffect(() => {
     return () => receiptFiles.forEach(({ preview }) => preview && URL.revokeObjectURL(preview));
   }, []);
+
+  useEffect(() => {
+    if (uploadHookError) setApiError(uploadHookError?.message || "Order placed, but receipt upload failed. Please contact support.");
+  }, [uploadHookError]);
 
   const setField = (key) => (val) => {
     setForm((f) => ({ ...f, [key]: val }));
@@ -186,11 +192,17 @@ export default function DirectCheckoutPage() {
         city:             form.city,
         postal_code:      form.postal,
       });
+
+      const file = receiptFiles[0]?.file;
+      if (file) {
+        await uploadReceipt(order.order_id, file);
+      }
+
       setOrderResult(order);
-    } catch { /* synced via useEffect on hookError */ }
+    } catch { /* synced via useEffect on hookError / uploadHookError */ }
   };
 
-  const isLocked  = loading || !!orderResult;
+  const isLocked  = loading || uploadLoading || !!orderResult;
   const hasErrors = Object.keys(errors).length > 0 || !!apiError;
 
   if (!state?.product_id) return null;
@@ -436,7 +448,9 @@ export default function DirectCheckoutPage() {
               >
                 {loading
                   ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Placing Order…</>
-                  : <><SendOutlinedIcon style={{ fontSize: 16 }} /> Place Order</>
+                  : uploadLoading
+                    ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Uploading Receipt…</>
+                    : <><SendOutlinedIcon style={{ fontSize: 16 }} /> Place Order</>
                 }
               </button>
 

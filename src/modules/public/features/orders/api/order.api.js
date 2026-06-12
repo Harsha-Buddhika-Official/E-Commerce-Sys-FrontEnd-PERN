@@ -15,6 +15,7 @@ export const createOrderApi = (payload) =>{
 
 export const uploadReceiptAPI = async (orderId, formData) => {
     // console.log("API call - Uploading receipt for orderId:", orderId, "with formData:", formData); // Debug log
+    console.log("File data in API layer: ", formData.get("media")); // Debug log
     const { data } = await API.post(
         `/orders/upload-receipt/${orderId}`,
         formData,
@@ -26,3 +27,4 @@ export const uploadReceiptAPI = async (orderId, formData) => {
 
     return data;
 };
+

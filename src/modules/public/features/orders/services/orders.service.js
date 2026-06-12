@@ -30,24 +30,8 @@ export const createOrder = async (payload) => {
   }
 };
 
-// export const uploadReceipt = async (orderId, files) => {
-//   try {
-//     const response = await UploadReceiptAPI(orderId, files);
-//     return extractObjectPayload(response.data);
-//   } catch (error) {
-//     throw handleServiceError(
-//       error,
-//       "Failed to upload receipt",
-//       {
-//         service: "OrderService",
-//         operation: "uploadReceipt",
-//       }
-//     );
-//   }
-// }
-
 export const uploadReceiptService = async (orderId, file) => {
-    // console.log("file:", file); // Debug log
+    // console.log("File data in Service layer: ", file); // Debug log
     try {
         const formData = new FormData();
         formData.append("media", file);
