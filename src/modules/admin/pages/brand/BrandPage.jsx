@@ -129,7 +129,7 @@ export default function BrandPage() {
 
         <div className="flex items-center gap-2.5">
           {/* Refresh */}
-          <button
+          {/* <button
             onClick={refresh}
             className="flex items-center justify-center w-9 h-9 rounded-xl cursor-pointer transition-all"
             style={{ backgroundColor: "#fff", border: "1px solid #e8e8e8", color: "#888" }}
@@ -137,7 +137,7 @@ export default function BrandPage() {
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e8e8e8"; e.currentTarget.style.color = "#888"; }}
           >
             <RefreshOutlinedIcon style={{ fontSize: 17 }} />
-          </button>
+          </button> */}
 
           {/* Add Brand */}
           <button
