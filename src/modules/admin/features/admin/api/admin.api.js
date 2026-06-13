@@ -18,7 +18,7 @@ export const updateAdminRole = async (adminId, newRole) => {
     return res.data;
 };
 
-// to update admin password (admin settings page) 
+// to update admin password (settings page) 
 export const updatePassword = async (adminId, passwordData) => {
     const res = await API.put(`/admin/settings/updatePassword/${adminId}`, { passwordData });
     return res.data;

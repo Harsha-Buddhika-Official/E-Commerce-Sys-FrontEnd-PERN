@@ -8,7 +8,7 @@ export const useDeleteBanner = () => {
   const removeBanner = async (bannerId) => {
     if (!bannerId) {
       const err = new Error("Banner ID is required");
-      setError(err);
+      setError(err.message);
       throw err;
     }
 
@@ -25,9 +25,5 @@ export const useDeleteBanner = () => {
     }
   };
 
-  return {
-    deleteBanner: removeBanner,
-    deleting,
-    error,
-  };
+  return {deleteBanner: removeBanner, deleting, error,};
 };

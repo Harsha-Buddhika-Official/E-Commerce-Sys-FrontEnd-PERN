@@ -1,5 +1,4 @@
-import {getAllBannersApi,getBannerByIdApi,createBannerApi,deleteBannerApi,} from "../api/banner.api";
-
+import { getAllBannersApi, getBannerByIdApi, createBannerApi, deleteBannerApi } from "../api/banner.api";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 import { extractArrayPayload, extractObjectPayload } from "../../../../../utils/payloadExtractors.js";
 
@@ -7,7 +6,7 @@ import { extractArrayPayload, extractObjectPayload } from "../../../../../utils/
 export const getAllBanners = async () => {
   try {
     const response = await getAllBannersApi();
-    return extractArrayPayload(response.data);
+    return extractArrayPayload(response);
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch banners");
   }
@@ -17,8 +16,7 @@ export const getAllBanners = async () => {
 export const getBannerById = async (id) => {
   try {
     const response = await getBannerByIdApi(id);
-    // console.log("Raw API Response for getBannerById:", response); // Debug log
-    return extractObjectPayload(response.data);
+    return extractObjectPayload(response);
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch banner");
   }
@@ -36,7 +34,7 @@ export const createBanner = async (payload) => {
     }
 
     const response = await createBannerApi(formData);
-    return extractObjectPayload(response.data);
+    return extractObjectPayload(response);
   } catch (error) {
     throw handleServiceError(error, "Failed to create banner");
   }

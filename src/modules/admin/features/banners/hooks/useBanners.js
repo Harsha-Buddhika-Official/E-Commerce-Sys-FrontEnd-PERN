@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getAllBanners } from "../services/banner.service.js";
 
 export const useBanners = () => {
@@ -6,29 +6,23 @@ export const useBanners = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchBanners = async () => {
+  const fetchBanners = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
       const data = await getAllBanners();
-      // console.log("Fetched Banners Data:", data); // Debug log
       setBanners(data);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchBanners();
-  }, []);
+  }, [fetchBanners]);
 
-  return {
-    banners,
-    loading,
-    error,
-    refresh: fetchBanners,
-  };
+  return { banners, loading, error, refresh: fetchBanners };
 };

@@ -9,7 +9,7 @@ export const useCreateBanner = () => {
     try {
       setLoading(true);
       setError(null);
-      // console.log("Creating banner with payload:", payload);
+
       return await createBanner(payload);
     } catch (err) {
       setError(err.message);
@@ -19,9 +19,5 @@ export const useCreateBanner = () => {
     }
   };
 
-  return {
-    createBanner: create,
-    loading,
-    error,
-  };
+  return { createBanner: create, loading, error,};
 };
