@@ -1,9 +1,4 @@
-import {
-  getAllBannersApi,
-  getBannerByIdApi,
-  createBannerApi,
-  deleteBannerApi,
-} from "../api/banner.api";
+import {getAllBannersApi,getBannerByIdApi,createBannerApi,deleteBannerApi,} from "../api/banner.api";
 
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 import { extractArrayPayload, extractObjectPayload } from "../../../../../utils/payloadExtractors.js";
