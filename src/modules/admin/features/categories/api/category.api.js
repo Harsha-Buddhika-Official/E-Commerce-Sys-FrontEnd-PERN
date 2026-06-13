@@ -18,3 +18,24 @@ export const getCategoryNames = async () => {
     throw handleApiError(error, "Failed to fetch category names");
   }
 };
+
+export const createCategory = async (formData) => {
+  try {
+    const response = await API.post("/categories", formData,{
+      headers: {"Content-Type": "multipart/form-data",},
+      timeout: 100000,
+    });
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to create category");
+  }
+};
+
+export const deleteCategory = async (categoryId) => {
+  try {
+    const response = await API.delete(`/categories/${categoryId}`);
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error, "Failed to delete category");
+  }
+};

@@ -18,6 +18,8 @@ import BrandsManagement from "../../modules/admin/pages/brand/BrandPage.jsx";
 import AttributesPage from "../../modules/admin/pages/attribute/AttributesPage.jsx";
 import AddProductAttributes from "../../modules/admin/pages/product/AddProductAttributes.jsx";
 
+import CategoriesPage from "../../modules/admin/pages/categories/CategoriesPage.jsx";
+
 import BannerListPage from "../../modules/admin/pages/banners/BannerListPage.jsx";
 import ViewBannerPage from "../../modules/admin/pages/banners/ViewBannerPage.jsx";
 
@@ -61,6 +63,8 @@ export default function AdminRoutes() {
             <Route path="promotions/:id" element={<PromotionDetailPage />} />
 
             <Route path="attributes" element={<AttributesPage />} />
+
+            <Route path="categories" element={<CategoriesPage />} />
 
             <Route path="settings" element={<SettingsPage />} />
 

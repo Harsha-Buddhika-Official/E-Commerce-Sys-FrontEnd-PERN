@@ -1,4 +1,4 @@
-import { getCategories, getCategoryNames } from "../api/category.api.js";
+import { getCategories, getCategoryNames, createCategory as createCategoryApi, deleteCategory as deleteCategoryApi } from "../api/category.api.js";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 import {safeNumber,safeText,safeDate} from "../../../../../utils/normalizers.js";
 
@@ -6,7 +6,8 @@ const normalizeCategory = (category = {}) => ({
   category_id: safeNumber(category.category_id),
   name: safeText(category.name) || "",
   slug: safeText(category.slug),
-  image_url: safeText(category.image_url),
+  category_type: safeText(category.category_type),
+  img_url: safeText(category.img_url),
   created_at: safeDate(category.created_at),
   updated_at: safeDate(category.updated_at),
 });
@@ -52,6 +53,37 @@ export const fetchCategoryNames = async () => {
     throw handleServiceError(error, "Failed to fetch category names", {
       service: "categories",
       operation: "fetchCategoryNames",
+    });
+  }
+};
+
+export const createCategory = async (payload) => {
+  const { name, category_type, image } = payload;
+  try {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("category_type", category_type);
+    if (image) {
+      formData.append("media", image);
+    }
+    const response = await createCategoryApi(formData);
+
+    return normalizeCategory(response);
+  } catch (error) {
+    throw handleServiceError(error, "Failed to create category", {
+      service: "categories",
+      operation: "createCategory",
+    });
+  }
+};
+
+export const deleteCategory = async (categoryId) => {
+  try {
+    return await deleteCategoryApi(categoryId);
+  } catch (error) {
+    throw handleServiceError(error, "Failed to delete category", {
+      service: "categories",
+      operation: "deleteCategory",
     });
   }
 };

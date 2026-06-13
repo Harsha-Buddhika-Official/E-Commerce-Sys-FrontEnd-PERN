@@ -25,6 +25,7 @@ const NAV_GROUPS = [
       { id: "products",   label: "Products",   icon: <CategoryOutlinedIcon     style={{ fontSize: 20 }} /> },
       { id: "brands",     label: "Brand Management", icon: <StorefrontOutlinedIcon style={{ fontSize: 20 }} /> },
       { id: "attributes",     label: "Attribute Management", icon: <TuneOutlinedIcon style={{ fontSize: 20 }} /> },
+      { id: "categories",  label: "Categories", icon: <CategoryOutlinedIcon style={{ fontSize: 20 }} /> },
       { id: "banners",     label: "Banner Management", icon: <CampaignOutlinedIcon style={{ fontSize: 20 }} /> },
       // { id: "customers",  label: "Customers",  icon: <PeopleAltOutlinedIcon    style={{ fontSize: 20 }} /> },
     ],
@@ -60,7 +61,8 @@ const ROUTE_MAP = {
   settings:   "/admin/settings",
   admin:      "/admin/admin",
   attributes: "/admin/attributes",
-  banners: "/admin/banners"
+  banners:    "/admin/banners",
+  categories: "/admin/categories",
 };
 
 // ─── AdminSidebar ─────────────────────────────────────────────────────────────
