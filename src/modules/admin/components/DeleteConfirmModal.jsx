@@ -8,21 +8,6 @@ import { SORA, INTER }                   from "../../../styles/fonts.js";
 
 const AUTO_CLOSE_DELAY = 1800;
 
-/**
- * Generic delete confirmation modal.
- *
- * Props
- * ─────
- * item       – { id, name, type, context, image_url? }
- *               • id        – unique key to reset state when target changes
- *               • name      – display label shown in the confirmation copy
- *               • type      – entity label, e.g. "Banner", "Product", "Category"
- *               • context   – breadcrumb prefix, e.g. "Banners", "Products / Edit"
- *               • image_url – optional preview image
- * onConfirm  – async () => void   — must throw on failure
- * onCancel   – () => void
- * onDeleted  – () => void         — called after success auto-close
- */
 export default function DeleteConfirmModal({ item, onConfirm, onCancel, onDeleted }) {
   const [status,   setStatus]   = useState("idle"); // "idle" | "loading" | "success" | "error"
   const [errorMsg, setErrorMsg] = useState("");

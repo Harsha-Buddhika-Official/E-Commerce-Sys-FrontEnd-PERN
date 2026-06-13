@@ -9,7 +9,6 @@ import { SORA, INTER }        from "../../../../styles/fonts.js";
 import AddOutlinedIcon        from "@mui/icons-material/AddOutlined";
 import DeleteOutlinedIcon     from "@mui/icons-material/DeleteOutlined";
 import CategoryOutlinedIcon   from "@mui/icons-material/CategoryOutlined";
-import InventoryOutlinedIcon  from "@mui/icons-material/InventoryOutlined";
 import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 import ImageNotSupportedOutlinedIcon from "@mui/icons-material/ImageNotSupportedOutlined";
 
@@ -45,9 +44,11 @@ export default function CategoriesPage() {
   };
 
   const handleDeleteConfirm = async () => {
+    console.log("Delete confirm clicked for category:", deleteTarget);
     if (!deleteTarget) return;
     setDeleteError("");
     try {
+      console.log("Deleting category ID:", deleteTarget.category_id);
       await deleteCategory(deleteTarget.category_id);
       setDeleteTarget(null);
       refresh();
@@ -199,13 +200,25 @@ export default function CategoriesPage() {
       />
 
       {/* ── Delete confirm modal ── */}
-      <DeleteConfirmModal
+      {/* <DeleteConfirmModal
         isOpen={!!deleteTarget}
         title="Delete Category"
         message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
         loading={deleting}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTarget(null)}
+      /> */}
+      <DeleteConfirmModal
+        item={deleteTarget? {
+          id: deleteTarget.category_id,
+          name: deleteTarget.name,
+          type: "Category",
+          context: "Categories",
+          image_url: deleteTarget.img_url,
+        }: null}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+        onDeleted={() => {setDeleteTarget(null);refresh();}}
       />
     </div>
   );
