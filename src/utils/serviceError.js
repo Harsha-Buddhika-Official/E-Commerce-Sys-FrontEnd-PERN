@@ -1,6 +1,6 @@
 export const handleServiceError = (
   error,
-  fallbackMessage,
+  fallbackMessage = "An unexpected service error occurred.",
   context = {}
 ) => {
   const response = error?.response;
@@ -8,18 +8,20 @@ export const handleServiceError = (
   let message =
     response?.data?.message ||
     error?.message ||
-    fallbackMessage ||
-    "An unexpected service error occurred.";
+    fallbackMessage;
 
-  // Handle validation errors array
-  if (Array.isArray(response?.data?.error)) {
-    message = response.data.error
-      .map((err) => err.message)
+  const validationErrors = response?.data?.error;
+
+  if (Array.isArray(validationErrors)) {
+    message = validationErrors
+      .map((err) =>
+        typeof err === "string"
+          ? err
+          : err?.message || "Unknown validation error"
+      )
       .join(", ");
-  }
-  // Handle string error
-  else if (typeof response?.data?.error === "string") {
-    message = response.data.error;
+  } else if (typeof validationErrors === "string") {
+    message = validationErrors;
   }
 
   const serviceError = new Error(message);
@@ -31,17 +33,16 @@ export const handleServiceError = (
   serviceError.cause = error;
 
   serviceError.context = {
-    service: context.service || null,
-    operation: context.operation || null,
-    details: context.details || null,
+    service: context.service ?? null,
+    operation: context.operation ?? null,
+    details: context.details ?? null,
   };
 
-  if (context.log !== false) {
-    const scope = context.service || context.operation || "service";
-
-    console.error(`[${scope}] ${message}`, {
+  if (context.log !== false && import.meta.env.DEV) {
+    console.error(`[${serviceError.context.service || "service"}] ${message}`, {
       status: serviceError.status,
       code: serviceError.code,
+      operation: serviceError.context.operation,
       body: serviceError.body,
     });
   }

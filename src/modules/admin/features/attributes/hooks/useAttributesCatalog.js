@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getAttributesCatalog } from "../service/attributes.service";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 const INITIAL_CATALOG = {
   categories: [],
@@ -30,7 +31,8 @@ export const useAttributesCatalog = () => {
       });
     } catch (err) {
       setCatalog(INITIAL_CATALOG);
-      setError(err);
+      const hookError = handleHookError(err, "Failed to fetch attributes catalog");
+      setError(hookError);
     } finally {
       setLoading(false);
     }

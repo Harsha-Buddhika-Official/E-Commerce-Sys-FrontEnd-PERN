@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAdminService } from "../service/auth.service";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 const INITIAL_STATE = {
     adminData: null,
@@ -34,7 +35,7 @@ export const useAdminLogin = () => {
             setState({
                 adminData: null,
                 loading: false,
-                error:error.message ||"Login failed. Please check your credentials.",
+                error: handleHookError(error, "Login failed. Please check your credentials."),
             });
         }
     };

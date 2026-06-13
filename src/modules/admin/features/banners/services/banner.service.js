@@ -12,8 +12,7 @@ import { extractArrayPayload, extractObjectPayload } from "../../../../../utils/
 export const getAllBanners = async () => {
   try {
     const response = await getAllBannersApi();
-    // console.log("Raw API Response for getAllBanners:", response); // Debug log
-    return extractArrayPayload(response.data.data);
+    return extractArrayPayload(response.data);
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch banners");
   }
@@ -42,7 +41,6 @@ export const createBanner = async (payload) => {
     }
 
     const response = await createBannerApi(formData);
-
     return extractObjectPayload(response.data);
   } catch (error) {
     throw handleServiceError(error, "Failed to create banner");
@@ -53,7 +51,7 @@ export const createBanner = async (payload) => {
 export const deleteBanner = async (bannerId) => {
   try {
     const response = await deleteBannerApi(bannerId);
-    return extractObjectPayload(response.data);
+    return extractObjectPayload(response);
   } catch (error) {
     throw handleServiceError(error, "Failed to delete banner");
   }

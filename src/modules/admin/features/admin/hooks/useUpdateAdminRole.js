@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { updateAdminRole } from "../service/admin.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useUpdateAdminRole = () => {
     const [loading, setLoading] = useState(false);
@@ -16,9 +17,9 @@ export const useUpdateAdminRole = () => {
             setSuccess(true);
             return updatedAdmin;
         } catch (err) {
-            const message = err?.message || "Failed to update admin role";
-            setError(message);
-            throw err;
+            const hookError = handleHookError(err, "Failed to update admin role");
+            setError(hookError);
+            throw hookError;
         } finally {
             setLoading(false);
         }

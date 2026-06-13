@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { updateAdminPassword } from "../service/admin.service.js";
 import { getCurrentAdminId } from "../utils/auth.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useUpdatePassword = () => {
   const [saving, setSaving] = useState(false);
@@ -31,7 +32,8 @@ export const useUpdatePassword = () => {
 
       return true;
     } catch (err) {
-      setError(err?.message || "Failed to update password");
+      const hookError = handleHookError(err, "Failed to update password");
+      setError(hookError);
       return false;
     } finally {
       setSaving(false);

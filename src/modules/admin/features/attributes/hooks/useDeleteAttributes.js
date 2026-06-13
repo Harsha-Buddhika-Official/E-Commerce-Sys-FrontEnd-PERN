@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { deleteAttributesService } from "../service/attributes.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useDeleteAttributes = () => {
   const [loading, setLoading] = useState(false);
@@ -13,9 +14,9 @@ export const useDeleteAttributes = () => {
       const deleteAttribute = await deleteAttributesService(id);
       return deleteAttribute;
     } catch (err) {
-      const message = err?.message || "Failed to delete attribute.";
-      setError(message);
-      throw err;
+      const hookError = handleHookError(err, "Failed to delete attribute");
+      setError(hookError);
+      throw hookError;
     } finally {
       setLoading(false);
     }

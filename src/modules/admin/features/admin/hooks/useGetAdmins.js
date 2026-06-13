@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchAllAdmins } from "../service/admin.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 const INITIAL_ADMINS = [];
 
@@ -16,7 +17,8 @@ export const useGetAdmins = () => {
       const data = await fetchAllAdmins();
       setAdmins(data);
     } catch (err) {
-      setError(err?.message || "Failed to fetch admins");
+      const hookError = handleHookError(err, "Failed to fetch admins");
+      setError(hookError);
       setAdmins(INITIAL_ADMINS);
     } finally {
       setLoading(false);

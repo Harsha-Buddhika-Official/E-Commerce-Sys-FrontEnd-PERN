@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { deleteAdmin as deleteAdminService } from "../service/admin.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useDeleteAdmin = () => {
   const [loading, setLoading] = useState(false);
@@ -18,8 +19,9 @@ export const useDeleteAdmin = () => {
     try {
       return await deleteAdminService(email);
     } catch (err) {
-      setError(err?.message || "Failed to delete admin");
-      throw err;
+      const hookError = handleHookError(err, "Failed to delete admin");
+      setError(hookError);
+      throw hookError;
     } finally {
       setLoading(false);
     }

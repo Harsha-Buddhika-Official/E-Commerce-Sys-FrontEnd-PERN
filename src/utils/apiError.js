@@ -1,11 +1,18 @@
-export const handleApiError = (error, fallbackMessage) => {
-  const normalizedError = new Error(
-    error.response?.data?.message || fallbackMessage
+export const handleApiError = (
+  error,
+  fallbackMessage = "An unexpected API error occurred."
+) => {
+  const apiError = new Error(
+    error?.response?.data?.message ||
+    error?.message ||
+    fallbackMessage
   );
 
-  normalizedError.status = error.response?.status;
-  normalizedError.body = error.response?.data;
-  normalizedError.original = error;
+  apiError.name = "ApiError";
+  apiError.status = error?.response?.status ?? null;
+  apiError.body = error?.response?.data ?? null;
+  apiError.code = error?.code ?? null;
+  apiError.cause = error;
 
-  return normalizedError;
+  return apiError;
 };

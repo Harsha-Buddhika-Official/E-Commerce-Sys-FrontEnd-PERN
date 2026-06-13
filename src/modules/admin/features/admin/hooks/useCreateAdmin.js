@@ -1,5 +1,7 @@
 import { useState, useCallback } from "react";
 import { createNewAdmin } from "../service/admin.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
+
 
 export const useCreateAdmin = () => {
     const [createdAdmin, setCreatedAdmin] = useState(null);
@@ -15,8 +17,9 @@ export const useCreateAdmin = () => {
             setCreatedAdmin(admin);
             return admin;
         } catch (err) {
-            setError(err?.message || "Failed to create admin");
-            throw err;
+            const hookError = handleHookError(err, "Failed to create admin");
+            setError(hookError);
+            throw hookError;
         } finally {
             setLoading(false);
         }

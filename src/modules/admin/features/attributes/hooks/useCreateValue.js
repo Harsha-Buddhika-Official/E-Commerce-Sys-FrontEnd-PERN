@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { createAttributeValueService } from "../service/attributes.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useCreateValue = () => {
   const [createdValue, setCreatedValue] = useState(null);
@@ -15,8 +16,9 @@ export const useCreateValue = () => {
       setCreatedValue(value);
       return value;
     } catch (err) {
-      setError(err?.message || "Failed to create attribute value");
-      throw err;
+      const hookError = handleHookError(err, "Failed to create attribute value");
+      setError(hookError);
+      throw hookError;
     } finally {
       setLoading(false);
     }
