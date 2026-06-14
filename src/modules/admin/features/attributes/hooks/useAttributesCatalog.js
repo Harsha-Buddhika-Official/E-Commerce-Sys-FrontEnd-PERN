@@ -30,7 +30,6 @@ export const useAttributesCatalog = () => {
         totalAttributes: data?.totalAttributes ?? 0,
       });
     } catch (err) {
-      setCatalog(INITIAL_CATALOG);
       const hookError = handleHookError(err, "Failed to fetch attributes catalog");
       setError(hookError);
     } finally {

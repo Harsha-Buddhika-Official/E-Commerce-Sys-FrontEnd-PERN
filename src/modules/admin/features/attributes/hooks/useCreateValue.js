@@ -29,5 +29,5 @@ export const useCreateValue = () => {
     setError(null);
   }, []);
 
-  return {createdValue,loading,error,createValue,reset,};
+  return { createdValue, loading, error, createValue, reset, };
 };

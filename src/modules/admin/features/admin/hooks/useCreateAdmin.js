@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import { createNewAdmin } from "../service/admin.service.js";
 import { handleHookError } from "../../../../../utils/handleHookError.js";
 
-
 export const useCreateAdmin = () => {
     const [createdAdmin, setCreatedAdmin] = useState(null);
     const [loading, setLoading] = useState(false);

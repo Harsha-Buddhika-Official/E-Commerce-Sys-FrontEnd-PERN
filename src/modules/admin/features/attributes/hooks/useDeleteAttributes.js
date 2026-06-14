@@ -11,8 +11,8 @@ export const useDeleteAttributes = () => {
     setError(null);
 
     try {
-      const deleteAttribute = await deleteAttributesService(id);
-      return deleteAttribute;
+      const deletedValue = await deleteAttributesService(id);
+      return deletedValue;
     } catch (err) {
       const hookError = handleHookError(err, "Failed to delete attribute");
       setError(hookError);
@@ -22,5 +22,5 @@ export const useDeleteAttributes = () => {
     }
   }, []);
 
-  return {loading,error,deleteAttribute };
+  return { loading, error, deleteAttribute };
 };

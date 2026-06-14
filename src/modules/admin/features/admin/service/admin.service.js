@@ -1,21 +1,20 @@
-import {createAdmin as createAdminAPI,deleteAdminByEmail,getAllAdmins,updatePassword,updateAdminRole as updateAdminRoleAPI,} from "../api/admin.api";
+import { createAdmin as createAdminAPI, deleteAdminByEmail, getAllAdmins, updatePassword, updateAdminRole as updateAdminRoleAPI, } from "../api/admin.api";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
-import {safeNumber,safeText,safeDate,normalizePassword,normalizeRole,normalizeBoolean,} from "../../../../../utils/normalizers.js";
-import {extractArrayPayload,extractObjectPayload,} from "../../../../../utils/payloadExtractors.js";
+import { extractArrayPayload } from "../../../../../utils/payloadExtractors.js";
+import { ensurePayload } from "../../../../../utils/validators.js";
+import { normalizeCreateAdmin, normalizeAdminList, normalizePasswordPayload, normalizeAdminRole, normalizeAdminEmail, } from "./admin.normalizer.js";
 
 // ---------------- CREATE ADMIN ----------------
 export const createNewAdmin = async (payload) => {
   try {
-    const data = extractObjectPayload(payload, "Admin payload is required");
+    const data = ensurePayload(payload, "Admin payload is required");
+    const normalized = normalizeCreateAdmin(data);
 
-    const normalized = {
-      fullname: safeText(data.fullName) || safeText(data.fullname) || "",
-      email: safeText(data.email) || "",
-      password: normalizePassword(data.password) || "",
-      role: normalizeRole(data.role) || "manager",
-    };
-
-    if (!normalized.fullname || !normalized.email || !normalized.password) {
+    if (
+      !normalized.fullname ||
+      !normalized.email ||
+      !normalized.password
+    ) {
       throw new Error("Full name, email, and password are required");
     }
 
@@ -28,11 +27,64 @@ export const createNewAdmin = async (payload) => {
   }
 };
 
+// ---------------- FETCH ALL ADMINS ----------------
+export const fetchAllAdmins = async () => {
+  try {
+    const admins = extractArrayPayload(
+      await getAllAdmins(),
+      "Invalid admins response"
+    );
+
+    return normalizeAdminList(admins);
+  } catch (error) {
+    throw handleServiceError(error, "Failed to fetch admins", {
+      service: "admin",
+      operation: "fetchAllAdmins",
+    });
+  }
+};
+
+// ---------------- UPDATE PASSWORD ----------------
+export const updateAdminPassword = async (adminId, passwordData) => {
+  try {
+    if (!adminId) {
+      throw new Error("Admin ID is required");
+    }
+
+    const data = ensurePayload(
+      passwordData,
+      "Password data is required"
+    );
+
+    const normalized = normalizePasswordPayload(data);
+
+    if (
+      !normalized.oldPassword ||
+      !normalized.newPassword ||
+      !normalized.confirmPassword
+    ) {
+      throw new Error("All password fields are required");
+    }
+
+    if (
+      normalized.newPassword !== normalized.confirmPassword
+    ) {
+      throw new Error("Passwords do not match");
+    }
+
+    return await updatePassword(adminId, normalized);
+  } catch (error) {
+    throw handleServiceError(error, "Failed to update password", {
+      service: "admin",
+      operation: "updateAdminPassword",
+    });
+  }
+};
 
 // ---------------- DELETE ADMIN ----------------
 export const deleteAdmin = async (email) => {
   try {
-    const normalizedEmail = safeText(email);
+    const normalizedEmail = normalizeAdminEmail(email);
 
     if (!normalizedEmail) {
       throw new Error("Email is required to delete an admin");
@@ -47,73 +99,6 @@ export const deleteAdmin = async (email) => {
   }
 };
 
-
-// ---------------- FETCH ALL ADMINS ----------------
-export const fetchAllAdmins = async () => {
-  try {
-    const admins = extractArrayPayload(
-      await getAllAdmins(),
-      "Invalid admins response"
-    );
-
-    return admins.map((a = {}) => ({
-      admin_id: safeNumber(a.admin_id),
-      name: safeText(a.full_name) || safeText(a.name) || "",
-      username: safeText(a.username) || (a.email ? a.email.split("@")[0] : ""),
-      email: safeText(a.email) || "",
-      role: (normalizeRole(a.role) || "manager").toUpperCase(),
-      is_active: normalizeBoolean(a.is_active),
-      last_login: safeDate(a.last_login),
-      created_at: safeDate(a.created_at),
-      updated_at: safeDate(a.updated_at),
-    }));
-  } catch (error) {
-    throw handleServiceError(error, "Failed to fetch admins", {
-      service: "admin",
-      operation: "fetchAllAdmins",
-    });
-  }
-};
-
-
-// ---------------- UPDATE PASSWORD ----------------
-export const updateAdminPassword = async (adminId, passwordData) => {
-  try {
-    if (!adminId) {
-      throw new Error("Admin ID is required");
-    }
-
-    const data = extractObjectPayload(
-      passwordData,
-      "Password data is required"
-    );
-
-    const oldPassword = normalizePassword(data.oldPassword);
-    const newPassword = normalizePassword(data.newPassword);
-    const confirmPassword = normalizePassword(data.confirmPassword);
-
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      throw new Error("All password fields are required");
-    }
-
-    if (newPassword !== confirmPassword) {
-      throw new Error("Passwords do not match");
-    }
-
-    return await updatePassword(adminId, {
-      oldPassword,
-      newPassword,
-      confirmPassword,
-    });
-  } catch (error) {
-    throw handleServiceError(error, "Failed to update password", {
-      service: "admin",
-      operation: "updateAdminPassword",
-    });
-  }
-};
-
-
 // ---------------- UPDATE ROLE ----------------
 export const updateAdminRole = async (adminId, newRole) => {
   try {
@@ -121,7 +106,7 @@ export const updateAdminRole = async (adminId, newRole) => {
       throw new Error("Admin ID is required");
     }
 
-    const role = normalizeRole(newRole);
+    const role = normalizeAdminRole(newRole);
 
     if (!role) {
       throw new Error("Invalid role provided");

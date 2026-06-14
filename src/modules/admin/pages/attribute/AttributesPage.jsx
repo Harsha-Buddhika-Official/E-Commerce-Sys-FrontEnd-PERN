@@ -4,11 +4,13 @@ import CloseIcon                 from "@mui/icons-material/CloseOutlined";
 import SearchOutlinedIcon        from "@mui/icons-material/SearchOutlined";
 import TagOutlinedIcon           from "@mui/icons-material/TagOutlined";
 import TuneOutlinedIcon          from "@mui/icons-material/TuneOutlined";
+
 import AttributeCreateOverlay    from "../../overlay/AttributeCreateOverlay";
 import DeleteModal from "../../components/attributes/DeleteModal";
 import CreateAttributeValueOverlay from "../../overlay/CreateAttributeValueOverlay";
 import AttributeCard from "../../components/attributes/AttributeCard";
 import CategoryChip from "../../components/attributes/CategoryChip";
+
 import { useAttributesCatalog }  from "../../features/attributes/hooks/useAttributesCatalog";
 import { useDeleteAttributes } from "../../features/attributes/hooks/useDeleteAttributes"
 import { useDeleteValue } from "../../features/attributes/hooks/useDeleteValue";
@@ -63,16 +65,19 @@ const AttributesPage = () => {
     });
   }, [attributes, activeCategory, search]);
 
-  const handleCreateAttribute = async () => {
-    await refresh();
+  const handleCreateAttribute = (newAttribute) => {
+    setAttributes((prev) => [
+      ...prev,
+      { ...newAttribute, values: newAttribute.values ?? [] },
+    ]);
     setShowCreateAttr(false);
   };
-
+  
   const handleDeleteAttribute = async (attr) => {
     try {
       setDeleteModalError("");
-      await deleteAttribute(attr.attribute_id);
-      await refresh();
+      const { id } = await deleteAttribute(attr.attribute_id);
+      setAttributes((prev) => prev.filter((a) => a.attribute_id !== id));
       setDeleteAttrTarget(null);
     } catch (err) {
       setDeleteModalError(err?.message || "Failed to delete attribute.");
@@ -173,15 +178,9 @@ const AttributesPage = () => {
       {createValueFor && (
         <CreateAttributeValueOverlay
           attribute={createValueFor}
-          onSave={async (payload) => {
-            try {
-              // update local state optimistically
-              handleCreateValue(payload);
-              // then re-sync with server to ensure full, canonical data
-              await refresh();
-            } finally {
-              setCreateValueFor(null);
-            }
+          onSave={(payload) => {
+            handleCreateValue(payload);
+            setCreateValueFor(null);
           }}
           onClose={() => setCreateValueFor(null)}
         />
