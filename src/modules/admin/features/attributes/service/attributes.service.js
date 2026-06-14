@@ -3,7 +3,6 @@ import { handleServiceError } from "../../../../../utils/serviceError.js";
 import { extractObjectPayload } from "../../../../../utils/payloadExtractors.js";
 import { normalizeCatalogPayload, normalizeAttribute, normalizeValue } from "./attribute.normalizer.js";
 
-
 // ==================== CREATE ====================
 
 export const createAttributeService = async (attributeData) => {

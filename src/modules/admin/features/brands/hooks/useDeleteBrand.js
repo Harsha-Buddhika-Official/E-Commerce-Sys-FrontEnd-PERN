@@ -1,26 +1,35 @@
+import { useCallback, useState } from "react";
 import { deleteBrandService } from "../services/brand.service.js";
-import { useState } from "react";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useDeleteBrand = () => {
-    const [success, setSuccess] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const deleteBrand = async (brandId) => {
-        setLoading(true);
-        setError(null);
-        setSuccess(false);
-        try {
-            const deleteBrand = await deleteBrandService(brandId);
-            setSuccess(true);
-            return deleteBrand;
-        } catch (err) {
-            const message = err.message || "Failed to delete Brand"
-            setError(message);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
-    return { loading, error, success, deleteBrand };
-}
+  const deleteBrand = useCallback(async (brandId) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await deleteBrandService(brandId);
+      return result;
+    } catch (err) {
+      const hookError = handleHookError(err, "Failed to delete brand");
+      setError(hookError);
+      throw hookError;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const reset = useCallback(() => {
+    setError(null);
+  }, []);
+
+  return {
+    deleteBrand,
+    loading,
+    error,
+    reset,
+  };
+};

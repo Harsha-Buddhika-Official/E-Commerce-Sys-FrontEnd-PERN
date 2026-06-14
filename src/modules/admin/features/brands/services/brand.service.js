@@ -1,23 +1,15 @@
-import { getBrands, getBrandNames, createBrand, deleteBrand } from "../api/brand.api.js";
+import { getBrands, getBrandNames, createBrand, deleteBrand, } from "../api/brand.api.js";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
-import { extractArrayPayload } from "../../../../../utils/payloadExtractors.js";
-import { safeNumber, safeText, safeDate } from "../../../../../utils/normalizers.js";
+import { normalizeBrand, normalizeBrandList, normalizeBrandNameList, } from "./brand.normalizer.js";
+import { extractArrayPayload, extractObjectPayload } from "../../../../../utils/payloadExtractors.js";
 
-// for creating a new brand in brand page 
+
+// ==================== CREATE ====================
+
 export const createBrandService = async (brandData) => {
   try {
-    const brand = await createBrand(brandData);
-    const brandDetails = {
-      brand_id: safeNumber(brand.brand_id), 
-      brand_name: safeText(brand.brand_name),
-      slug: safeText(brand.slug),
-      logo_url: safeText(brand.logo_url),
-      is_active: Boolean(brand.is_active),
-      updated_at: safeDate(brand.updated_at),
-      created_at: safeDate(brand.created_at),
-      logo_public_id: safeText(brand.logo_public_id),
-    };
-    return brandDetails;
+    const response = await createBrand(brandData);
+    return normalizeBrand(extractObjectPayload(response));
   } catch (error) {
     throw handleServiceError(error, "Failed to create brand", {
       service: "brands",
@@ -26,23 +18,13 @@ export const createBrandService = async (brandData) => {
   }
 };
 
-// for brands page listing and details
+
+// ==================== READ (LIST) ====================
+
 export const fetchBrands = async () => {
   try {
-    const payload = await getBrands();
-    const data = extractArrayPayload(payload);
-
-    const brandDetails = data.map((brand) => ({
-      brand_id: safeNumber(brand.brand_id),
-      name: safeText(brand.name),
-      slug: safeText(brand.slug),
-      logo_url: safeText(brand.logo_url),
-      is_active: Boolean(brand.is_active),
-      updated_at: safeDate(brand.updated_at),
-      created_at: safeDate(brand.created_at),
-    }));
-
-    return brandDetails;
+    const response = await getBrands();
+    return normalizeBrandList(extractArrayPayload(response));
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch brands", {
       service: "brands",
@@ -51,18 +33,13 @@ export const fetchBrands = async () => {
   }
 };
 
-// for create product form dropdown
+
+// ==================== READ (DROPDOWN) ====================
+
 export const fetchBrandNames = async () => {
   try {
-    const payload = await getBrandNames();
-    const data = extractArrayPayload(payload);
-
-    const brandDetails = data.map((b) => ({
-      brand_id: safeNumber(b.brand_id),
-      brand_name: safeText(b.name),
-    }));
-    
-    return brandDetails;
+    const response = await getBrandNames();
+    return normalizeBrandNameList(extractArrayPayload(response));
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch brand names", {
       service: "brands",
@@ -71,11 +48,12 @@ export const fetchBrandNames = async () => {
   }
 };
 
-// for deleting a brand in brand details page
+
+// ==================== DELETE ====================
+
 export const deleteBrandService = async (brandId) => {
   try {
-    const res = await deleteBrand(brandId);
-    return res;
+    return extractObjectPayload(await deleteBrand(brandId));
   } catch (error) {
     throw handleServiceError(error, "Failed to delete brand", {
       service: "brands",

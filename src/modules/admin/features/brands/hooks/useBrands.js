@@ -1,26 +1,42 @@
 import { fetchBrands } from "../services/brand.service.js";
 import { useState, useEffect, useCallback } from "react";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
+
+const INITIAL_STATE = {
+    brands: [],
+};
 
 export const useBrands = () => {
-    const [brands, setBrands] = useState([]);
+    const [state, setState] = useState(INITIAL_STATE);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const loadBrands = useCallback(async () => {
         setLoading(true);
         setError(null);
+
         try {
-            const brands = await fetchBrands();
-            setBrands(brands);
+            const data = await fetchBrands();
+
+            setState({
+                brands: data ?? [],
+            });
         } catch (err) {
-            setError(`Failed to load brands. ${err.message}`);
+            const hookError = handleHookError(err, "Failed to load brands");
+            setError(hookError);
         } finally {
             setLoading(false);
         }
     }, []);
+
     useEffect(() => {
         loadBrands();
     }, [loadBrands]);
 
-    return { brands, loading, error, refresh: loadBrands };
+    return {
+        ...state,
+        loading,
+        error,
+        refresh: loadBrands,
+    };
 };
