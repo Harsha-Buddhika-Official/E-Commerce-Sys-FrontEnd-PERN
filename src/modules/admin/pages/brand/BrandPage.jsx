@@ -1,4 +1,4 @@
-import { useState, useCallback }      from "react";
+import { useState, useCallback, useEffect, useMemo }      from "react";
 import { SORA, INTER }                from "../../../../styles/fonts";
 
 import AddOutlinedIcon                from "@mui/icons-material/AddOutlined";
@@ -64,8 +64,10 @@ function SkeletonCard() {
 // BRAND PAGE
 // ══════════════════════════════════════════════════════════════════════════════
 export default function BrandPage() {
-  const { brands, loading, error, refresh } = useBrands();
-  const { deleteBrand }                     = useDeleteBrand();
+  // const { brands, loading, error, refresh } = useBrands();
+  const { brands: apiBrands, loading, error } = useBrands();
+  const [ brands, setBrands]                  = useState([]);
+  const { deleteBrand }                       = useDeleteBrand();
 
   // ── Overlay / modal state ─────────────────────────────────────────────────
   const [showCreate,   setShowCreate]   = useState(false);
@@ -80,22 +82,40 @@ export default function BrandPage() {
   };
 
   // ── Derived counts ────────────────────────────────────────────────────────
-  const activeCount   = brands.filter(b => b.is_active).length;
+  const activeCount = useMemo(
+    () => brands.filter(b => b.is_active).length,
+    [brands]
+  );
+
   const inactiveCount = brands.length - activeCount;
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    await deleteBrand(deleteTarget.id); // throws on failure → modal catches it
-    await refresh();
+
+    await deleteBrand(deleteTarget.id);
+
+    setBrands(prev =>
+      prev.filter(b => b.brand_id !== deleteTarget.id)
+    );
+
+    setDeleteTarget(null);
     showToast(`"${deleteTarget.name}" deleted successfully.`);
   };
 
-  const handleCreated = useCallback(async () => {
+  const handleCreated = (created) => {
     setShowCreate(false);
-    await refresh();
+
+    setBrands(prev => [
+      {
+        ...created,
+        is_active: created.is_active ?? true,
+      },
+      ...prev,
+    ]);
+
     showToast("Brand created successfully.");
-  }, [refresh]);
+  };
 
   const openDeleteModal = useCallback((brand) => {
     setDeleteTarget({
@@ -106,6 +126,10 @@ export default function BrandPage() {
       image_url: brand.logo_url ?? null,
     });
   }, []);
+
+  useEffect(() => {
+    setBrands(apiBrands);
+  }, [apiBrands]);
 
   return (
     <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
@@ -247,10 +271,10 @@ export default function BrandPage() {
         item={deleteTarget}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}
-        onDeleted={() => {
-          setDeleteTarget(null);
-          showToast(`"${deleteTarget?.name}" deleted successfully.`);
-        }}
+        // onDeleted={() => {
+        //   setDeleteTarget(null);
+        //   showToast(`"${deleteTarget?.name}" deleted successfully.`);
+        // }}
       />
 
       {/* ── Create overlay — unmounted when not in use ── */}
