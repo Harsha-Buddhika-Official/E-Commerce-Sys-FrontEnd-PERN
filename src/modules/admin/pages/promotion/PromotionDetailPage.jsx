@@ -220,8 +220,8 @@ const PromotionDetailPage = ({ offer = null, onBack = () => {}, onDelete = () =>
 
 					<SectionCard>
 						<SectionTitle icon={<AttachMoneyOutlinedIcon style={{ fontSize: 16 }} />}>Prices & Stock</SectionTitle>
-						<InfoRow label="Price" value={primaryProduct ? (primaryProduct.discounted_price ? `Rs ${Number(primaryProduct.discounted_price).toLocaleString()}` : `Rs ${Number(primaryProduct.selling_price).toLocaleString()}`) : "—"} />
-						{primaryProduct && primaryProduct.discounted_price && primaryProduct.discounted_price !== primaryProduct.selling_price ? (
+						<InfoRow label="Price" value={primaryProduct ? (primaryProduct.after_discounted_price ? `Rs ${Number(primaryProduct.after_discounted_price).toLocaleString()}` : `Rs ${Number(primaryProduct.selling_price).toLocaleString()}`) : "—"} />
+						{primaryProduct && primaryProduct.discounted_price && primaryProduct.after_discounted_price !== primaryProduct.selling_price ? (
 							<InfoRow label="Original Price" value={<span style={{ textDecoration: 'line-through' }}>{`Rs ${Number(primaryProduct.selling_price).toLocaleString()}`}</span>} />
 						) : null}
 						<InfoRow label="Stock" value={primaryProduct && typeof primaryProduct.stock_quantity !== 'undefined' ? Number(primaryProduct.stock_quantity) : "—"} />

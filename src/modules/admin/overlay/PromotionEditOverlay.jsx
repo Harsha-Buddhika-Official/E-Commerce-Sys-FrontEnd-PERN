@@ -170,7 +170,7 @@ const PromotionEditOverlay = ({ offer = null, onSave, onClose }) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) { setBannerErr(true); return; }
-    if (file.size > 5 * 1024 * 1024) { setBannerErr(true); return; }
+    if (file.size > 10 * 1024 * 1024) { setBannerErr(true); return; }
     setBannerFile(file); setBannerErr(false); mark();
     const reader = new FileReader();
     reader.onload = (ev) => setBannerPreview(ev.target?.result || "");
