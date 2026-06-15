@@ -10,6 +10,8 @@ import { useAddProductImages }     from "../../features/products/hooks/useAddPro
 import { useRemoveProductImage }   from "../../features/products/hooks/useRemoveProductImage.js";
 import { useReorderProductImages } from "../../features/products/hooks/useReorderProductImages.js";
 import { useProductAttributes }    from "../../features/products/hooks/useProductAttributes.js";
+import AttributeCreateOverlay from "../../overlay/AttributeCreateOverlay.jsx";
+import CreateAttributeValueOverlay from "../../overlay/CreateAttributeValueOverlay.jsx";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import {
   DiscardModal,
@@ -39,6 +41,11 @@ const EditProductPage = ({
   const [showDiscard, setShowDiscard] = useState(false);
   const [saving,      setSaving]      = useState(false);
   const [saved,       setSaved]       = useState(false);
+
+  // ── Attribute creation overlays ─────────────────────────────────
+  const [showAttrCreate, setShowAttrCreate] = useState(false);
+  const [createValueFor, setCreateValueFor] = useState(null);
+  const [refreshKey,     setRefreshKey]     = useState(0);
 
   const productId     = product?.product_id ?? product?.id ?? routeProductId;
   const { product: fetchedProduct, loading: detailLoading, error: detailError } = useProductDetail(productId);
@@ -99,7 +106,7 @@ const EditProductPage = ({
   }, [sourceProduct, dirty]);
 
   const productCategoryId = categoryId || sourceProduct?.category_id || "";
-  const { attributes: catalogAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(productCategoryId);
+  const { attributes: catalogAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(productCategoryId, refreshKey);
 
   const markDirty = ()       => { setDirty(true); setSaved(false); };
   const field     = (setter) => (val) => { setter(val); markDirty(); };
@@ -124,7 +131,18 @@ const EditProductPage = ({
     markDirty();
   };
 
-
+  // ── Attribute creation handlers ─────────────────────────────────
+  const handleCreateValue = (payload) => {
+    if (payload?.attribute_id && payload?.attribute_value_id) {
+      setAttributeSelections((current) => ({
+        ...current,
+        [String(payload.attribute_id)]: String(payload.attribute_value_id),
+      }));
+      markDirty();
+    }
+    setCreateValueFor(null);
+    setRefreshKey((k) => k + 1);
+  };
 
   // ── Save product fields only ──────────────────────────────────
   const handleSave = async () => {
@@ -235,6 +253,26 @@ const EditProductPage = ({
         />
       )}
 
+      {/* ── Attribute creation overlays ── */}
+      {showAttrCreate && (
+        <AttributeCreateOverlay
+          categories={categoryList || []}
+          defaultCategoryId={productCategoryId ? Number(productCategoryId) : ""}
+          onCreated={() => {
+            setShowAttrCreate(false);
+            setRefreshKey((k) => k + 1);
+          }}
+          onClose={() => setShowAttrCreate(false)}
+        />
+      )}
+      {createValueFor && (
+        <CreateAttributeValueOverlay
+          attribute={createValueFor}
+          onSave={handleCreateValue}
+          onClose={() => setCreateValueFor(null)}
+        />
+      )}
+
       <EditProductHeader
         productId={productId}
         dirty={dirty}
@@ -284,6 +322,8 @@ const EditProductPage = ({
               markDirty();
             }}
             attributeOptionsById={attributeOptionsById}
+            onAddAttribute={() => setShowAttrCreate(true)}
+            onAddValue={(attribute) => setCreateValueFor(attribute)}
           />
         </div>
 
