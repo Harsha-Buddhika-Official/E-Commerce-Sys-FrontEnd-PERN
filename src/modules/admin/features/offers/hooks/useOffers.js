@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { getAllOffers } from "../service/offers.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useOffers = () => {
   const [offers, setOffers] = useState([]);
@@ -9,12 +10,15 @@ export const useOffers = () => {
   const fetchOffers = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
       const data = await getAllOffers();
-      setOffers(data);
+      setOffers(data ?? []);
+
     } catch (err) {
-      setError(err?.message || "Failed to fetch offers");
+      setError(handleHookError(err, "Failed to fetch offers"));
       setOffers([]);
+
     } finally {
       setLoading(false);
     }
@@ -28,6 +32,6 @@ export const useOffers = () => {
     offers,
     loading,
     error,
-    refresh: fetchOffers
+    refresh: fetchOffers,
   };
 };

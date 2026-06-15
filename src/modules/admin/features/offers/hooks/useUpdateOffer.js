@@ -1,40 +1,48 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { updateOfferService } from "../service/offers.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useUpdateOffer = () => {
-  const [updating, setUpdating] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const updateOffer = async (offerId, payload) => {
+  const updateOffer = useCallback(async (offerId, payload) => {
     if (!offerId) {
-      const message = "Offer ID is required";
-      setError(message);
-      throw new Error(message);
+      const hookError = new Error("Offer ID is required");
+      setError(hookError.message);
+      throw hookError;
     }
 
     if (!payload) {
-      const message = "Offer payload is required";
-      setError(message);
-      throw new Error(message);
+      const hookError = new Error("Offer payload is required");
+      setError(hookError.message);
+      throw hookError;
     }
 
-    setUpdating(true);
+    setLoading(true);
     setError(null);
 
     try {
       return await updateOfferService(offerId, payload);
+
     } catch (err) {
-      const message = err?.message || "Failed to update offer";
-      setError(message);
-      throw err;
+      const hookError = handleHookError(err, "Failed to update offer");
+      setError(hookError);
+      throw hookError;
+
     } finally {
-      setUpdating(false);
+      setLoading(false);
     }
-  };
+  }, []);
+
+  const reset = useCallback(() => {
+    setError(null);
+  }, []);
 
   return {
-    updating,
-    error,
     updateOffer,
+    loading,
+    error,
+    reset,
   };
 };

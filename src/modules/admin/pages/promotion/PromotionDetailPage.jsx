@@ -3,12 +3,12 @@ import ArrowBackOutlinedIcon        from "@mui/icons-material/ArrowBackOutlined"
 import CalendarTodayOutlinedIcon    from "@mui/icons-material/CalendarTodayOutlined";
 import PercentOutlinedIcon          from "@mui/icons-material/PercentOutlined";
 import AttachMoneyOutlinedIcon      from "@mui/icons-material/AttachMoneyOutlined";
-import WarningAmberOutlinedIcon     from "@mui/icons-material/WarningAmberOutlined";
 import BrokenImageOutlinedIcon      from "@mui/icons-material/BrokenImageOutlined";
 import AccessTimeOutlinedIcon       from "@mui/icons-material/AccessTimeOutlined";
 import LocalOfferOutlinedIcon       from "@mui/icons-material/LocalOfferOutlined";
+
 import { useOfferDetail }           from "../../features/offers/hooks/useOfferDetail";
-import { formatDate } from "../../../../utils/dateFormatters";
+import { formatDate }               from "../../../../utils/dateFormatters";
 import { getStatus }                from "../../utils/promotionStatus";
 import { SORA, INTER }              from "../../../../styles/fonts";
 
@@ -53,32 +53,9 @@ function InfoRow({ label, value, accent = false }) {
 	);
 }
 
-function DeleteModal({ title, onConfirm, onCancel }) {
-	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-			<div className="bg-white rounded-2xl p-7 flex flex-col gap-4 w-full" style={{ maxWidth: 380, boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
-				<div className="flex items-center gap-3">
-					<div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-50 shrink-0">
-						<WarningAmberOutlinedIcon style={{ fontSize: 20, color: "#e53935" }} />
-					</div>
-					<h3 style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>Delete Promotion</h3>
-				</div>
-				<p style={{ ...INTER, fontSize: 13, color: "#555", lineHeight: 1.7 }}>
-					Are you sure you want to delete <strong>"{title}"</strong>? All linked products will be removed from this offer.
-				</p>
-				<div className="flex gap-3">
-					<button onClick={onCancel} className="flex-1 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#555", background: "#fff" }}>Cancel</button>
-					<button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl text-white hover:bg-red-600 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, background: "#e53935", border: "none" }}>Delete</button>
-				</div>
-			</div>
-		</div>
-	);
-}
-
-const PromotionDetailPage = ({ offer = null, onBack = () => {}, onDelete = () => {} }) => {
+const PromotionDetailPage = ({ offer = null, onBack = () => {} }) => {
 	const { offer: fetchedOffer, loading, error: detailError } = useOfferDetail(offer?.id);
 	const resolvedOffer = fetchedOffer || offer;
-	const [showDelete, setShowDelete] = useState(false);
 	const [imgErr, setImgErr] = useState(false);
 
 	if (!resolvedOffer) {
@@ -97,14 +74,6 @@ const PromotionDetailPage = ({ offer = null, onBack = () => {}, onDelete = () =>
 
 	return (
 		<div className="min-h-screen w-full bg-[#f5f5f5] p-4 md:p-5 lg:p-6">
-			{showDelete && (
-				<DeleteModal
-					title={resolvedOffer.title}
-					onConfirm={() => { setShowDelete(false); onDelete(resolvedOffer); }}
-					onCancel={() => setShowDelete(false)}
-				/>
-			)}
-
 			<div className="flex items-center justify-between mb-6 flex-wrap gap-3">
 				<div className="flex items-center gap-3">
 					<button onClick={onBack} className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-all cursor-pointer">
@@ -199,7 +168,6 @@ const PromotionDetailPage = ({ offer = null, onBack = () => {}, onDelete = () =>
 								<div className="min-w-0">
 									<p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 700 }}>Featured Product</p>
 									<h3 style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111", lineHeight: 1.2, marginTop: 4 }}>{primaryProduct.name}</h3>
-							
 								</div>
 							</div>
 						</SectionCard>
@@ -211,20 +179,19 @@ const PromotionDetailPage = ({ offer = null, onBack = () => {}, onDelete = () =>
 						<SectionTitle icon={<LocalOfferOutlinedIcon style={{ fontSize: 16 }} />}>Offer Details</SectionTitle>
 						<InfoRow label="Offer ID"      value={`#${resolvedOffer.id}`} />
 						<InfoRow label="Discount Type" value={resolvedOffer.discount_type} />
-						<InfoRow label="Discount" value={isPercent ? `${resolvedOffer.discount_value}%` : `Rs ${Number(resolvedOffer.discount_value).toLocaleString()}`} accent />
-						<InfoRow label="Status" value={status.label} />
-                        
-						<InfoRow label="Created" value={formatDate(resolvedOffer.created_at)} />
-						<InfoRow label="Updated" value={formatDate(resolvedOffer.updated_at)} />
+						<InfoRow label="Discount"      value={isPercent ? `${resolvedOffer.discount_value}%` : `Rs ${Number(resolvedOffer.discount_value).toLocaleString()}`} accent />
+						<InfoRow label="Status"        value={status.label} />
+						<InfoRow label="Created"       value={formatDate(resolvedOffer.created_at)} />
+						<InfoRow label="Updated"       value={formatDate(resolvedOffer.updated_at)} />
 					</SectionCard>
 
 					<SectionCard>
 						<SectionTitle icon={<AttachMoneyOutlinedIcon style={{ fontSize: 16 }} />}>Prices & Stock</SectionTitle>
 						<InfoRow label="Price" value={primaryProduct ? (primaryProduct.after_discounted_price ? `Rs ${Number(primaryProduct.after_discounted_price).toLocaleString()}` : `Rs ${Number(primaryProduct.selling_price).toLocaleString()}`) : "—"} />
 						{primaryProduct && primaryProduct.discounted_price && primaryProduct.after_discounted_price !== primaryProduct.selling_price ? (
-							<InfoRow label="Original Price" value={<span style={{ textDecoration: 'line-through' }}>{`Rs ${Number(primaryProduct.selling_price).toLocaleString()}`}</span>} />
+							<InfoRow label="Original Price" value={<span style={{ textDecoration: "line-through" }}>{`Rs ${Number(primaryProduct.selling_price).toLocaleString()}`}</span>} />
 						) : null}
-						<InfoRow label="Stock" value={primaryProduct && typeof primaryProduct.stock_quantity !== 'undefined' ? Number(primaryProduct.stock_quantity) : "—"} />
+						<InfoRow label="Stock" value={primaryProduct && typeof primaryProduct.stock_quantity !== "undefined" ? Number(primaryProduct.stock_quantity) : "—"} />
 					</SectionCard>
 				</div>
 			</div>

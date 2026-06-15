@@ -1,7 +1,6 @@
 import { useState } from "react";
 import AddOutlinedIcon           from "@mui/icons-material/AddOutlined";
 import SearchOutlinedIcon        from "@mui/icons-material/SearchOutlined";
-// import FilterListOutlinedIcon    from "@mui/icons-material/FilterListOutlined";
 import LocalOfferOutlinedIcon    from "@mui/icons-material/LocalOfferOutlined";
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import CloseIcon                 from "@mui/icons-material/Close";
@@ -17,8 +16,6 @@ import { useDeleteOffer }        from "../../features/offers/hooks/useDeleteOffe
 import { useToggleOffer }        from "../../features/offers/hooks/useToggleOffer.js";
 import { getStatus }             from "../../utils/promotionStatus.js";
 import { SORA, INTER }           from "../../../../styles/fonts";
-
-// const STATUS_FILTERS = ["All", "Active", "Scheduled", "Expired", "Inactive"];
 
 function DeleteModal({ offer, onConfirm, onCancel }) {
 	return (
