@@ -1,25 +1,24 @@
-import {
-  safeNumber,
-  safeText,
-  safeDate,
-  normalizePassword,
-  normalizeRole,
-  normalizeBoolean,
-} from "../../../../../utils/normalizers.js";
+import { safeNumber, safeText, safeDate, normalizePassword, normalizeRole, normalizeBoolean, } from "../../../../../utils/normalizers.js";
+
+
+// ==================== CREATE ADMIN ====================
 
 export const normalizeCreateAdmin = (data = {}) => ({
-  fullname: safeText(data.fullName) || safeText(data.fullname) || "",
+  fullname: safeText(data.fullName || data.fullname) || "",
   email: safeText(data.email) || "",
   password: normalizePassword(data.password) || "",
   role: normalizeRole(data.role) || "manager",
 });
 
+
+// ==================== ADMIN ENTITY ====================
+
 export const normalizeAdmin = (admin = {}) => ({
   admin_id: safeNumber(admin.admin_id),
-  name: safeText(admin.full_name) || safeText(admin.name) || "",
+  name: safeText(admin.full_name || admin.name) || "",
   username:
     safeText(admin.username) ||
-    (safeText(admin.email) ? admin.email.split("@")[0] : ""),
+    (admin.email ? admin.email.split("@")[0] : ""),
   email: safeText(admin.email) || "",
   role: (normalizeRole(admin.role) || "manager").toUpperCase(),
   is_active: normalizeBoolean(admin.is_active),
@@ -28,8 +27,16 @@ export const normalizeAdmin = (admin = {}) => ({
   updated_at: safeDate(admin.updated_at),
 });
 
+
+// ==================== LIST ====================
+
 export const normalizeAdminList = (admins = []) =>
-  admins.filter(Boolean).map(normalizeAdmin);
+  Array.isArray(admins)
+    ? admins.filter(Boolean).map(normalizeAdmin)
+    : [];
+
+
+// ==================== PASSWORD ====================
 
 export const normalizePasswordPayload = (data = {}) => ({
   oldPassword: normalizePassword(data.oldPassword),
@@ -37,8 +44,14 @@ export const normalizePasswordPayload = (data = {}) => ({
   confirmPassword: normalizePassword(data.confirmPassword),
 });
 
+
+// ==================== ROLE ====================
+
 export const normalizeAdminRole = (role) =>
   normalizeRole(role);
+
+
+// ==================== EMAIL ====================
 
 export const normalizeAdminEmail = (email) =>
   safeText(email);
