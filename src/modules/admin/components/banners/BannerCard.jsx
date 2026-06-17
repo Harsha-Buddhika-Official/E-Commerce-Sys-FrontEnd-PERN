@@ -5,7 +5,7 @@ import VideocamOutlinedIcon      from "@mui/icons-material/VideocamOutlined";
 
 import { SORA, INTER }           from "../../../../styles/fonts";
 
-export default function BannerCard({ banner, onView, onDelete }) {
+export default function BannerCard({ banner, onView, onDelete, canDelete = false }) {
   const { banner_id, title, media_url, media_type } = banner;
 
   const isVideo = media_type === "video";
@@ -101,18 +101,21 @@ export default function BannerCard({ banner, onView, onDelete }) {
           </button>
 
           {/* Delete */}
-          <button
-            onClick={() => onDelete(banner)}
-            className="flex items-center justify-center w-9 h-9 rounded-xl cursor-pointer transition-all shrink-0"
-            style={{
-              backgroundColor: "#fff5f5", color: "#e53935",
-              border: "1px solid #fecaca",
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#fee2e2"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#fff5f5"; }}
-          >
-            <DeleteOutlineOutlinedIcon style={{ fontSize: 16 }} />
-          </button>
+
+          {canDelete && (
+            <button
+              onClick={() => onDelete(banner)}
+              className="flex items-center justify-center w-9 h-9 rounded-xl cursor-pointer transition-all shrink-0"
+              style={{
+                backgroundColor: "#fff5f5", color: "#e53935",
+                border: "1px solid #fecaca",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#fee2e2"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#fff5f5"; }}
+            >
+              <DeleteOutlineOutlinedIcon style={{ fontSize: 16 }} />
+            </button>
+          )}
         </div>
       </div>
     </div>

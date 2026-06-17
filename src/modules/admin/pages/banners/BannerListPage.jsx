@@ -1,6 +1,7 @@
 import { useCallback, useState }          from "react";
 import { useNavigate }                    from "react-router-dom";
 import { SORA, INTER }                    from "../../../../styles/fonts";
+import { useRole }                         from "../../../../App/hooks/useRole.js";
 
 import AddOutlinedIcon                    from "@mui/icons-material/AddOutlined";
 import RefreshOutlinedIcon                from "@mui/icons-material/RefreshOutlined";
@@ -106,6 +107,9 @@ export default function BannerListPage() {
   const navigate                                                  = useNavigate();
   const { banners, loading, error, refresh }                      = useBanners();
   const { deleteBanner }                                          = useDeleteBanner();
+  const { can } = useRole();
+  const canCreate = can(["admin", "super_admin"]);
+  const canDelete = can(["admin", "super_admin"]);
 
   // ── Tab state ──────────────────────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState("images"); // "images" | "videos"
@@ -196,16 +200,18 @@ export default function BannerListPage() {
           </button> */}
 
           {/* Single Add Banner button */}
-          <button
-            onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl cursor-pointer transition-all"
-            style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", color: "#fff", border: "none" }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#333"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#111"; }}
-          >
-            <AddOutlinedIcon style={{ fontSize: 16 }} />
-            Add Banner
-          </button>
+          {canCreate && (
+            <button
+              onClick={() => setShowCreate(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl cursor-pointer transition-all"
+              style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", color: "#fff", border: "none" }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#333"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#111"; }}
+            >
+              <AddOutlinedIcon style={{ fontSize: 16 }} />
+              Add Banner
+            </button>
+          )}
         </div>
       </div>
 
@@ -293,6 +299,7 @@ export default function BannerListPage() {
                 banner={banner}
                 onView={() => onView(banner.banner_id)}
                 onDelete={() => openDeleteModal(banner)}
+                canDelete={canCreate}   // reuse the same permission you already have
               />
             ))
         }
@@ -332,19 +339,23 @@ export default function BannerListPage() {
       )}
 
       {/* ── Delete confirmation modal ── */}
-      <DeleteConfirmModal
-        item={deleteTarget}
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteTarget(null)}
-        onDeleted={handleDeleted}
+      {canDelete && ( 
+        <DeleteConfirmModal
+          item={deleteTarget}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
+          onDeleted={handleDeleted}
       />
+      )}
 
       {/* ── Single create overlay ── */}
-      <BannerCreateOverlay
-        isOpen={showCreate}
-        onClose={() => setShowCreate(false)}
-        onCreated={handleCreated}
-      />
+      {canCreate && (
+        <BannerCreateOverlay
+          isOpen={showCreate}
+          onClose={() => setShowCreate(false)}
+          onCreated={handleCreated}
+        />
+      )}
 
       {/* ── Toast ── */}
       <Toast message={toast.message} type={toast.type} />

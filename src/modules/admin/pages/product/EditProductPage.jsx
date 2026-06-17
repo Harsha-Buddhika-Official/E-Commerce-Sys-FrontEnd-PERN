@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useProductDetail }        from "../../features/products/hooks/useProductDetail";
 import { useCategories }           from "../../features/categories/hooks/useCategories.js";
 import { useBrandNames }           from "../../features/brands/hooks/useBrandNames.js";
@@ -31,7 +31,6 @@ const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
 const EditProductPage = ({
   product = null,
-  onBack  = () => {},
   onSave  = () => {},
 }) => {
   const { id: routeProductId } = useParams();
@@ -41,6 +40,7 @@ const EditProductPage = ({
   const [showDiscard, setShowDiscard] = useState(false);
   const [saving,      setSaving]      = useState(false);
   const [saved,       setSaved]       = useState(false);
+  const navigate = useNavigate();
 
   // ── Attribute creation overlays ─────────────────────────────────
   const [showAttrCreate, setShowAttrCreate] = useState(false);
@@ -225,7 +225,6 @@ const EditProductPage = ({
     }
   };
 
-  const handleBack     = () => { if (dirty) setShowDiscard(true); else onBack(); };
   const discPriceError = discPrice && Number(discPrice) > Number(sellingPrice);
 
   const attributeOptionsById = (Array.isArray(catalogAttributes) ? catalogAttributes : []).reduce((acc, attribute) => {
@@ -242,13 +241,13 @@ const EditProductPage = ({
   }, {});
 
   if (!sourceProduct && detailLoading) return <LoadingState />;
-  if (!sourceProduct && detailError)   return <NotFoundState error={detailError} onBack={handleBack} />;
+  if (!sourceProduct && detailError)   return <NotFoundState error={detailError} onBack={() => navigate("/admin/products")} />;
 
   return (
     <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
       {showDiscard && (
         <DiscardModal
-          onConfirm={() => { setShowDiscard(false); onBack(); }}
+          onConfirm={() => { setShowDiscard(false); navigate("/admin/products"); }}
           onCancel={() => setShowDiscard(false)}
         />
       )}
@@ -279,7 +278,7 @@ const EditProductPage = ({
         saved={saved}
         saving={saving}
         updateLoading={updateLoading}
-        onBack={handleBack}
+        onBack={() => navigate("/admin/products")}
         onSave={handleSave}
       />
 
