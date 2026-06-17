@@ -10,12 +10,13 @@ export const trackOrderAPI = async (payload) => {
 // Create Order (Direct or Cart)
 export const createOrderApi = (payload) =>{
     // console.log("API call - Creating order with payload:", payload); // Debug log
-    return API.post("/orders/create", payload);
+    return API.post("/orders/create", payload,{
+        timeout: 100000, // Set timeout to 100 seconds
+    });
 }
 
 export const uploadReceiptAPI = async (orderId, formData) => {
     // console.log("API call - Uploading receipt for orderId:", orderId, "with formData:", formData); // Debug log
-    console.log("File data in API layer: ", formData.get("media")); // Debug log
     const { data } = await API.post(
         `/orders/upload-receipt/${orderId}`,
         formData,

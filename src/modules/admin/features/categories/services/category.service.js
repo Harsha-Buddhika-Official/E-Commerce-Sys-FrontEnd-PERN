@@ -1,31 +1,17 @@
-import { getCategories, getCategoryNames, createCategory as createCategoryApi, deleteCategory as deleteCategoryApi } from "../api/category.api.js";
+import { getCategories, getCategoryNames, createCategory as createCategoryApi, deleteCategory as deleteCategoryApi, } from "../api/category.api.js";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
-import {safeNumber,safeText,safeDate} from "../../../../../utils/normalizers.js";
+import { extractArrayPayload, extractObjectPayload, } from "../../../../../utils/payloadExtractors.js";
+import { normalizeCategory, normalizeCategoryList, normalizeCategoryNameList, } from "./category.normalizer.js";
 
-const normalizeCategory = (category = {}) => ({
-  category_id: safeNumber(category.category_id),
-  name: safeText(category.name) || "",
-  slug: safeText(category.slug),
-  category_type: safeText(category.category_type),
-  img_url: safeText(category.img_url),
-  created_at: safeDate(category.created_at),
-  updated_at: safeDate(category.updated_at),
-});
+
+// ==================== FETCH CATEGORIES ====================
 
 export const fetchCategories = async () => {
   try {
     const response = await getCategories();
-    
-    const categories = response?.data;
+    const data = extractArrayPayload(response);
 
-    if (!Array.isArray(categories)) {
-      throw new Error("Invalid categories response");
-    }
-
-    return categories
-      .filter(category => category && typeof category === "object")
-      .map(normalizeCategory);
-
+    return normalizeCategoryList(data);
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch categories", {
       service: "categories",
@@ -34,21 +20,15 @@ export const fetchCategories = async () => {
   }
 };
 
+
+// ==================== FETCH CATEGORY NAMES ====================
+
 export const fetchCategoryNames = async () => {
   try {
     const response = await getCategoryNames();
+    const data = extractArrayPayload(response);
 
-    if (!Array.isArray(response)) {
-      throw new Error("Invalid category names response");
-    }
-
-    return response
-      .filter((category) => category && typeof category === "object")
-      .map((category) => ({
-        category_id: safeNumber(category.category_id),
-        name: safeText(category.name) || "",
-      }));
-
+    return normalizeCategoryNameList(data);
   } catch (error) {
     throw handleServiceError(error, "Failed to fetch category names", {
       service: "categories",
@@ -57,18 +37,27 @@ export const fetchCategoryNames = async () => {
   }
 };
 
+
+// ==================== CREATE CATEGORY ====================
+
 export const createCategory = async (payload) => {
+  if (!payload) throw new Error("Category payload is required");
+
   const { name, category_type, image } = payload;
+
   try {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("category_type", category_type);
+
     if (image) {
       formData.append("media", image);
     }
-    const response = await createCategoryApi(formData);
 
-    return normalizeCategory(response);
+    const response = await createCategoryApi(formData);
+    const data = extractObjectPayload(response);
+
+    return normalizeCategory(data);
   } catch (error) {
     throw handleServiceError(error, "Failed to create category", {
       service: "categories",
@@ -77,9 +66,15 @@ export const createCategory = async (payload) => {
   }
 };
 
+
+// ==================== DELETE CATEGORY ====================
+
 export const deleteCategory = async (categoryId) => {
+  if (!categoryId) throw new Error("Category ID is required");
+
   try {
-    return await deleteCategoryApi(categoryId);
+    const response = await deleteCategoryApi(categoryId);
+    return extractObjectPayload(response);
   } catch (error) {
     throw handleServiceError(error, "Failed to delete category", {
       service: "categories",

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useProductDetail }        from "../../features/products/hooks/useProductDetail";
 import { useCategories }           from "../../features/categories/hooks/useCategories.js";
 import { useBrandNames }           from "../../features/brands/hooks/useBrandNames.js";
@@ -10,6 +10,8 @@ import { useAddProductImages }     from "../../features/products/hooks/useAddPro
 import { useRemoveProductImage }   from "../../features/products/hooks/useRemoveProductImage.js";
 import { useReorderProductImages } from "../../features/products/hooks/useReorderProductImages.js";
 import { useProductAttributes }    from "../../features/products/hooks/useProductAttributes.js";
+import AttributeCreateOverlay from "../../overlay/AttributeCreateOverlay.jsx";
+import CreateAttributeValueOverlay from "../../overlay/CreateAttributeValueOverlay.jsx";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import {
   DiscardModal,
@@ -29,7 +31,6 @@ const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
 const EditProductPage = ({
   product = null,
-  onBack  = () => {},
   onSave  = () => {},
 }) => {
   const { id: routeProductId } = useParams();
@@ -39,6 +40,12 @@ const EditProductPage = ({
   const [showDiscard, setShowDiscard] = useState(false);
   const [saving,      setSaving]      = useState(false);
   const [saved,       setSaved]       = useState(false);
+  const navigate = useNavigate();
+
+  // ── Attribute creation overlays ─────────────────────────────────
+  const [showAttrCreate, setShowAttrCreate] = useState(false);
+  const [createValueFor, setCreateValueFor] = useState(null);
+  const [refreshKey,     setRefreshKey]     = useState(0);
 
   const productId     = product?.product_id ?? product?.id ?? routeProductId;
   const { product: fetchedProduct, loading: detailLoading, error: detailError } = useProductDetail(productId);
@@ -99,7 +106,7 @@ const EditProductPage = ({
   }, [sourceProduct, dirty]);
 
   const productCategoryId = categoryId || sourceProduct?.category_id || "";
-  const { attributes: catalogAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(productCategoryId);
+  const { attributes: catalogAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(productCategoryId, refreshKey);
 
   const markDirty = ()       => { setDirty(true); setSaved(false); };
   const field     = (setter) => (val) => { setter(val); markDirty(); };
@@ -124,7 +131,18 @@ const EditProductPage = ({
     markDirty();
   };
 
-
+  // ── Attribute creation handlers ─────────────────────────────────
+  const handleCreateValue = (payload) => {
+    if (payload?.attribute_id && payload?.attribute_value_id) {
+      setAttributeSelections((current) => ({
+        ...current,
+        [String(payload.attribute_id)]: String(payload.attribute_value_id),
+      }));
+      markDirty();
+    }
+    setCreateValueFor(null);
+    setRefreshKey((k) => k + 1);
+  };
 
   // ── Save product fields only ──────────────────────────────────
   const handleSave = async () => {
@@ -207,7 +225,6 @@ const EditProductPage = ({
     }
   };
 
-  const handleBack     = () => { if (dirty) setShowDiscard(true); else onBack(); };
   const discPriceError = discPrice && Number(discPrice) > Number(sellingPrice);
 
   const attributeOptionsById = (Array.isArray(catalogAttributes) ? catalogAttributes : []).reduce((acc, attribute) => {
@@ -224,14 +241,34 @@ const EditProductPage = ({
   }, {});
 
   if (!sourceProduct && detailLoading) return <LoadingState />;
-  if (!sourceProduct && detailError)   return <NotFoundState error={detailError} onBack={handleBack} />;
+  if (!sourceProduct && detailError)   return <NotFoundState error={detailError} onBack={() => navigate("/admin/products")} />;
 
   return (
     <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
       {showDiscard && (
         <DiscardModal
-          onConfirm={() => { setShowDiscard(false); onBack(); }}
+          onConfirm={() => { setShowDiscard(false); navigate("/admin/products"); }}
           onCancel={() => setShowDiscard(false)}
+        />
+      )}
+
+      {/* ── Attribute creation overlays ── */}
+      {showAttrCreate && (
+        <AttributeCreateOverlay
+          categories={categoryList || []}
+          defaultCategoryId={productCategoryId ? Number(productCategoryId) : ""}
+          onCreated={() => {
+            setShowAttrCreate(false);
+            setRefreshKey((k) => k + 1);
+          }}
+          onClose={() => setShowAttrCreate(false)}
+        />
+      )}
+      {createValueFor && (
+        <CreateAttributeValueOverlay
+          attribute={createValueFor}
+          onSave={handleCreateValue}
+          onClose={() => setCreateValueFor(null)}
         />
       )}
 
@@ -241,7 +278,7 @@ const EditProductPage = ({
         saved={saved}
         saving={saving}
         updateLoading={updateLoading}
-        onBack={handleBack}
+        onBack={() => navigate("/admin/products")}
         onSave={handleSave}
       />
 
@@ -284,6 +321,8 @@ const EditProductPage = ({
               markDirty();
             }}
             attributeOptionsById={attributeOptionsById}
+            onAddAttribute={() => setShowAttrCreate(true)}
+            onAddValue={(attribute) => setCreateValueFor(attribute)}
           />
         </div>
 

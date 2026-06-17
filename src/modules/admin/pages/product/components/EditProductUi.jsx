@@ -14,6 +14,7 @@ import TagOutlinedIcon from "@mui/icons-material/TagOutlined";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
@@ -647,12 +648,40 @@ export function ProductBasicsSection({ name, onNameChange, description, onDescri
 // ─────────────────────────────────────────────────────────────
 // ATTRIBUTES
 // ─────────────────────────────────────────────────────────────
-export function ProductAttributesSection({ productCategoryId, catalogAttributes, attributesLoading, attributesError, attributeSelections, onAttributeChange, attributeOptionsById }) {
+export function ProductAttributesSection({
+  productCategoryId,
+  catalogAttributes,
+  attributesLoading,
+  attributesError,
+  attributeSelections,
+  onAttributeChange,
+  attributeOptionsById,
+  onAddAttribute,
+  onAddValue,
+}) {
   return (
     <SectionCard>
-      <SectionTitle icon={<TagOutlinedIcon style={{ fontSize: 16 }} />}>
-        Product Attributes ({Array.isArray(catalogAttributes) ? catalogAttributes.length : 0})
-      </SectionTitle>
+      <div className="flex items-center justify-between gap-3 mb-5 pb-3" style={{ borderBottom: "1px solid #f0f0f0" }}>
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
+            <TagOutlinedIcon style={{ fontSize: 16 }} />
+          </div>
+          <span style={{ ...SORA, fontSize: 14, fontWeight: 800, color: "#111", letterSpacing: "0.02em" }}>
+            Product Attributes ({Array.isArray(catalogAttributes) ? catalogAttributes.length : 0})
+          </span>
+        </div>
+        {onAddAttribute && (
+          <button
+            type="button"
+            onClick={onAddAttribute}
+            className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all cursor-pointer shrink-0"
+            style={{ ...INTER, fontSize: 12, fontWeight: 600 }}
+          >
+            Add Attribute
+          </button>
+        )}
+      </div>
+
       {!productCategoryId ? (
         <p style={{ ...INTER, fontSize: 13, color: "#888" }}>Select a category to load attributes.</p>
       ) : attributesLoading ? (
@@ -668,7 +697,19 @@ export function ProductAttributesSection({ productCategoryId, catalogAttributes,
             <div key={attribute.attribute_id} className="rounded-xl p-4" style={{ backgroundColor: "#f9f9f9", border: "1.5px solid #ebebeb" }}>
               <div className="flex items-start justify-between gap-3 mb-3">
                 <FieldLabel>{attribute.name}</FieldLabel>
-                <span style={{ ...INTER, fontSize: 11, color: "#aaa" }}>#{attribute.attribute_id}</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span style={{ ...INTER, fontSize: 11, color: "#aaa" }}>#{attribute.attribute_id}</span>
+                  {onAddValue && (
+                    <button
+                      type="button"
+                      onClick={() => onAddValue(attribute)}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
+                      style={{ ...INTER, fontSize: 11, fontWeight: 600 }}
+                    >
+                      <AddOutlinedIcon style={{ fontSize: 13 }} /> Add Value
+                    </button>
+                  )}
+                </div>
               </div>
               <SelectInput
                 value={attributeSelections[String(attribute.attribute_id)] || ""}

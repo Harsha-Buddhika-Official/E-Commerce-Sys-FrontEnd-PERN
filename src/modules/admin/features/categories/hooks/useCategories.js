@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchCategories } from "../services/category.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -11,11 +12,13 @@ export const useCategories = () => {
     setError(null);
 
     try {
-      const categories = await fetchCategories();
-      setCategories(categories);
+      const data = await fetchCategories();
+      setCategories(data ?? []);
+
     } catch (err) {
       setCategories([]);
-      setError(err?.message || "Failed to fetch categories");
+      setError(handleHookError(err, "Failed to fetch categories"));
+
     } finally {
       setLoading(false);
     }

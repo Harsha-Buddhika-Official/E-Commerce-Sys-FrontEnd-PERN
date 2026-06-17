@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackOutlinedIcon          from "@mui/icons-material/ArrowBackOutlined";
-import EditOutlinedIcon               from "@mui/icons-material/EditOutlined";
-import DeleteOutlineOutlinedIcon      from "@mui/icons-material/DeleteOutlineOutlined";
 import ContentCopyOutlinedIcon        from "@mui/icons-material/ContentCopyOutlined";
 import CheckCircleOutlinedIcon        from "@mui/icons-material/CheckCircleOutlined";
 import LocalOfferOutlinedIcon         from "@mui/icons-material/LocalOfferOutlined";
@@ -13,12 +11,10 @@ import ToggleOnOutlinedIcon           from "@mui/icons-material/ToggleOnOutlined
 import ToggleOffOutlinedIcon          from "@mui/icons-material/ToggleOffOutlined";
 import TrendingUpOutlinedIcon         from "@mui/icons-material/TrendingUpOutlined";
 import StarOutlinedIcon               from "@mui/icons-material/StarOutlined";
-import WarningAmberOutlinedIcon       from "@mui/icons-material/WarningAmberOutlined";
 import TagOutlinedIcon                from "@mui/icons-material/TagOutlined";
 import LinkOutlinedIcon               from "@mui/icons-material/LinkOutlined";
 import BrokenImageOutlinedIcon        from "@mui/icons-material/BrokenImageOutlined";
 import { useProductDetail }           from "../../features/products/hooks/useProductDetail";
-import { useDeleteProduct }           from "../../features/products/hooks/useDeleteProduct";
 import { formatDateWithTime }         from "../../../../utils/dateFormatters";
 import { SORA, INTER }                from "../../../../styles/fonts";
 
@@ -136,44 +132,18 @@ function ImageThumb({ src, alt, active, onClick }) {
   );
 }
 
-function DeleteModal({ name, onConfirm, onCancel }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white rounded-2xl p-7 flex flex-col gap-4 w-full" style={{ maxWidth: 380, boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-50 shrink-0">
-            <WarningAmberOutlinedIcon style={{ fontSize: 20, color: "#e53935" }} />
-          </div>
-          <h3 style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>Delete Product</h3>
-        </div>
-        <p style={{ ...INTER, fontSize: 13, color: "#555", lineHeight: 1.7 }}>
-          Are you sure you want to delete <strong>"{name}"</strong>? This cannot be undone.
-        </p>
-        <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 600, background: "#fff" }}>Cancel</button>
-          <button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl text-white hover:bg-red-600 transition-all cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, background: "#e53935", border: "none" }}>Delete</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ══════════════════════════════════════════════════════════════════════════════
 // ADMIN PRODUCT INFO PAGE
 // ══════════════════════════════════════════════════════════════════════════════
-const ProductInfoPage = ({
-  onBack     = null,
-  onEdit     = () => {},
-}) => {
+const ProductInfoPage = () => {
   const navigate = useNavigate();
   const { id: routeProductId } = useParams();
   const { product: fetchedProduct, loading, error } = useProductDetail(routeProductId);
   const resolvedProduct = fetchedProduct;
   const sortedImages = [...(resolvedProduct?.images || [])].sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0));
   const primaryIdx = sortedImages.findIndex((i) => i.is_primary);
-  const [activeImg,   setActiveImg]   = useState(Math.max(primaryIdx, 0));
-  const [showDelete,  setShowDelete]  = useState(false);
-  const [imgErr,      setImgErr]      = useState(false);
+  const [activeImg, setActiveImg] = useState(Math.max(primaryIdx, 0));
+  const [imgErr,    setImgErr]    = useState(false);
 
   useEffect(() => {
     setActiveImg(Math.max(primaryIdx, 0));
@@ -181,15 +151,6 @@ const ProductInfoPage = ({
   }, [primaryIdx, routeProductId]);
 
   const productData = resolvedProduct;
-  const { deleting, error: deleteError, deleteProduct } = useDeleteProduct();
-  const handleEditRoute = (editMode = "details") => {
-    navigate(`/admin/products/${routeProductId}/edit`, {
-      state: {
-        product: productData,
-        editMode,
-      },
-    });
-  };
 
   if (!routeProductId) {
     return (
@@ -244,37 +205,19 @@ const ProductInfoPage = ({
   const base     = Number(productData.base_price)       || 0;
   const disc     = Number(productData.discounted_price) || 0;
   const margin = disc - base;
-  const marginPct =base > 0 ? ((margin / base) * 100).toFixed(1) : "0.0";
+  const marginPct = base > 0 ? ((margin / base) * 100).toFixed(1) : "0.0";
   const savingAmt = selling - disc;
   const savingPct = selling > 0 ? ((savingAmt / selling) * 100).toFixed(1) : "0.0";
 
   const currentImg = sortedImages[activeImg];
-  const handleBack = onBack || (() => navigate("/admin/products"));
 
   return (
     <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
 
-      {/* Delete modal */}
-      {showDelete && (
-        <DeleteModal
-          name={productData?.name}
-          onConfirm={async () => {
-            try {
-              await deleteProduct(routeProductId);
-              setShowDelete(false);
-              navigate("/admin/products");
-            } catch (err) {
-              window.alert(err?.message || "Failed to delete product");
-            }
-          }}
-          onCancel={() => setShowDelete(false)}
-        />
-      )}
-
       {/* ── Top bar ── */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <button onClick={handleBack} className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-all cursor-pointer">
+          <button onClick={() => navigate("/admin/products")} className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-all cursor-pointer">
             <ArrowBackOutlinedIcon style={{ fontSize: 18 }} />
           </button>
           <div>
@@ -549,24 +492,6 @@ const ProductInfoPage = ({
             <InfoRow label="Status"      value={productData.is_active ? "Active" : "Inactive"} />
             <InfoRow label="Created"     value={formatDateWithTime(productData.created_at)} />
             <InfoRow label="Updated"     value={formatDateWithTime(productData.updated_at)} />
-          </SectionCard>
-
-          {/* Quick actions */}
-          <SectionCard>
-            <SectionTitle icon={<InventoryOutlinedIcon style={{ fontSize: 16 }} />}>
-              Quick Actions
-            </SectionTitle>
-            <div className="flex flex-col gap-2.5">
-              <button onClick={() => handleEditRoute("details")} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white transition-all hover:bg-[#222] cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}>
-                <EditOutlinedIcon style={{ fontSize: 17 }} /> Edit Product Details
-              </button>
-              <button onClick={() => handleEditRoute("attributes")} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-gray-100 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, color: "#111", backgroundColor: "#f5f5f5", border: "1px solid #ebebeb" }}>
-                <TagOutlinedIcon style={{ fontSize: 17 }} /> Edit Attributes
-              </button>
-              <button onClick={() => setShowDelete(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 transition-all hover:bg-red-50 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 700, backgroundColor: "#fef2f2", border: "1px solid #fecaca" }}>
-                <DeleteOutlineOutlinedIcon style={{ fontSize: 17 }} /> Delete Product
-              </button>
-            </div>
           </SectionCard>
 
         </div>

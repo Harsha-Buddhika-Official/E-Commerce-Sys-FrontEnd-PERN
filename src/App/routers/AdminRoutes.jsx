@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
 import AdminLayout from "../components/AdminLayout.jsx";
+import { useRole } from "../../App/hooks/useRole.js";
 
 import Login from "../../modules/admin/pages/admin/AdminLoginPage.jsx";
 import Dashboard from "../../modules/admin/pages/admin/AdminDashboardPage.jsx";
@@ -32,50 +33,75 @@ import AdminCreatePage from "../../modules/admin/pages/admin/AdminCreatePage.jsx
 import SettingsPage from "../../modules/admin/pages/settings/SettingsPage.jsx";
 
 
+// ─── Role-gated route — redirects to dashboard if role not allowed ─────────────
+function RoleRoute({ element, allowed }) {
+  const { can } = useRole();
+  return can(allowed) ? element : <Navigate to="/admin/dashboard" replace />;
+}
+
 
 export default function AdminRoutes() {
   const location = useLocation();
 
   return (
-    <>
-      <Routes location={location}>
-        <Route path="/" element={<Login />} />
+    <Routes location={location}>
+      <Route path="/" element={<Login />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AdminLayout />}>
-            <Route path="dashboard" element={<Dashboard />} />
-            
-            <Route path="orders" element={<Orders />} />
-            <Route path="orders/:id" element={<OrderDetailPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AdminLayout />}>
 
-            <Route path="products" element={<Products />} />
-            <Route path="products/add" element={<AddProductBasicPage />} />
-            <Route path="products/add/attributes" element={<AddProductAttributes />} />
-            <Route path="products/:id" element={<ProductInfoPage />} />
-            <Route path="products/:id/edit" element={<EditProductPage product={location.state?.product} />} />
+          {/* ── All roles ── */}
+          <Route path="dashboard"  element={<Dashboard />} />
 
-            <Route path="brands" element={<BrandsManagement />} />
+          <Route path="orders"     element={<Orders />} />
+          <Route path="orders/:id" element={<OrderDetailPage />} />
 
-            <Route path="admin" element={<AdminManagement />} />
-            <Route path="admin/create" element={<AdminCreatePage />} />
+          <Route path="products"                   element={<Products />} />
+          <Route path="products/:id"               element={<ProductInfoPage />} />
 
-            <Route path="promotions" element={<PromotionsPage />} />
-            <Route path="promotions/:id" element={<PromotionDetailPage />} />
+          {/* Add / Edit — admin + super_admin only */}
+          <Route path="products/add"
+            element={<RoleRoute allowed={["admin", "super_admin"]} element={<AddProductBasicPage />} />}
+          />
+          <Route path="products/add/attributes"
+            element={<RoleRoute allowed={["admin", "super_admin"]} element={<AddProductAttributes />} />}
+          />
+          <Route path="products/:id/edit"
+            element={<RoleRoute allowed={["admin", "super_admin"]} element={<EditProductPage product={location.state?.product} />} />}
+          />
 
-            <Route path="attributes" element={<AttributesPage />} />
+          {/* ── admin + super_admin only pages ── */}
+          <Route path="brands"
+            element={<RoleRoute allowed={["admin", "super_admin"]} element={<BrandsManagement />} />}
+          />
+          <Route path="attributes"
+            element={<RoleRoute allowed={["admin", "super_admin"]} element={<AttributesPage />} />}
+          />
+          <Route path="categories"
+            element={<RoleRoute allowed={["admin", "super_admin"]} element={<CategoriesPage />} />}
+          />
 
-            <Route path="categories" element={<CategoriesPage />} />
+          {/* ── super_admin only pages ── */}
+          <Route path="admin"
+            element={<RoleRoute allowed={["super_admin"]} element={<AdminManagement />} />}
+          />
+          <Route path="admin/create"
+            element={<RoleRoute allowed={["super_admin"]} element={<AdminCreatePage />} />}
+          />
 
-            <Route path="settings" element={<SettingsPage />} />
+          {/* ── All roles ── */}
+          <Route path="promotions"    element={<PromotionsPage />} />
+          <Route path="promotions/:id" element={<PromotionDetailPage />} />
 
-            <Route path="banners" element={<BannerListPage />} />
-            <Route path="banners/view/:id" element={<ViewBannerPage />} />
-          </Route>
+          <Route path="banners"          element={<BannerListPage />} />
+          <Route path="banners/view/:id" element={<ViewBannerPage />} />
+
+          <Route path="settings" element={<SettingsPage />} />
+
         </Route>
+      </Route>
 
-        <Route path="*" element={<Navigate to="/admin" replace />} />
-      </Routes>
-
-    </>
+      <Route path="*" element={<Navigate to="/admin" replace />} />
+    </Routes>
   );
 }

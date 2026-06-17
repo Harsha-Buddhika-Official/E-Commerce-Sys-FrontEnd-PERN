@@ -6,6 +6,7 @@ import ErrorOutlineOutlinedIcon          from "@mui/icons-material/ErrorOutlineO
 import CloseIcon                         from "@mui/icons-material/Close";
 import { SORA, INTER }                   from "../../../styles/fonts.js";
 
+
 const AUTO_CLOSE_DELAY = 1800;
 
 export default function DeleteConfirmModal({ item, onConfirm, onCancel, onDeleted }) {

@@ -3,32 +3,41 @@ import { updateAdminRole } from "../service/admin.service.js";
 import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useUpdateAdminRole = () => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const updateRole = useCallback(async (adminId, newRole) => {
-        setLoading(true);
-        setError(null);
-        setSuccess(false);
+  const updateRole = useCallback(async (adminId, newRole) => {
+    if (!adminId || !newRole) {
+      const hookError = new Error("Admin ID and role are required");
+      setError(hookError.message);
+      throw hookError;
+    }
 
-        try {
-            const updatedAdmin = await updateAdminRole(adminId, newRole);
-            setSuccess(true);
-            return updatedAdmin;
-        } catch (err) {
-            const hookError = handleHookError(err, "Failed to update admin role");
-            setError(hookError);
-            throw hookError;
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    setLoading(true);
+    setError(null);
 
-    const reset = useCallback(() => {
-        setError(null);
-        setSuccess(false);
-    }, []);
+    try {
+      const updatedAdmin = await updateAdminRole(adminId, newRole);
+      return updatedAdmin;
 
-    return {loading,error,success,updateRole,reset,};
+    } catch (err) {
+      const hookError = handleHookError(err, "Failed to update admin role");
+      setError(hookError);
+      throw hookError;
+
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const reset = useCallback(() => {
+    setError(null);
+  }, []);
+
+  return {
+    updateRole,
+    loading,
+    error,
+    reset,
+  };
 };

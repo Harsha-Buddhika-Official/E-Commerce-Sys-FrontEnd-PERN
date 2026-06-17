@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo }      from "react";
 import { SORA, INTER }                from "../../../../styles/fonts";
+import { useRole }                         from "../../../../App/hooks/useRole.js";
 
 import AddOutlinedIcon                from "@mui/icons-material/AddOutlined";
 import RefreshOutlinedIcon            from "@mui/icons-material/RefreshOutlined";
@@ -68,6 +69,9 @@ export default function BrandPage() {
   const { brands: apiBrands, loading, error } = useBrands();
   const [ brands, setBrands]                  = useState([]);
   const { deleteBrand }                       = useDeleteBrand();
+  const { can } = useRole();
+  const canDelete = can(["admin", "super_admin"]);
+  const canCreate = can(["admin", "super_admin"]);
 
   // ── Overlay / modal state ─────────────────────────────────────────────────
   const [showCreate,   setShowCreate]   = useState(false);
@@ -164,16 +168,18 @@ export default function BrandPage() {
           </button> */}
 
           {/* Add Brand */}
-          <button
-            onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl cursor-pointer transition-all"
-            style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", color: "#fff", border: "none" }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#333"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#111"; }}
-          >
-            <AddOutlinedIcon style={{ fontSize: 16 }} />
-            Add Brand
-          </button>
+          {canCreate && (
+            <button
+              onClick={() => setShowCreate(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl cursor-pointer transition-all"
+              style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", color: "#fff", border: "none" }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#333"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#111"; }}
+            >
+              <AddOutlinedIcon style={{ fontSize: 16 }} />
+              Add Brand
+            </button>
+          )}
         </div>
       </div>
 
@@ -267,18 +273,20 @@ export default function BrandPage() {
       )}
 
       {/* ── Delete modal ── */}
-      <DeleteConfirmModal
-        item={deleteTarget}
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteTarget(null)}
-        // onDeleted={() => {
-        //   setDeleteTarget(null);
-        //   showToast(`"${deleteTarget?.name}" deleted successfully.`);
-        // }}
-      />
+      {canDelete && (
+        <DeleteConfirmModal
+          item={deleteTarget}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
+          // onDeleted={() => {
+          //   setDeleteTarget(null);
+          //   showToast(`"${deleteTarget?.name}" deleted successfully.`);
+          // }}
+        />
+      )}
 
       {/* ── Create overlay — unmounted when not in use ── */}
-      {showCreate && (
+      {showCreate && canCreate && (
         <BrandCreateOverlay
           onClose={() => setShowCreate(false)}
           onCreated={handleCreated}

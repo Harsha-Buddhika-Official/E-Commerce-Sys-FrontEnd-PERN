@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { toggleOfferService } from "../service/offers.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useToggleOffer = () => {
   const [toggling, setToggling] = useState(false);
@@ -7,9 +8,9 @@ export const useToggleOffer = () => {
 
   const toggleOfferActive = useCallback(async (offerId, isActive) => {
     if (!offerId) {
-      const message = "Offer ID is required";
-      setError(message);
-      throw new Error(message);
+      const hookError = new Error("Offer ID is required");
+      setError(hookError.message);
+      throw hookError;
     }
 
     setToggling(true);
@@ -17,14 +18,25 @@ export const useToggleOffer = () => {
 
     try {
       return await toggleOfferService(offerId, isActive);
+
     } catch (err) {
-      const message = err?.message || "Failed to update offer status";
-      setError(message);
-      throw err;
+      const hookError = handleHookError(err, "Failed to update offer status");
+      setError(hookError);
+      throw hookError;
+
     } finally {
       setToggling(false);
     }
-  },[]);
+  }, []);
 
-  return {toggling,error,toggleOfferActive,};
+  const reset = useCallback(() => {
+    setError(null);
+  }, []);
+
+  return {
+    toggleOfferActive,
+    loading: toggling,
+    error,
+    reset,
+  };
 };

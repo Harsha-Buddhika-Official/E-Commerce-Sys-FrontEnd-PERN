@@ -82,7 +82,13 @@ const AddProductAttributes = () => {
     });
   };
 
-  const handleCreateValue = () => {
+  const handleCreateValue = (payload) => {
+    if (payload?.attribute_id && payload?.attribute_value_id) {
+      setAttributeSelections((current) => ({
+        ...current,
+        [String(payload.attribute_id)]: String(payload.attribute_value_id),
+      }));
+    }
     setCreateValueFor(null);
     setRefreshKey((k) => k + 1);
     // window.location.reload();

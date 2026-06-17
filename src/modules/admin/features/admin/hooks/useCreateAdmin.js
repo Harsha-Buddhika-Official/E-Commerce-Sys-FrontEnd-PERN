@@ -3,31 +3,45 @@ import { createNewAdmin } from "../service/admin.service.js";
 import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useCreateAdmin = () => {
-    const [createdAdmin, setCreatedAdmin] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+  const [createdAdmin, setCreatedAdmin] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const createAdmin = useCallback(async (payload) => {
-        setLoading(true);
-        setError(null);
+  const createAdmin = useCallback(async (payload) => {
+    if (!payload || typeof payload !== "object") {
+      const hookError = new Error("Admin payload is required");
+      setError(hookError.message);
+      throw hookError;
+    }
 
-        try {
-            const admin = await createNewAdmin(payload);
-            setCreatedAdmin(admin);
-            return admin;
-        } catch (err) {
-            const hookError = handleHookError(err, "Failed to create admin");
-            setError(hookError);
-            throw hookError;
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    setLoading(true);
+    setError(null);
 
-    const reset = useCallback(() => {
-        setCreatedAdmin(null);
-        setError(null);
-    }, []);
+    try {
+      const admin = await createNewAdmin(payload);
+      setCreatedAdmin(admin);
+      return admin;
 
-    return { createdAdmin, loading, error, createAdmin, reset };
+    } catch (err) {
+      const hookError = handleHookError(err, "Failed to create admin");
+      setError(hookError);
+      throw hookError;
+
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const reset = useCallback(() => {
+    setCreatedAdmin(null);
+    setError(null);
+  }, []);
+
+  return {
+    createdAdmin,
+    loading,
+    error,
+    createAdmin,
+    reset,
+  };
 };

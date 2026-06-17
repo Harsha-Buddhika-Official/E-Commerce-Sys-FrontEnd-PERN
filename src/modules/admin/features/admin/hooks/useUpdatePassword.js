@@ -4,46 +4,46 @@ import { getCurrentAdminId } from "../utils/auth.js";
 import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useUpdatePassword = () => {
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const updatePassword = useCallback(async (passwordData) => {
     const adminId = getCurrentAdminId();
 
     if (!adminId) {
-      const message = "Unable to identify admin. Please log in again.";
-      setError(message);
-      return false;
+      const hookError = new Error(
+        "Unable to identify admin. Please log in again."
+      );
+
+      setError(hookError.message);
+      throw hookError;
     }
 
-    setSaving(true);
+    setLoading(true);
     setError(null);
-    setSaved(false);
 
     try {
-      await updateAdminPassword(adminId, passwordData);
+      const result = await updateAdminPassword(adminId, passwordData);
+      return result;
 
-      setSaved(true);
-
-      setTimeout(() => {
-        setSaved(false);
-      }, 3000);
-
-      return true;
     } catch (err) {
       const hookError = handleHookError(err, "Failed to update password");
       setError(hookError);
-      return false;
+      throw hookError;
+
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   }, []);
 
   const reset = useCallback(() => {
     setError(null);
-    setSaved(false);
   }, []);
 
-  return {saving,saved,error,updatePassword,reset,};
+  return {
+    updatePassword,
+    loading,
+    error,
+    reset,
+  };
 };

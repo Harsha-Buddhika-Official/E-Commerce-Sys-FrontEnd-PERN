@@ -1,38 +1,47 @@
 import { useCallback, useState } from "react";
 import { createOfferService } from "../service/offers.service.js";
+import { handleHookError } from "../../../../../utils/handleHookError.js";
 
 export const useCreateOffer = () => {
   const [createdOffer, setCreatedOffer] = useState(null);
-  const [creating, setCreating] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const createOffer = useCallback(async (offerData) => {
     if (!offerData || typeof offerData !== "object") {
-      const validationError = new Error("Offer payload is required");
-      setError(validationError.message);
-      throw validationError;
+      const hookError = new Error("Offer payload is required");
+      setError(hookError.message);
+      throw hookError;
     }
 
-    setCreating(true);
+    setLoading(true);
     setError(null);
 
     try {
       const offer = await createOfferService(offerData);
       setCreatedOffer(offer);
       return offer;
+
     } catch (err) {
-      setError(err?.message || "Failed to create offer");
-      throw err;
+      const hookError = handleHookError(err, "Failed to create offer");
+      setError(hookError);
+      throw hookError;
+
     } finally {
-      setCreating(false);
+      setLoading(false);
     }
   }, []);
 
   const reset = useCallback(() => {
     setCreatedOffer(null);
     setError(null);
-    setCreating(false);
   }, []);
 
-  return {createdOffer,creating,error,createOffer,reset,};
+  return {
+    createdOffer,
+    loading,
+    error,
+    createOffer,
+    reset,
+  };
 };

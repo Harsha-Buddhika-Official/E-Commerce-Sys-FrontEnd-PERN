@@ -3,7 +3,8 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import WarningAmberOutlinedIcon  from "@mui/icons-material/WarningAmberOutlined";
 import BrokenImageOutlinedIcon   from "@mui/icons-material/BrokenImageOutlined";
 
-import { SORA, INTER } from "../../../../styles/fonts";
+import { SORA, INTER }  from "../../../../styles/fonts";
+import { useRole }      from "../../../../App/hooks/useRole.js";
 
 const toSlug = (value = "") =>
   value
@@ -69,6 +70,9 @@ function DeleteModal({ brand, onConfirm, onCancel }) {
 // BRAND CARD
 // ══════════════════════════════════════════════════════════════════════════════
 export default function BrandCard({ brand, onDelete }) {
+  const { can } = useRole();
+  const canDelete = can(["admin", "super_admin"]);
+  const canCreate = can(["admin", "super_admin"]);
   const [showDelete, setShowDelete] = useState(false);
   const [logoErr,    setLogoErr]    = useState(false);
   const slug = brand.slug || toSlug(brand.name);
@@ -179,16 +183,18 @@ export default function BrandCard({ brand, onDelete }) {
           <span style={{ ...INTER, fontSize: 10, fontWeight: 600, color: "#ccc" }}>
             #{brand.brand_id}
           </span>
-          <button
-            onClick={() => setShowDelete(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer border-none transition-all"
-            style={{ backgroundColor: "#fef2f2", color: "#e53935" }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fee2e2"}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#fef2f2"}
-          >
-            <DeleteOutlineOutlinedIcon style={{ fontSize: 15 }} />
-            <span style={{ ...INTER, fontSize: 11, fontWeight: 700 }}>Delete</span>
-          </button>
+          {canDelete && (
+            <button
+              onClick={() => setShowDelete(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer border-none transition-all"
+              style={{ backgroundColor: "#fef2f2", color: "#e53935" }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fee2e2"}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#fef2f2"}
+            >
+              <DeleteOutlineOutlinedIcon style={{ fontSize: 15 }} />
+              <span style={{ ...INTER, fontSize: 11, fontWeight: 700 }}>Delete</span>
+            </button>
+          )}
         </div>
       </div>
     </>
