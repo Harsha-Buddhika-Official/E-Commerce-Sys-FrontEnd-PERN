@@ -1,11 +1,4 @@
-import {
-  fetchRecentOrders,
-  fetchAllOrders,
-  fetchOrderDetail,
-  fetchOrderStats,
-  updateOrderStatus as apiUpdateOrderStatus,
-  getOrderReceiptAPI,
-} from "../api/order.api";
+import { fetchRecentOrders, fetchAllOrders, fetchOrderDetail, fetchOrderStats, updateOrderStatus as apiUpdateOrderStatus, getOrderReceiptAPI, } from "../api/order.api";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 import { safeNumber, safeMoney, safeText, safeDate, normalizeStatus } from "../../../../../utils/normalizers.js";
 import { extractArrayPayload, extractObjectPayload } from "../../../../../utils/payloadExtractors.js";
@@ -85,7 +78,7 @@ export const getAllOrders = async () => {
 
 // for the get all details about one order in order details page
 export const getOrderDetail = async (orderId) => {
-  if (orderId === undefined || orderId === null) {
+  if (orderId === undefined || orderId === null || orderId === "" || !orderId) {
     throw new Error("orderId is required");
   }
 
@@ -146,6 +139,8 @@ export const changeOrderStatus = async (orderId, newStatus) => {
   if (orderId === undefined || orderId === null) throw new Error("orderId is required");
   const id = safeNumber(orderId);
   if (id === null) throw new Error("orderId must be a valid number");
+  if (!orderId) throw new Error("orderId is required");
+  if (!newStatus) throw new Error("newStatus is required");
 
   const rawStatus = safeText(newStatus);
   if (!rawStatus) throw new Error("newStatus is required");
@@ -180,15 +175,15 @@ export const changeOrderStatus = async (orderId, newStatus) => {
 
 
 export const getOrderReceiptService = async (orderId) => {
-    try {
-        const response = await getOrderReceiptAPI(orderId);
-        return extractObjectPayload(response);
-    } catch (error) {
-        // A missing receipt (404) is a normal state, not an error to surface.
-        if (error?.response?.status === 404) return null;
-        throw handleServiceError(error, "Failed to fetch order receipt", {
-            service: "OrderService",
-            operation: "getOrderReceipt",
-        });
-    }
+  try {
+    const response = await getOrderReceiptAPI(orderId);
+    return extractObjectPayload(response);
+  } catch (error) {
+    // A missing receipt (404) is a normal state, not an error to surface.
+    if (error?.response?.status === 404) return null;
+    throw handleServiceError(error, "Failed to fetch order receipt", {
+      service: "OrderService",
+      operation: "getOrderReceipt",
+    });
+  }
 };

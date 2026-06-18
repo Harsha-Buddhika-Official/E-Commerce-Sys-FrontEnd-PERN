@@ -1,12 +1,12 @@
 import API from "../../../../../api/client.js";
 
 export const getCategories = async () => {
-    const response = await API.get("/categories");
+    const response = await API.get("/categories/admin");
     return response.data;
 };
 
 export const getCategoryNames = async () => {
-    const response = await API.get("/categories/names");
+    const response = await API.get("/categories/admin/names");
     return response.data;
 };
 

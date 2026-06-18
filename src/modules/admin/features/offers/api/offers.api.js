@@ -8,12 +8,6 @@ export const createOffer = async (payload) => {
     return res.data;
 };
 
-// for get all products to product dropdown in offer create overlay //successfully
-export const fetchOfferProducts = async (offerId) => {
-    const res = await API.get(`/offers/${offerId}/products`);
-    return res.data;
-};
-
 // for attach product to offer in offer create page //successfully
 export const attachProductToOffer = async (offerId, productId) => {
     const res = await API.post(`/offers/admin/products/${offerId}`, { product_id: productId });
@@ -34,8 +28,9 @@ export const fetchOfferById = async (offerId) => {
 
 // for update offer in offer page //successfully
 export const updateOffer = async (offerId, payload) => {
-    const isMultipart = typeof FormData !== "undefined" && payload instanceof FormData;
-    const res = await API.put(`/offers/admin/${offerId}`, payload, isMultipart ? { timeout: 30000 } : undefined);
+    const res = await API.put(`/offers/admin/${offerId}`, payload, { 
+        timeout: 30000 
+    });
     return res.data;
 };
 

@@ -1,181 +1,99 @@
 import API from "../../../../../api/client";
-import { handleApiError } from "../../../../../utils/apiError";
 
+// ==================== READ ====================
 
 export const fetchAllProductsLimited = async () => {
-  try {
-    const res = await API.get("/products/admin/limited-details");
-    return res.data; // Already unwrapped by client interceptor
-  } catch (error) {
-    throw handleApiError(
-      error,
-      "Failed to fetch products"
-    );
-  }
-};
-
-export const fetchProductDetail = async (productId) => {
-  if (!productId) {
-    throw new Error("Product ID is required");
-  }
-
-  try {
-    const res = await API.get(`/products/admin/products/${productId}`);
-    return res.data;
-  } catch (error) {
-    throw handleApiError(
-      error,
-      "Failed to fetch product details"
-    );
-  }
-};
-
-export const deleteProduct = async (productId) => {
-  if (!productId) {
-    throw new Error("Product ID is required");
-  }
-  try {
-    const res = await API.delete(`/products/admin/delete/${productId}`, {timeout: 30000});
-    return res.data;
-  } catch (error) {
-    throw handleApiError(
-      error,
-      "Failed to delete product"
-    );
-  }
+  const res = await API.get("/products/admin/limited-details");
+  return res.data;
 };
 
 export const fetchProductsLimitedData = async () => {
-  try {
-    const res = await API.get("/products/admin/simple-details", {timeout: 30000});
-    return res.data?.data ?? [];
-  } catch (error) {
-    throw handleApiError(
-      error,
-      "Failed to fetch limited product data"
-    );
-  }
+  const res = await API.get("/products/admin/simple-details", { timeout: 30000 });
+  return res.data;
 };
+
+export const fetchProductDetail = async (productId) => {
+  const res = await API.get(`/products/admin/products/${productId}`);
+  return res.data;
+};
+
+// ==================== CREATE ====================
 
 export const createProduct = async (payload) => {
-  if (!payload) {
-    throw new Error("Product payload is required");
-  }
-  // console.log("Creating product with payload:", payload);
-  try {
-    const res = await API.post("/products/admin/without-attributes", payload, {timeout: 30000});
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to create product");
-  }
+  const res = await API.post(
+    "/products/admin/without-attributes",
+    payload,
+    { timeout: 30000 }
+  );
+  return res.data;
 };
 
-export const updateProductFull = async (productId, payload) => {
-  // console.log("Updating product with ID:", productId);
-  // console.log("Payload:", payload);
-  if (!productId) {
-    throw new Error("Product ID is required");
-  }
+// ==================== UPDATE ====================
 
-  if (!payload || typeof payload !== "object") {
-    throw new Error("Product payload is required");
-  }
-  try {
-    const res = await API.put(`/products/admin/products/${productId}/full-update`, payload, { timeout: 30000 });
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to update product");
-  }
+export const updateProductDetails = async (productId, payload) => {
+  const res = await API.put(
+    `/products/admin/products/${productId}/full-update`,
+    payload,
+    { timeout: 30000 }
+  );
+  return res.data;
 };
+
+// ==================== DELETE ====================
+
+export const deleteProduct = async (productId) => {
+  const res = await API.delete(
+    `/products/admin/delete/${productId}`,
+    { timeout: 30000 }
+  );
+  return res.data;
+};
+
+// ==================== ATTRIBUTES ====================
 
 export const fetchProductAttributesByCategory = async (categoryId) => {
-  if (categoryId === null || typeof categoryId === "undefined" || categoryId === "") {
-    throw new Error("Category ID is required");
-  }
-
-  try {
-    try {
-      const res = await API.get(`/attributes/admin/grouped/${categoryId}`);
-      return res.data;
-    } catch {
-      const res = await API.get(`/products/attributes/by-category/${categoryId}`);
-      return res.data;
-    }
-  } catch (error) {
-    throw handleApiError(error, "Failed to fetch product attributes");
-  }
+  const res = await API.get(`/attributes/admin/grouped/${categoryId}`);
+  return res.data;
 };
 
 export const addProductAttribute = async (productId, payload) => {
-  if (!productId) {
-    throw new Error("Product ID is required");
-  }
-
-  if (!payload) {
-    throw new Error("Attribute payload is required");
-  }
-
-  try {
-    const res = await API.post(`/attributes/admin/products/${productId}/attributes`, payload, { timeout: 30000 });
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to save product attribute");
-  }
+  const res = await API.post(
+    `/attributes/admin/products/${productId}/attributes`,
+    payload,
+    { timeout: 30000 }
+  );
+  return res.data;
 };
 
+// ==================== IMAGES ====================
 
-// Add images — multipart
 export const addProductImages = async (productId, files) => {
-  const fd = new FormData();
-  files.forEach((file) => fd.append("images", file, file.name));
-  try {
-    const res = await API.post(
-      `/products/admin/products/${productId}/images`,
-      fd,
-      { timeout: 30000 }
-    );
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to add product images");
-  }
+  const formData = new FormData();
+
+  files.forEach((file) => {
+    formData.append("images", file, file.name);
+  });
+
+  const res = await API.post(
+    `/products/admin/products/${productId}/images`,
+    formData,
+    { timeout: 30000 }
+  );
+
+  return res.data;
 };
 
-// Remove single image
 export const removeProductImage = async (productId, imageId) => {
-  console.log("Removing image with ID:", imageId, "from product ID:", productId);
-  try {
-    const res = await API.delete(
-      `/products/admin/products/${productId}/images/${imageId}`
-    );
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to remove product image");
-  }
+  const res = await API.delete(
+    `/products/admin/products/${productId}/images/${imageId}`
+  );
+  return res.data;
 };
 
-// Reorder / set primary
 export const reorderProductImages = async (productId, primaryImageId, order) => {
-  try {
-    const res = await API.patch(
-      `/products/admin/products/${productId}/images/reorder`,
-      { primary_image_id: primaryImageId, order }
-    );
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to reorder product images");
-  }
-};
-
-// Product data only — pure JSON no images
-export const updateProductDetails = async (productId, payload) => {
-  try {
-    const res = await API.put(
-      `/products/admin/products/${productId}/full-update`,
-      payload,
-      { timeout: 30000 }
-    );
-    return res.data;
-  } catch (error) {
-    throw handleApiError(error, "Failed to update product details");
-  }
+  const res = await API.patch(
+    `/products/admin/products/${productId}/images/reorder`,
+    { primary_image_id: primaryImageId, order }
+  );
+  return res.data;
 };

@@ -4,7 +4,7 @@ import { useProductDetail }        from "../../features/products/hooks/useProduc
 import { useCategories }           from "../../features/categories/hooks/useCategories.js";
 import { useBrandNames }           from "../../features/brands/hooks/useBrandNames.js";
 import { normalizeOptions }        from "./components/AddProductUi.jsx";
-import { normalizeProductForForm } from "../../features/products/service/products.service.js";
+import { normalizeProductForForm } from "../../features/products/service/product.normalizer.js";
 import { useUpdateProductDetails } from "../../features/products/hooks/useUpdateProductDetails.js";
 import { useAddProductImages }     from "../../features/products/hooks/useAddProductImages.js";
 import { useRemoveProductImage }   from "../../features/products/hooks/useRemoveProductImage.js";
