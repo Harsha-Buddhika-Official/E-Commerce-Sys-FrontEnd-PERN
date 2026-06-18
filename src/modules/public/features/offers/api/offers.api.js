@@ -24,25 +24,25 @@ export const getOffers = async (status) => {
   }
 };
 
-// GET ACTIVE OFFERS
-export const getActiveOffers = async () => {
-  try {
-    const response = await API.get("/offers/active");
-    return extractArrayPayload(response.data);
-  } catch (error) {
-    throw handleApiError(error, "Failed to fetch active offers");
-  }
-};
+// // GET ACTIVE OFFERS
+// export const getActiveOffers = async () => {
+//   try {
+//     const response = await API.get("/offers/active");
+//     return extractArrayPayload(response.data);
+//   } catch (error) {
+//     throw handleApiError(error, "Failed to fetch active offers");
+//   }
+// };
 
-// GET UPCOMING OFFERS
-export const getUpcomingOffers = async () => {
-  try {
-    const response = await API.get("/offers/upcoming");
-    return extractArrayPayload(response.data);
-  } catch (error) {
-    throw handleApiError(error, "Failed to fetch upcoming offers");
-  }
-};
+// // GET UPCOMING OFFERS
+// export const getUpcomingOffers = async () => {
+//   try {
+//     const response = await API.get("/offers/upcoming");
+//     return extractArrayPayload(response.data);
+//   } catch (error) {
+//     throw handleApiError(error, "Failed to fetch upcoming offers");
+//   }
+// };
 
 // GET OFFER BY ID
 export const getOfferById = async (id) => {
