@@ -136,18 +136,18 @@ export const fetchActiveOffers = async () => {
   }
 };
 
-export const fetchUpcomingOffers = async () => {
-  try {
-    const response = await getUpcomingOffers();
-    const offers = Array.isArray(unwrapResponse(response))
-      ? unwrapResponse(response)
-      : [];
-    return offers.map((offer) => normalizeOffer(offer, "upcoming"));
-  } catch (error) {
-    console.error("Failed to fetch upcoming offers:", error);
-    return [];
-  }
-};
+// export const fetchUpcomingOffers = async () => {
+//   try {
+//     const response = await getUpcomingOffers();
+//     const offers = Array.isArray(unwrapResponse(response))
+//       ? unwrapResponse(response)
+//       : [];
+//     return offers.map((offer) => normalizeOffer(offer, "upcoming"));
+//   } catch (error) {
+//     console.error("Failed to fetch upcoming offers:", error);
+//     return [];
+//   }
+// };
 
 export const fetchOfferById = async (offerId) => {
   try {

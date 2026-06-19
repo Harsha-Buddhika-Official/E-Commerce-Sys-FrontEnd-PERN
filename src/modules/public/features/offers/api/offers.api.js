@@ -18,36 +18,39 @@ export const getOffers = async (status) => {
     const response = await API.get("/offers", {
       params: status ? { status } : {}
     });
+    console.log("Offers Response:", response.data); // Debugging line
     return extractArrayPayload(response.data);
   } catch (error) {
     throw handleApiError(error, "Failed to fetch offers");
   }
 };
 
-// // GET ACTIVE OFFERS
-// export const getActiveOffers = async () => {
-//   try {
-//     const response = await API.get("/offers/active");
-//     return extractArrayPayload(response.data);
-//   } catch (error) {
-//     throw handleApiError(error, "Failed to fetch active offers");
-//   }
-// };
+// GET ACTIVE OFFERS
+export const getActiveOffers = async () => {
+  try {
+    const response = await API.get("/offers/active");
+    return extractArrayPayload(response.data);
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch active offers");
+  }
+};
 
-// // GET UPCOMING OFFERS
-// export const getUpcomingOffers = async () => {
-//   try {
-//     const response = await API.get("/offers/upcoming");
-//     return extractArrayPayload(response.data);
-//   } catch (error) {
-//     throw handleApiError(error, "Failed to fetch upcoming offers");
-//   }
-// };
+// GET UPCOMING OFFERS
+export const getUpcomingOffers = async () => {
+  try {
+    const response = await API.get("/offers/upcoming");
+    console.log("Upcoming Offers Response:", response.data); // Debugging line  
+    return extractArrayPayload(response.data);
+  } catch (error) {
+    throw handleApiError(error, "Failed to fetch upcoming offers");
+  }
+};
 
 // GET OFFER BY ID
 export const getOfferById = async (id) => {
   try {
     const response = await API.get(`/offers/user/${id}`);
+    console.log("Offer Details Response:", response.data); // Debugging line
     return extractObjectPayload(response.data);
   } catch (error) {
     throw handleApiError(error, "Failed to fetch offer details");
