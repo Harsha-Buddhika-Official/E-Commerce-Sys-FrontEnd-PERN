@@ -8,6 +8,7 @@ import Dashboard from "../../modules/admin/pages/admin/AdminDashboardPage.jsx";
 
 import Orders from "../../modules/admin/pages/order/OrdersPage.jsx";
 import OrderDetailPage from "../../modules/admin/pages/order/OrderDetailPage.jsx";
+import OrderReceiptPage from "../../modules/admin/pages/order/OrderReceiptPage.jsx";
 
 import Products from "../../modules/admin/pages/product/ProductsPage.jsx";
 import ProductInfoPage from "../../modules/admin/pages/product/ProductInfoPage.jsx";
@@ -55,6 +56,7 @@ export default function AdminRoutes() {
 
           <Route path="orders"     element={<Orders />} />
           <Route path="orders/:id" element={<OrderDetailPage />} />
+          <Route path="orders/:id/receipt" element={<OrderReceiptPage />} />
 
           <Route path="products"                   element={<Products />} />
           <Route path="products/:id"               element={<ProductInfoPage />} />

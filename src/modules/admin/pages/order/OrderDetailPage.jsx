@@ -268,9 +268,71 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
 }
 
 // ─── Payment receipt card ──────────────────────────────────────────────────────
-function PaymentReceiptCard({ receipt, loading, error }) {
-  return (
+// function PaymentReceiptCard({ receipt, loading, error }) {
+//   return (
     
+//     <SectionCard>
+//       <SectionTitle icon={<ReceiptLongOutlinedIcon style={{ fontSize: 16 }} />}>
+//         Payment Receipt
+//       </SectionTitle>
+
+//       {loading && (
+//         <p style={{ ...INTER, fontSize: 12, color: "#aaa", fontWeight: 500 }}>Loading receipt…</p>
+//       )}
+
+//       {!loading && error && (
+//         <p style={{ ...INTER, fontSize: 12, color: "#dc2626", fontWeight: 500 }}>Failed to load receipt.</p>
+//       )}
+
+//       {!loading && !error && !receipt?.media_url && (
+//         <div
+//           className="flex flex-col items-center justify-center gap-2 py-6 rounded-xl"
+//           style={{ backgroundColor: "#f9f9f9", border: "1px dashed #e5e5e5" }}
+//         >
+//           <InsertDriveFileOutlinedIcon style={{ fontSize: 28, color: "#ccc" }} />
+//           <p style={{ ...INTER, fontSize: 12, color: "#bbb", fontWeight: 600 }}>No receipt uploaded</p>
+//         </div>
+//       )}
+
+//       {!loading && !error && receipt?.media_url && (
+//         <div className="flex flex-col gap-3">
+//           <div
+//             className="flex items-center justify-center rounded-xl overflow-hidden"
+//             style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0", minHeight: 160 }}
+//           >
+//             {isPdfUrl(receipt.media_url) ? (
+//               <div className="flex flex-col items-center gap-2 py-8">
+//                 <InsertDriveFileOutlinedIcon style={{ fontSize: 36, color: "#e53935" }} />
+//                 <span style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#555" }}>PDF Document</span>
+//               </div>
+//             ) : (
+//               <img src={receipt.media_url} alt="Payment receipt" className="w-full max-h-64 object-contain" />
+//             )}
+//           </div>
+//           <a
+//             href={receipt.media_url}
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer hover:opacity-80 no-underline"
+//             style={{ ...INTER, fontSize: 12, fontWeight: 700, backgroundColor: "#111", color: "#fff", border: "none" }}
+//           >
+//             <OpenInNewOutlinedIcon style={{ fontSize: 15 }} /> Open Full Receipt
+//           </a>
+//           {receipt.created_at && (
+//             <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500, textAlign: "center" }}>
+//               Uploaded {formatDate(receipt.created_at)}
+//             </p>
+//           )}
+//         </div>
+//       )}
+//     </SectionCard>
+//   );
+// }
+
+function PaymentReceiptCard({ receipt, loading, error, orderId }) {
+  const navigate = useNavigate();
+
+  return (
     <SectionCard>
       <SectionTitle icon={<ReceiptLongOutlinedIcon style={{ fontSize: 16 }} />}>
         Payment Receipt
@@ -296,28 +358,36 @@ function PaymentReceiptCard({ receipt, loading, error }) {
 
       {!loading && !error && receipt?.media_url && (
         <div className="flex flex-col gap-3">
+          {/* ── Thumbnail preview ── */}
           <div
-            className="flex items-center justify-center rounded-xl overflow-hidden"
+            className="flex items-center justify-center rounded-xl overflow-hidden cursor-pointer transition-all hover:opacity-80"
             style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0", minHeight: 160 }}
+            onClick={() => navigate(`/admin/orders/${orderId}/receipt`)}
           >
             {isPdfUrl(receipt.media_url) ? (
               <div className="flex flex-col items-center gap-2 py-8">
-                <InsertDriveFileOutlinedIcon style={{ fontSize: 36, color: "#e53935" }} />
+                <InsertDriveFileOutlinedIcon style={{ fontSize: 40, color: "#e53935" }} />
                 <span style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#555" }}>PDF Document</span>
+                <span style={{ ...INTER, fontSize: 11, color: "#aaa" }}>Click to view</span>
               </div>
             ) : (
-              <img src={receipt.media_url} alt="Payment receipt" className="w-full max-h-64 object-contain" />
+              <img
+                src={receipt.media_url}
+                alt="Payment receipt"
+                className="w-full max-h-64 object-contain"
+              />
             )}
           </div>
-          <a
-            href={receipt.media_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer hover:opacity-80 no-underline"
+
+          {/* ── Open button ── */}
+          <button
+            onClick={() => navigate(`/admin/orders/${orderId}/receipt`)}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer hover:opacity-80"
             style={{ ...INTER, fontSize: 12, fontWeight: 700, backgroundColor: "#111", color: "#fff", border: "none" }}
           >
             <OpenInNewOutlinedIcon style={{ fontSize: 15 }} /> Open Full Receipt
-          </a>
+          </button>
+
           {receipt.created_at && (
             <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500, textAlign: "center" }}>
               Uploaded {formatDate(receipt.created_at)}
@@ -558,7 +628,12 @@ const OrderDetailPage = ({
           </SectionCard>
 
           {/* Payment receipt */}
-          <PaymentReceiptCard receipt={receipt} loading={receiptLoading} error={receiptError} />
+          <PaymentReceiptCard
+            receipt={receipt}
+            loading={receiptLoading}
+            error={receiptError}
+            orderId={displayOrder.order_id}
+          />
 
           {/* Timeline */}
           <SectionCard>
