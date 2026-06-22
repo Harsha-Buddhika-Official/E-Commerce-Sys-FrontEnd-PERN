@@ -20,6 +20,7 @@ export const useOfferDetail = (offerId) => {
 
     try {
       const offerData = await getOfferDetail(offerId);
+      console.log("Fetched offer data:", offerData);
       setOffer(offerData ?? null);
 
     } catch (err) {
