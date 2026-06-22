@@ -270,6 +270,7 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
 // ─── Payment receipt card ──────────────────────────────────────────────────────
 function PaymentReceiptCard({ receipt, loading, error }) {
   return (
+    
     <SectionCard>
       <SectionTitle icon={<ReceiptLongOutlinedIcon style={{ fontSize: 16 }} />}>
         Payment Receipt
