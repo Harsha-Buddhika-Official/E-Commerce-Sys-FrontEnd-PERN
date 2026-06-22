@@ -72,6 +72,19 @@ const PromotionDetailPage = ({ offer = null, onBack = () => {} }) => {
 	const primaryProduct = resolvedOffer.product || linkedProducts?.[0]?.product || linkedProducts?.[0] || null;
 	const remaining = daysRemaining(resolvedOffer.end_date, resolvedOffer.start_date);
 
+	// Price & stock derived values — driven off the real field names returned by the API
+	const sellingPrice = primaryProduct ? Number(primaryProduct.selling_price) : null;
+	const discountedPrice =
+		primaryProduct && primaryProduct.discounted_price != null
+			? Number(primaryProduct.discounted_price)
+			: null;
+	const hasDiscount =
+		discountedPrice != null && sellingPrice != null && discountedPrice !== sellingPrice;
+	const stockQuantity =
+		primaryProduct && typeof primaryProduct.stock_quantity !== "undefined"
+			? Number(primaryProduct.stock_quantity)
+			: null;
+
 	return (
 		<div className="min-h-screen w-full bg-[#f5f5f5] p-4 md:p-5 lg:p-6">
 			<div className="flex items-center justify-between mb-6 flex-wrap gap-3">
@@ -187,11 +200,24 @@ const PromotionDetailPage = ({ offer = null, onBack = () => {} }) => {
 
 					<SectionCard>
 						<SectionTitle icon={<AttachMoneyOutlinedIcon style={{ fontSize: 16 }} />}>Prices & Stock</SectionTitle>
-						<InfoRow label="Price" value={primaryProduct ? (primaryProduct.after_discounted_price ? `Rs ${Number(primaryProduct.after_discounted_price).toLocaleString()}` : `Rs ${Number(primaryProduct.selling_price).toLocaleString()}`) : "—"} />
-						{primaryProduct && primaryProduct.discounted_price && primaryProduct.after_discounted_price !== primaryProduct.selling_price ? (
-							<InfoRow label="Original Price" value={<span style={{ textDecoration: "line-through" }}>{`Rs ${Number(primaryProduct.selling_price).toLocaleString()}`}</span>} />
+						<InfoRow
+							label="Price"
+							value={
+								primaryProduct
+									? hasDiscount
+										? `Rs ${discountedPrice.toLocaleString()}`
+										: `Rs ${sellingPrice.toLocaleString()}`
+									: "—"
+							}
+							accent={hasDiscount}
+						/>
+						{hasDiscount ? (
+							<InfoRow
+								label="Original Price"
+								value={<span style={{ textDecoration: "line-through" }}>{`Rs ${sellingPrice.toLocaleString()}`}</span>}
+							/>
 						) : null}
-						<InfoRow label="Stock" value={primaryProduct && typeof primaryProduct.stock_quantity !== "undefined" ? Number(primaryProduct.stock_quantity) : "—"} />
+						<InfoRow label="Stock" value={stockQuantity != null ? stockQuantity : "—"} />
 					</SectionCard>
 				</div>
 			</div>
