@@ -1,4 +1,4 @@
-import {getStatusBarDataApi,getLowAlertDataApi,} from "../api/dashboard.api";
+import {getStatusBarDataApi,getLowAlertDataApi,} from "../api/dashboard.api.js";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 import {safeNumber,safeMoney,safeText,} from "../../../../../utils/normalizers.js";
 

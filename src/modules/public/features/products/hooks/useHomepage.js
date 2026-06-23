@@ -1,8 +1,5 @@
-// features/products/hooks/useHomepage.js
-// Layer: Hook — owns async state only. No API calls, no transforms.
-
 import { useEffect, useState } from "react";
-import { fetchHomepageData } from "../services/homepage.service.js";  // ← correct path
+import { fetchHomepageData } from "../services/homePage.service.js"; 
 
 const INITIAL_STATE = {
     bestSellers: [],
