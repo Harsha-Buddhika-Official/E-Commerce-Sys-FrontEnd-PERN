@@ -81,7 +81,7 @@ const OrderReceiptPage = () => {
                         )}
 
                         {/* Download */}
-                        <button
+                        {/* <button
                             onClick={handleDownload}
                             className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer transition-all"
                             style={{ ...INTER, fontSize: 12, fontWeight: 700, backgroundColor: "#111", color: "#fff", border: "none" }}
@@ -89,7 +89,7 @@ const OrderReceiptPage = () => {
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#111"}
                         >
                             <DownloadOutlinedIcon style={{ fontSize: 15 }} /> Download
-                        </button>
+                        </button> */}
                     </div>
                 )}
 
