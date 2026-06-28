@@ -21,7 +21,6 @@ const ProductBadge = ({ label, color = '#FE1801' }) => {
           transform: 'rotate(-45deg)',
           lineHeight: 1.25,
           boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
-          // For single-word (or 3+ word) labels, keep the original solid background
           ...(!isTwoWords && {
             background: color,
             color: '#fff',
