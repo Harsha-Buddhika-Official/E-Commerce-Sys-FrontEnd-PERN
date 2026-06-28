@@ -90,7 +90,7 @@ function FieldError({ message }) {
   );
 }
 
-export default function DirectCheckoutPage() {
+export default function DirectCheckout() {
   const fileRef                                    = useRef();
   const { state }                                  = useLocation();
   const navigate                                   = useNavigate();
