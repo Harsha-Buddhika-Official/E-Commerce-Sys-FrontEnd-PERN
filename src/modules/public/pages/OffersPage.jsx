@@ -53,22 +53,36 @@ const OffersPage = () => {
 
         .offers-grid { grid-template-columns: repeat(4, 1fr); }
         @media (max-width: 1200px) { .offers-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 860px)  { .offers-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 500px)  { .offers-grid { grid-template-columns: repeat(1, 1fr); } }
+        @media (max-width: 860px)  { .offers-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+        @media (max-width: 500px)  { .offers-grid { grid-template-columns: repeat(1, 1fr); gap: 12px; } }
+
+        /* MOBILE RESPONSIVE — title/subtitle scale down (desktop 48px untouched) */
+        @media (max-width: 640px) {
+          .offers-title    { font-size: 32px !important; }
+          .offers-subtitle { font-size: 13px !important; }
+        }
+        @media (max-width: 420px) {
+          .offers-title { font-size: 26px !important; letter-spacing: -0.5px !important; }
+        }
+
+        /* MOBILE RESPONSIVE — tighter tab buttons on very small screens */
+        @media (max-width: 420px) {
+          .offers-tab-btn { padding-left: 14px !important; padding-right: 14px !important; font-size: 12px !important; }
+        }
       `}</style>
 
-      <div className="offers-padded pt-10 pb-16">
+      <div className="offers-padded pt-6 sm:pt-10 pb-10 sm:pb-16">
 
         {/* ── Header ── */}
         <div className="flex flex-col items-center text-center mb-8">
           <h1
-            className="text-[#111] leading-none mb-2"
+            className="offers-title text-[#111] leading-none mb-2"
             style={{ ...SORA, fontSize: 48, fontWeight: 900, letterSpacing: "-1.5px" }}
           >
             Offers & Deals
           </h1>
           <p
-            className="text-gray-400"
+            className="offers-subtitle text-gray-400"
             style={{ ...INTER, fontSize: 15, fontWeight: 400 }}
           >
             Exclusive discounts on top PC components — updated weekly.
@@ -83,7 +97,7 @@ const OffersPage = () => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2 px-5 py-2 rounded-full border-[1.5px] transition-all duration-150
+                className={`offers-tab-btn flex items-center gap-2 px-5 py-2 rounded-full border-[1.5px] transition-all duration-150
                   ${isActive
                     ? "bg-[#111] border-[#111] text-white"
                     : "bg-white border-gray-300 text-gray-600 hover:border-[#111] hover:text-[#111]"
@@ -144,7 +158,7 @@ const OffersPage = () => {
 
         {/* ── Footer disclaimer ── */}
         {!loading && !error && offers.length > 0 && (
-          <div className="flex items-center gap-2 mt-10 px-5 py-3.5 bg-white border border-[#e6e6e6] rounded-xl text-gray-400">
+          <div className="flex items-center gap-2 mt-10 px-3 sm:px-5 py-3 sm:py-3.5 bg-white border border-[#e6e6e6] rounded-xl text-gray-400">
             <InfoOutlinedIcon style={{ fontSize: 16, color: "#ccc", flexShrink: 0 }} />
             <span style={{ ...INTER, fontSize: 12, fontWeight: 500 }}>
               Prices are subject to change without prior notice. All offers are valid while stocks last.
