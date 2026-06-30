@@ -19,7 +19,7 @@ function Toast({ message, type = "success" }) {
   if (!message) return null;
   return (
     <div
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl"
+      className="fixed bottom-6 right-4 sm:right-6 left-4 sm:left-auto z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl"
       style={{
         ...INTER, fontSize: 13, fontWeight: 700,
         backgroundColor: type === "success" ? "#f0fdf4" : "#fef2f2",
@@ -30,7 +30,7 @@ function Toast({ message, type = "success" }) {
       }}
     >
       <span
-        className="w-2 h-2 rounded-full"
+        className="w-2 h-2 rounded-full shrink-0"
         style={{ backgroundColor: type === "success" ? "#16a34a" : "#e53935" }}
       />
       {message}
@@ -65,8 +65,9 @@ function SkeletonCard() {
 // BRAND PAGE
 // ══════════════════════════════════════════════════════════════════════════════
 export default function BrandPage() {
-  // const { brands, loading, error, refresh } = useBrands();
-  const { brands: apiBrands, loading, error } = useBrands();
+  // FIX — `refresh` is used by the Retry button below but was previously never
+  // destructured from useBrands(), which would throw a ReferenceError on click.
+  const { brands: apiBrands, loading, error, refresh } = useBrands();
   const [ brands, setBrands]                  = useState([]);
   const { deleteBrand }                       = useDeleteBrand();
   const { can } = useRole();
@@ -136,18 +137,18 @@ export default function BrandPage() {
   }, [apiBrands]);
 
   return (
-    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
+    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6">
 
       {/* ── Top bar ── */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <div
-            className="flex items-center justify-center w-9 h-9 rounded-xl"
+            className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0"
             style={{ backgroundColor: "#fff", border: "1px solid #ebebeb" }}
           >
             <StorefrontOutlinedIcon style={{ fontSize: 18, color: "#555" }} />
           </div>
-          <div>
+          <div className="min-w-0">
             <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Products / Brands</p>
             <h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>
               Brand Management
@@ -186,7 +187,7 @@ export default function BrandPage() {
       {/* ── Error state ── */}
       {error && !loading && (
         <div
-          className="bg-white rounded-2xl p-6 mb-5"
+          className="bg-white rounded-2xl p-4 sm:p-6 mb-5"
           style={{ border: "1px solid #fecaca", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
         >
           <p style={{ ...SORA, fontSize: 14, fontWeight: 800, color: "#dc2626" }}>Failed to load brands</p>
@@ -203,8 +204,12 @@ export default function BrandPage() {
       )}
 
       {/* ── Stats row ── */}
+      {/* MOBILE FIX — was a hard `grid-cols-3`; on small phones the 3 stat cards
+          (icon + label + number) got squeezed and text wrapped/overflowed.
+          Now stacks to 1 column on the smallest screens, 3 from sm: up — i.e.
+          the original desktop 3-col layout is unchanged at sm and above. */}
       {!loading && !error && (
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 xs:grid-cols-3 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
           {[
             { label: "Total Brands", value: brands.length,  bg: "#f5f5f5", color: "#111",    icon: <StorefrontOutlinedIcon style={{ fontSize: 20 }} /> },
             { label: "Active",       value: activeCount,    bg: "#f0fdf4", color: "#15803d", icon: <span className="w-3 h-3 rounded-full bg-green-500 block" /> },
@@ -212,7 +217,7 @@ export default function BrandPage() {
           ].map(({ label, value, bg, color, icon }) => (
             <div
               key={label}
-              className="bg-white rounded-2xl p-5 flex items-center gap-4"
+              className="bg-white rounded-2xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4"
               style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
             >
               <div
@@ -221,7 +226,7 @@ export default function BrandPage() {
               >
                 {icon}
               </div>
-              <div>
+              <div className="min-w-0">
                 <p style={{ ...INTER, fontSize: 11, fontWeight: 600, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.07em" }}>
                   {label}
                 </p>
@@ -233,7 +238,7 @@ export default function BrandPage() {
       )}
 
       {/* ── Card grid ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
         {loading
           ? Array.from({ length: 12 }).map((_, i) => <SkeletonCard key={i} />)
           : brands.map((brand) => (
@@ -249,7 +254,7 @@ export default function BrandPage() {
       {/* ── Empty state ── */}
       {!loading && !error && brands.length === 0 && (
         <div
-          className="bg-white rounded-2xl flex flex-col items-center justify-center py-20 gap-4"
+          className="bg-white rounded-2xl flex flex-col items-center justify-center py-16 sm:py-20 gap-4 px-4 text-center"
           style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
         >
           <div className="flex items-center justify-center w-16 h-16 rounded-2xl" style={{ backgroundColor: "#f5f5f5" }}>

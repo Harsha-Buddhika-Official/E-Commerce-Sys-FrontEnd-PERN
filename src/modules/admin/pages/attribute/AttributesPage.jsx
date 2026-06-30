@@ -86,7 +86,6 @@ const AttributesPage = () => {
   };
 
   const handleCreateValue = (savedValue) => {
-    // savedValue should include attribute_id and attribute_value_id from server
     const attributeId = savedValue?.attribute_id ?? savedValue?.attributeId ?? null;
     const valueObj = {
       attribute_value_id: savedValue.attribute_value_id ?? savedValue.id ?? Date.now(),
@@ -95,7 +94,6 @@ const AttributesPage = () => {
     };
 
     if (!attributeId) {
-      // fallback: close overlay and refresh full catalog
       setCreateValueFor(null);
       refresh();
       return;
@@ -135,8 +133,8 @@ const AttributesPage = () => {
 
   if (catalogLoading && categories.length === 0 && attributes.length === 0) {
     return (
-      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6 flex items-center justify-center">
-        <div className="bg-white rounded-2xl px-6 py-5" style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6 flex items-center justify-center">
+        <div className="bg-white rounded-2xl px-5 sm:px-6 py-5 mx-2" style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
           <p style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>Loading attributes catalog…</p>
           <p style={{ ...INTER, fontSize: 13, color: "#777", marginTop: 4 }}>Fetching categories and attribute definitions from the API.</p>
         </div>
@@ -146,8 +144,8 @@ const AttributesPage = () => {
 
   if (catalogError && categories.length === 0 && attributes.length === 0) {
     return (
-      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6 flex items-center justify-center">
-        <div className="bg-white rounded-2xl px-6 py-5 max-w-md w-full" style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6 flex items-center justify-center">
+        <div className="bg-white rounded-2xl px-5 sm:px-6 py-5 max-w-md w-full mx-2" style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
           <p style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>Failed to load attributes</p>
           <p style={{ ...INTER, fontSize: 13, color: "#777", marginTop: 4 }}>{catalogError.message || String(catalogError)}</p>
           <button
@@ -165,7 +163,7 @@ const AttributesPage = () => {
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
+    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6">
 
       {/* ── Modals ── */}
       {showCreateAttr && (
@@ -206,16 +204,16 @@ const AttributesPage = () => {
       )}
 
       {/* ── Top bar ── */}
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div className="flex items-start sm:items-center justify-between mb-5 sm:mb-6 flex-wrap gap-3">
         <div>
           <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Products / Attributes</p>
-          <h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>
+          <h1 style={{ ...SORA, fontSize: 18, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }} className="sm:text-[20px]">
             Attributes
           </h1>
         </div>
         <button
           onClick={() => setShowCreateAttr(true)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all cursor-pointer"
+          className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-white transition-all cursor-pointer w-full sm:w-auto"
           style={{ ...SORA, fontSize: 13, fontWeight: 700, backgroundColor: "#111", border: "none" }}
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#222"}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#111"}
@@ -225,19 +223,19 @@ const AttributesPage = () => {
       </div>
 
       {/* ── Stats row ── */}
-      <div className="grid grid-cols-3 gap-4 mb-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-5">
         {[
           { label: "Total Attributes", value: totalAttrs,  icon: <TuneOutlinedIcon style={{ fontSize: 20 }} />,      bg: "#f5f5f5", color: "#111"    },
           { label: "Total Values",     value: totalValues, icon: <TagOutlinedIcon style={{ fontSize: 20 }} />,        bg: "#dbeafe", color: "#1d4ed8" },
           { label: "Categories",       value: categories.length,
                                                            icon: <TuneOutlinedIcon style={{ fontSize: 20 }} />,       bg: "#f3e8ff", color: "#7e22ce" },
-        ].map(({ label, value, icon, bg, color }) => (
+        ].map(({ label, value, icon, bg, color }, i) => (
           <div
             key={label}
-            className="bg-white rounded-2xl p-5 flex items-center gap-4"
+            className={`bg-white rounded-2xl p-3.5 sm:p-5 flex items-center gap-3 sm:gap-4 ${i === 2 ? "col-span-2 sm:col-span-1" : ""}`}
             style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
           >
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl shrink-0" style={{ backgroundColor: bg, color }}>
+            <div className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl shrink-0" style={{ backgroundColor: bg, color }}>
               {icon}
             </div>
             <div>
@@ -250,7 +248,7 @@ const AttributesPage = () => {
 
       {/* ── Filter + search bar ── */}
       <div
-        className="bg-white rounded-2xl p-4 mb-5 flex flex-col gap-3"
+        className="bg-white rounded-2xl p-3.5 sm:p-4 mb-5 flex flex-col gap-3"
         style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
       >
         {/* Search */}
@@ -284,7 +282,7 @@ const AttributesPage = () => {
         </div>
 
         {/* Category chips */}
-        <div className="flex items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+        <div className="flex items-center gap-2 overflow-x-auto -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
           <CategoryChip
             label="All"
             count={totalAttrs}
@@ -307,8 +305,8 @@ const AttributesPage = () => {
       </div>
 
       {/* ── Results header ── */}
-      <div className="flex items-center justify-between mb-4">
-        <p style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#aaa" }}>
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <p style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#aaa" }} className="break-words">
           <span style={{ color: "#111", fontWeight: 800 }}>{activeCatName}</span>
           {" — "}
           {filtered.length} attribute{filtered.length !== 1 ? "s" : ""}
@@ -317,7 +315,7 @@ const AttributesPage = () => {
         {(search || activeCategory !== null) && (
           <button
             onClick={() => { setSearch(""); setActiveCategory(null); }}
-            className="flex items-center gap-1.5 cursor-pointer border-none bg-transparent"
+            className="flex items-center gap-1.5 cursor-pointer border-none bg-transparent shrink-0"
             style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#e53935" }}
           >
             <CloseIcon style={{ fontSize: 13 }} /> Clear filters
@@ -327,7 +325,7 @@ const AttributesPage = () => {
 
       {/* ── Attribute cards grid ── */}
       {filtered.length > 0 ? (
-        <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:[grid-template-columns:repeat(auto-fill,minmax(300px,1fr))] gap-4">
           {filtered.map((attr) => (
             <AttributeCard
               key={attr.attribute_id}
@@ -340,7 +338,7 @@ const AttributesPage = () => {
         </div>
       ) : (
         <div
-          className="bg-white rounded-2xl flex flex-col items-center justify-center py-20 gap-4"
+          className="bg-white rounded-2xl flex flex-col items-center justify-center py-14 sm:py-20 gap-4 px-4 text-center"
           style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
         >
           <div className="flex items-center justify-center w-16 h-16 rounded-2xl" style={{ backgroundColor: "#f5f5f5" }}>

@@ -48,7 +48,6 @@ const AddProductAttributes = () => {
   const normalizedCategoryId = categoryId === "" || categoryId === null || typeof categoryId === "undefined"
     ? ""
     : Number(categoryId);
-  // const { attributes: rawAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(normalizedCategoryId);
   const { attributes: rawAttributes, loading: attributesLoading, error: attributesError } = useProductAttributes(normalizedCategoryId, refreshKey);
   const attributes = useMemo(() => normalizeAttributes(rawAttributes), [rawAttributes]);
   const { categories } = useCategories();
@@ -59,10 +58,6 @@ const AddProductAttributes = () => {
     }
   }, [navigate, normalizedCategoryId, productId]);
 
-  // useEffect(() => {
-  //   setAttributeSelections({});
-  // }, [categoryId]);
-  
   const prevCategoryId = useRef(categoryId);
   useEffect(() => {
     if (prevCategoryId.current !== categoryId) {
@@ -91,7 +86,6 @@ const AddProductAttributes = () => {
     }
     setCreateValueFor(null);
     setRefreshKey((k) => k + 1);
-    // window.location.reload();
   };
 
   const handleSaveAttributes = async () => {
@@ -148,7 +142,7 @@ const AddProductAttributes = () => {
   const selectedAttrCount = Object.values(attributeSelections).filter(Boolean).length;
 
   return (
-    <main className="h-full overflow-y-auto bg-[#f5f5f5] px-5 py-6 lg:px-6 lg:py-7">
+    <main className="h-full overflow-y-auto bg-[#f5f5f5] px-4 py-5 sm:px-5 sm:py-6 lg:px-6 lg:py-7">
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <button
           onClick={handleCancel}
@@ -160,7 +154,8 @@ const AddProductAttributes = () => {
           <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Catalogue / Products</p>
           <h1 style={{ ...SORA, fontSize: 22, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>Product Attributes</h1>
         </div>
-        <div className="ml-auto flex items-center gap-2.5">
+        {/* MOBILE FIX — header buttons now wrap instead of overflowing on narrow phones */}
+        <div className="ml-auto flex items-center gap-2.5 flex-wrap w-full sm:w-auto justify-end">
           <button
             onClick={() => setShowAttrCreate(true)}
             className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
@@ -200,8 +195,6 @@ const AddProductAttributes = () => {
           onCreated={() => {
             setShowAttrCreate(false);
             setRefreshKey((k) => k + 1);
-            // refresh attributes to show newly created attribute
-            // window.location.reload();
           }}
           onClose={() => setShowAttrCreate(false)}
         />
@@ -221,11 +214,11 @@ const AddProductAttributes = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-        <div className="xl:col-span-2 flex flex-col gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5">
+        <div className="xl:col-span-2 flex flex-col gap-4 sm:gap-5">
           <SectionCard>
             <SectionHeader icon={<CategoryOutlinedIcon style={{ fontSize: 18 }} />} title="Category Attributes" subtitle={categoryName || "Select a category first"} />
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               {!normalizedCategoryId ? (
                 <div className="flex flex-col items-center justify-center py-8 rounded-xl border border-dashed border-gray-200" style={{ backgroundColor: "#fafafa" }}>
                   <CategoryOutlinedIcon style={{ fontSize: 32, color: "#ddd", marginBottom: 8 }} />
@@ -244,7 +237,7 @@ const AddProductAttributes = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {attributes.map((attribute) => (
                     <div key={attribute.attribute_id} className="rounded-xl border border-gray-200 bg-white p-4">
-                      <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
                         <FieldLabel>{attribute.name}</FieldLabel>
                         <button
                           type="button"
@@ -277,10 +270,10 @@ const AddProductAttributes = () => {
           </SectionCard>
         </div>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4 sm:gap-5">
           <SectionCard>
             <SectionHeader icon={<InventoryOutlinedIcon style={{ fontSize: 18 }} />} title="Summary" subtitle="Quick form overview" />
-            <div className="px-6 py-4">
+            <div className="px-4 py-4 sm:px-6">
               <PreviewRow label="Category" value={categoryName} />
               <PreviewRow label="Attributes" value={selectedAttrCount > 0 ? `${selectedAttrCount} selected` : "0 selected"} />
             </div>

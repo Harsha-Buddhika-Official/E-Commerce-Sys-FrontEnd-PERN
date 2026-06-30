@@ -32,7 +32,7 @@ const attrLabel = (name) =>
 function SectionCard({ children, className = "" }) {
   return (
     <div
-      className={`bg-white rounded-2xl p-6 ${className}`}
+      className={`bg-white rounded-2xl p-4 sm:p-6 ${className}`}
       style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
     >
       {children}
@@ -59,10 +59,13 @@ function SectionTitle({ icon, children }) {
 function InfoRow({ label, value, accent, mono, children }) {
   return (
     <div
-      className="flex items-start justify-between gap-4 py-2.5"
+      className="flex items-start justify-between gap-2 sm:gap-4 py-2.5"
       style={{ borderBottom: "1px solid #f8f8f8" }}
     >
-      <span style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#aaa", flexShrink: 0, minWidth: 130 }}>
+      <span
+        className="min-w-[92px] sm:min-w-[130px]"
+        style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#aaa", flexShrink: 0 }}
+      >
         {label}
       </span>
       <div className="text-right min-w-0">
@@ -143,7 +146,7 @@ function LinkedProductCard({ linkedProduct, productAttributes = [], onNavigate }
         {/* Image gallery */}
         <div className="flex flex-col gap-3 shrink-0">
           <div
-            className="flex items-center justify-center rounded-2xl overflow-hidden"
+            className="flex items-center justify-center rounded-2xl overflow-hidden mx-auto"
             style={{
               width: "100%", maxWidth: 260, height: 220,
               backgroundColor: "#f7f7f7", border: "1px solid #f0f0f0",
@@ -165,7 +168,7 @@ function LinkedProductCard({ linkedProduct, productAttributes = [], onNavigate }
           </div>
 
           {sortedImages.length > 1 && (
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap justify-center md:justify-start">
               {sortedImages.map((img, idx) => (
                 <button
                   key={img.image_id || idx}
@@ -186,7 +189,7 @@ function LinkedProductCard({ linkedProduct, productAttributes = [], onNavigate }
               ))}
             </div>
           )}
-          <p style={{ ...INTER, fontSize: 11, color: "#bbb" }}>
+          <p className="text-center md:text-left" style={{ ...INTER, fontSize: 11, color: "#bbb" }}>
             {sortedImages.length} image{sortedImages.length !== 1 ? "s" : ""}
           </p>
         </div>
@@ -408,7 +411,7 @@ export default function OfferDetailPage({ onBack } = {}) {
     <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
 
       {/* ── Top bar ── */}
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div className="flex items-center justify-between mb-4 sm:mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <button
             onClick={handleBack}
@@ -426,10 +429,10 @@ export default function OfferDetailPage({ onBack } = {}) {
       </div>
 
       {/* ── 3-col grid ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5">
 
         {/* ══ LEFT + CENTRE (col-span-2) ══ */}
-        <div className="xl:col-span-2 flex flex-col gap-5">
+        <div className="xl:col-span-2 flex flex-col gap-4 sm:gap-5">
 
           {/* ── Offer overview ── */}
           <SectionCard>
@@ -504,8 +507,8 @@ export default function OfferDetailPage({ onBack } = {}) {
                 ].map(({ label, value }) => (
                   <div
                     key={label}
-                    className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl flex-1"
-                    style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0", minWidth: 180 }}
+                    className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl flex-1 min-w-[140px] sm:min-w-[180px]"
+                    style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0" }}
                   >
                     <CalendarTodayOutlinedIcon style={{ fontSize: 15, color: "#bbb", flexShrink: 0 }} />
                     <div>
@@ -524,8 +527,8 @@ export default function OfferDetailPage({ onBack } = {}) {
               {/* Banner image */}
               {bannerImage ? (
                 <div
-                  className="rounded-2xl overflow-hidden"
-                  style={{ border: "1px solid #f0f0f0", aspectRatio: "10 / 3" }}
+                  className="rounded-2xl overflow-hidden aspect-[16/9] sm:aspect-[10/3]"
+                  style={{ border: "1px solid #f0f0f0" }}
                 >
                   <img src={bannerImage} alt="Banner" className="w-full h-full object-cover" />
                 </div>
@@ -565,7 +568,7 @@ export default function OfferDetailPage({ onBack } = {}) {
         </div>
 
         {/* ══ RIGHT PANEL ══ */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4 sm:gap-5">
 
           {/* Product summaries — one card per product */}
           {linkedProducts.map((product, idx) => {

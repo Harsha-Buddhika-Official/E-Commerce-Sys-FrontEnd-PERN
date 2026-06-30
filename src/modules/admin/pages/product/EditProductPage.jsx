@@ -55,6 +55,8 @@ const EditProductPage = ({
   const { brandNames: brandList }    = useBrandNames();
 
   const { updateDetails, loading: updateLoading }                            = useUpdateProductDetails();
+  // NOTE: addImagesLoading was previously fetched but never used in the UI —
+  // now reflected in the header's saving/disabled state below.
   const { addImages,     loading: addImagesLoading }     = useAddProductImages();
   const { removeImage: removeImageApi }                  = useRemoveProductImage();
   const { reorderImages, loading: reorderImagesLoading } = useReorderProductImages();
@@ -243,8 +245,12 @@ const EditProductPage = ({
   if (!sourceProduct && detailLoading) return <LoadingState />;
   if (!sourceProduct && detailError)   return <NotFoundState error={detailError} onBack={() => navigate("/admin/products")} />;
 
+  // Image uploads happen inside handleSave, but addImagesLoading also flips true
+  // momentarily during independent image actions — treat it the same as saving.
+  const isSaving = saving || addImagesLoading;
+
   return (
-    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
+    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6">
       {showDiscard && (
         <DiscardModal
           onConfirm={() => { setShowDiscard(false); navigate("/admin/products"); }}
@@ -276,14 +282,14 @@ const EditProductPage = ({
         productId={productId}
         dirty={dirty}
         saved={saved}
-        saving={saving}
+        saving={isSaving}
         updateLoading={updateLoading}
         onBack={() => navigate("/admin/products")}
         onSave={handleSave}
       />
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-        <div className="xl:col-span-2 flex flex-col gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5">
+        <div className="xl:col-span-2 flex flex-col gap-4 sm:gap-5">
           <ProductBasicsSection
             name={name}
             onNameChange={(val) => { setName(val); markDirty(); }}
@@ -326,7 +332,7 @@ const EditProductPage = ({
           />
         </div>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4 sm:gap-5">
           <ProductPricingSection
             basePrice={basePrice}
             sellingPrice={sellingPrice}

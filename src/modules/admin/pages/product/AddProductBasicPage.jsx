@@ -225,7 +225,7 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
   const hasLoadError = brandsError || categoriesError;
 
   return (
-    <main className="h-full overflow-y-auto bg-[#f5f5f5] px-5 py-6 lg:px-6 lg:py-7">
+    <main className="h-full overflow-y-auto bg-[#f5f5f5] px-4 py-5 sm:px-5 sm:py-6 lg:px-6 lg:py-7">
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <button
           onClick={() => { onCancel?.(); navigate("/admin/products"); }}
@@ -237,7 +237,8 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
           <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Catalogue / Products</p>
           <h1 style={{ ...SORA, fontSize: 22, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>Create Product</h1>
         </div>
-        <div className="ml-auto flex items-center gap-2.5">
+        {/* MOBILE FIX — was `ml-auto flex items-center gap-2.5` with no wrap, overflowing on narrow phones */}
+        <div className="ml-auto flex items-center gap-2.5 flex-wrap w-full sm:w-auto justify-end">
           <button
             onClick={() => setShowBrandCreate(true)}
             className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
@@ -292,11 +293,11 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-        <div className="xl:col-span-2 flex flex-col gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5">
+        <div className="xl:col-span-2 flex flex-col gap-4 sm:gap-5">
           <SectionCard>
             <SectionHeader icon={<InventoryOutlinedIcon style={{ fontSize: 18 }} />} title="Basic Information" subtitle="Core product details" />
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="md:col-span-2">
                 <FieldLabel required>Product Name</FieldLabel>
                 <TextField value={form.name} onChange={(value) => updateField("name", value)} placeholder="Enter product name" error={Boolean(errors.name)} />
@@ -335,7 +336,7 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
 
           <SectionCard>
             <SectionHeader icon={<LocalOfferOutlinedIcon style={{ fontSize: 18 }} />} title="Pricing & Inventory" subtitle="Prices in LKR" />
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
               {[
                 { label: "Base Price", key: "base_price", required: true, type: "number", placeholder: "0.00" },
                 { label: "Discounted Price", key: "discounted_price", required: true, type: "number", placeholder: "0.00" },
@@ -362,10 +363,10 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
           </SectionCard>
         </div>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4 sm:gap-5">
           <SectionCard>
             <SectionHeader icon={<ImageOutlinedIcon style={{ fontSize: 18 }} />} title="Product Images" subtitle={`Up to ${MAX_IMAGES} files, 10MB each`} />
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <input ref={fileInputRef} type="file" accept="image/jpeg,image/jpg,image/png,image/webp" multiple className="hidden" onChange={handleImageSelect} />
               <button
                 type="button"
@@ -415,7 +416,7 @@ const AddProductBasicPage = ({ onCancel = () => {} }) => {
 
           <SectionCard>
             <SectionHeader icon={<InventoryOutlinedIcon style={{ fontSize: 18 }} />} title="Summary" subtitle="Quick form overview" />
-            <div className="px-6 py-4">
+            <div className="px-4 py-4 sm:px-6">
               <PreviewRow label="Brand" value={form.brand_name} />
               <PreviewRow label="Category" value={form.category_name} />
               <PreviewRow label="Tag" value={form.product_tag ? formatLabel(form.product_tag) : null} />

@@ -39,10 +39,10 @@ const StatCard = ({
 
   const trendColor = isUp ? "#10b981" : isDown ? "#ef4444" : "#6b7280";
   const TrendIcon  = isUp
-    ? <TrendingUpOutlinedIcon   style={{ fontSize: 18, color: trendColor }} />
+    ? <TrendingUpOutlinedIcon   style={{ fontSize: 16 }} className="sm:!text-[18px]" />
     : isDown
-    ? <TrendingDownOutlinedIcon style={{ fontSize: 18, color: trendColor }} />
-    : <TrendingFlatOutlinedIcon style={{ fontSize: 18, color: trendColor }} />;
+    ? <TrendingDownOutlinedIcon style={{ fontSize: 16 }} className="sm:!text-[18px]" />
+    : <TrendingFlatOutlinedIcon style={{ fontSize: 16 }} className="sm:!text-[18px]" />;
 
   const trendText = isFlat
     ? `No change`
@@ -50,14 +50,14 @@ const StatCard = ({
 
   return (
     <div
-      className="bg-white rounded-2xl p-5 flex flex-col gap-3 w-full"
+      className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 flex flex-col gap-2 sm:gap-3 w-full"
       style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.07)", border: "1px solid #f0f0f0" }}
     >
       {/* ── Row 1: label + icon ── */}
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
         <p
           className="text-gray-400 leading-tight"
-          style={{ ...INTER, fontSize: 14, fontWeight: 500 }}
+          style={{ ...INTER, fontSize: 12, fontWeight: 500 }}
         >
           {title}
         </p>
@@ -66,28 +66,33 @@ const StatCard = ({
         <div
           className="flex items-center justify-center rounded-full shrink-0"
           style={{
-            width: 44,
-            height: 44,
+            width: 34,
+            height: 34,
             backgroundColor: resolvedBg,
             color: resolvedClr,
           }}
         >
-          {resolvedIcon}
+          <span style={{ transform: "scale(0.82)" }} className="sm:!scale-100 flex items-center justify-center">
+            {resolvedIcon}
+          </span>
         </div>
       </div>
 
       {/* ── Row 2: value ── */}
       <p
-        className="text-[#111] leading-none"
-        style={{ ...SORA, fontSize: 26, fontWeight: 800, letterSpacing: "-0.5px" }}
+        className="text-[#111] leading-none truncate"
+        style={{ ...SORA, fontSize: 19, fontWeight: 800, letterSpacing: "-0.5px" }}
       >
         {value}
       </p>
 
       {/* ── Row 3: trend ── */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1 sm:gap-1.5">
         {TrendIcon}
-        <span style={{ ...INTER, fontSize: 13, fontWeight: 500, color: trendColor }}>
+        <span
+          className="truncate"
+          style={{ ...INTER, fontSize: 11, fontWeight: 500, color: trendColor }}
+        >
           {trendText}
         </span>
       </div>

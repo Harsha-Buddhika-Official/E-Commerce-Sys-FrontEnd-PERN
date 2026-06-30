@@ -12,34 +12,34 @@ const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_STYLE = {
-  Pending:    { bg: "#fef9c3", color: "#ca8a04" }, // yellow — keep
-  Paid:       { bg: "#dcfce7", color: "#16a34a" }, // green — keep
-  Processing: { bg: "#dbeafe", color: "#1d4ed8" }, // blue — keep
-  Shipped:    { bg: "#f5f3ff", color: "#7c3aed" }, // ← purple (was amber, too close to Pending)
-  Delivered:  { bg: "#ecfeff", color: "#0e7490" }, // ← cyan (was teal green, too close to Paid)
-  Cancelled:  { bg: "#fee2e2", color: "#dc2626" }, // red — keep
+  Pending:    { bg: "#fef9c3", color: "#ca8a04" },
+  Paid:       { bg: "#dcfce7", color: "#16a34a" },
+  Processing: { bg: "#dbeafe", color: "#1d4ed8" },
+  Shipped:    { bg: "#f5f3ff", color: "#7c3aed" },
+  Delivered:  { bg: "#ecfeff", color: "#0e7490" },
+  Cancelled:  { bg: "#fee2e2", color: "#dc2626" },
 };
 
 function StatusBadge({ status }) {
   const s = STATUS_STYLE[status] || STATUS_STYLE.Pending;
   return (
     <span
-      className="inline-flex items-center px-3 py-0.5 rounded-full whitespace-nowrap"
-      style={{ ...INTER, fontSize: 13, fontWeight: 600, backgroundColor: s.bg, color: s.color }}
+      className="inline-flex items-center px-2.5 sm:px-3 py-0.5 rounded-full whitespace-nowrap"
+      style={{ ...INTER, fontSize: 12, fontWeight: 600, backgroundColor: s.bg, color: s.color }}
     >
       {status}
     </span>
   );
 }
 
-// ─── Column definitions — 8 cols with quantity and price at purchase ────────
+// ─── Column definitions ──────────────────────────────────────────────────────
 const COLUMNS = [
   { key: "id",               label: "Order ID",          w: "11%" },
   { key: "product",          label: "Product",           w: "18%" },
   { key: "email",            label: "Customer email",    w: "18%" },
   { key: "date",             label: "Date",              w: "10%" },
   { key: "quantity",         label: "Quantity",          w: "8%" },
-  { key: "priceAtPurchase",  label: "Price at Purchase",  w: "12%" },
+  { key: "priceAtPurchase",  label: "Price at Purchase", w: "12%" },
   { key: "amount",           label: "Total Amount",      w: "12%" },
   { key: "status",           label: "Status",            w: "11%" },
 ];
@@ -53,22 +53,22 @@ function OrderCard({ order, selected, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-xl border cursor-pointer transition-all duration-150 p-4 flex flex-col gap-2"
+      className="bg-white rounded-xl border cursor-pointer transition-all duration-150 p-3 sm:p-4 flex flex-col gap-2"
       style={{
         borderColor: selected ? "#1a73e8" : "#f0f0f0",
         backgroundColor: selected ? "#eff6ff" : "#fff",
         boxShadow: selected ? "0 0 0 2px #1a73e820" : "0 1px 4px rgba(0,0,0,0.05)",
       }}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <span
-          className="font-bold"
+          className="font-bold truncate"
           style={{ ...INTER, fontSize: 13, fontWeight: 700, color: "#1a73e8" }}
         >
           {order.id}
         </span>
         <span
-          className="inline-flex items-center px-2.5 py-0.5 rounded-full"
+          className="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full shrink-0"
           style={{ ...INTER, fontSize: 11, fontWeight: 600, backgroundColor: s.bg, color: s.color }}
         >
           {order.status}
@@ -97,18 +97,14 @@ function OrderCard({ order, selected, onClick }) {
 }
 
 // ─── OrdersTable ──────────────────────────────────────────────────────────────
-// Props:
-//   orders — array of order objects
-const OrdersTable = ({
-  orders = [],
-}) => {
+const OrdersTable = ({ orders = [] }) => {
   const [page,          setPage]          = useState(1);
   const [activeFilter,  setActiveFilter]  = useState("All");
   const [search,        setSearch]        = useState("");
   const [selectedRow,   setSelectedRow]   = useState(null);
   const [viewMode,      setViewMode]      = useState("list"); // "list" | "grid"
 
-  // Group orders by order id (collapse multiple items per order into one row)
+  // Group orders by order id
   const groupedMap = orders.reduce((acc, o) => {
     const key = String(o.id);
     if (!acc[key]) {
@@ -129,7 +125,6 @@ const OrdersTable = ({
       acc[key].amount += Number(o.amount) || 0;
       acc[key].itemCount += 1;
       if (!acc[key].products.includes(o.product)) acc[key].products.push(o.product);
-      // keep most recent date (string comparison works for ISO-like strings)
       if (o.date && acc[key].date && new Date(o.date) > new Date(acc[key].date)) {
         acc[key].date = o.date;
       }
@@ -139,11 +134,9 @@ const OrdersTable = ({
 
   const grouped = Object.values(groupedMap).map((g) => ({
     ...g,
-    // Display product summary: first product + " + N more" when multiple
     product: g.products.length > 1 ? `${g.products[0]} (+${g.products.length - 1} more)` : g.products[0],
   }));
 
-  // Filter + search (operate on grouped rows)
   const filtered = grouped.filter((o) => {
     const matchFilter = activeFilter === "All" ? true : o.status === activeFilter;
     const q = search.toLowerCase();
@@ -180,17 +173,17 @@ const OrdersTable = ({
 
   return (
     <div
-      className="w-full bg-white rounded-2xl overflow-hidden flex flex-col"
+      className="w-full bg-white rounded-xl sm:rounded-2xl overflow-hidden flex flex-col"
       style={{ border: "1px solid #f0f0f0", boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}
     >
 
       {/* ── Toolbar ── */}
-      <div className="flex items-center justify-between gap-4 px-5 py-4 flex-wrap border-b border-[#f5f5f5]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#f5f5f5]">
 
         {/* Search */}
         <div
-          className="flex items-center gap-2 px-3 rounded-xl border transition-all duration-150"
-          style={{ height: 38, minWidth: 180, maxWidth: 240, borderColor: "#e5e7eb", backgroundColor: "#fafafa" }}
+          className="flex items-center gap-2 px-3 rounded-xl border transition-all duration-150 w-full sm:w-auto"
+          style={{ height: 38, minWidth: 0, maxWidth: 240, borderColor: "#e5e7eb", backgroundColor: "#fafafa" }}
         >
           <SearchOutlinedIcon style={{ fontSize: 17, color: "#bbb", flexShrink: 0 }} />
           <input
@@ -203,15 +196,15 @@ const OrdersTable = ({
           />
         </div>
 
-        {/* Filter tabs — matching screenshot pill style */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Filter tabs — horizontally scrollable on mobile */}
+        <div className="flex items-center gap-2 overflow-x-auto sm:flex-wrap pb-1 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0" style={{ scrollbarWidth: "none" }}>
           {STATUS_FILTERS.map((f) => {
             const isActive = activeFilter === f;
             return (
               <button
                 key={f}
                 onClick={() => handleFilter(f)}
-                className="px-4 py-1.5 rounded-full border text-[13px] font-semibold transition-all duration-150 whitespace-nowrap"
+                className="px-3.5 sm:px-4 py-1.5 rounded-full border text-[12px] sm:text-[13px] font-semibold transition-all duration-150 whitespace-nowrap shrink-0"
                 style={{
                   ...INTER,
                   backgroundColor: isActive ? "#1a73e8" : "#f3f4f6",
@@ -227,33 +220,33 @@ const OrdersTable = ({
 
         {/* View toggle */}
         <div
-          className="flex items-center rounded-xl overflow-hidden border"
+          className="flex items-center rounded-xl overflow-hidden border self-start sm:self-auto shrink-0"
           style={{ borderColor: "#e5e7eb" }}
         >
           <button
             onClick={() => setViewMode("list")}
             className="flex items-center justify-center transition-all duration-150"
             style={{
-              width: 36, height: 36,
+              width: 34, height: 34,
               backgroundColor: viewMode === "list" ? "#1a73e8" : "#fff",
               color:           viewMode === "list" ? "#fff"    : "#888",
               border: "none", cursor: "pointer",
             }}
           >
-            <ViewListOutlinedIcon style={{ fontSize: 18 }} />
+            <ViewListOutlinedIcon style={{ fontSize: 17 }} />
           </button>
           <button
             onClick={() => setViewMode("grid")}
             className="flex items-center justify-center transition-all duration-150"
             style={{
-              width: 36, height: 36,
+              width: 34, height: 34,
               backgroundColor: viewMode === "grid" ? "#1a73e8" : "#fff",
               color:           viewMode === "grid" ? "#fff"    : "#888",
               border: "none", cursor: "pointer",
               borderLeft: "1px solid #e5e7eb",
             }}
           >
-            <GridViewOutlinedIcon style={{ fontSize: 17 }} />
+            <GridViewOutlinedIcon style={{ fontSize: 16 }} />
           </button>
         </div>
       </div>
@@ -271,7 +264,6 @@ const OrdersTable = ({
               ))}
             </colgroup>
 
-            {/* Head */}
             <thead>
               <tr className="border-b border-[#f0f0f0]">
                 {COLUMNS.map((col) => (
@@ -280,10 +272,10 @@ const OrdersTable = ({
                     className={col.key === "quantity" ? "text-center" : "text-left"}
                     style={{
                       ...INTER,
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: 700,
                       color: "#111",
-                      padding: "13px 16px",
+                      padding: "12px 14px",
                     }}
                   >
                     {col.label}
@@ -292,7 +284,6 @@ const OrdersTable = ({
               </tr>
             </thead>
 
-            {/* Body */}
             <tbody>
               {pageOrders.length === 0 ? (
                 <tr>
@@ -314,61 +305,53 @@ const OrdersTable = ({
                       className="border-b border-[#f5f5f5] cursor-pointer transition-colors duration-100 hover:bg-gray-50"
                       style={{ backgroundColor: isSelected ? "#eff6ff" : "transparent" }}
                     >
-                      {/* Order ID */}
-                      <td style={{ padding: "13px 16px", overflow: "hidden" }}>
+                      <td style={{ padding: "12px 14px", overflow: "hidden" }}>
                         <span
                           className="flex items-center gap-1"
-                          style={{ ...INTER, fontSize: 14, fontWeight: 600, color: "#1a73e8" }}
+                          style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#1a73e8" }}
                         >
                           {order.id}
                           <OpenInNewOutlinedIcon style={{ fontSize: 12, opacity: 0.6 }} />
                         </span>
                       </td>
 
-                      {/* Product */}
-                      <td style={{ padding: "13px 16px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 0 }}>
-                        <span style={{ ...INTER, fontSize: 14, fontWeight: 400, color: "#333" }}>
+                      <td style={{ padding: "12px 14px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 0 }}>
+                        <span style={{ ...INTER, fontSize: 13, fontWeight: 400, color: "#333" }}>
                           {order.product}
                         </span>
                       </td>
 
-                      {/* Email */}
-                      <td style={{ padding: "13px 16px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 0 }}>
-                        <span style={{ ...INTER, fontSize: 14, fontWeight: 400, color: "#555" }}>
+                      <td style={{ padding: "12px 14px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 0 }}>
+                        <span style={{ ...INTER, fontSize: 13, fontWeight: 400, color: "#555" }}>
                           {order.email}
                         </span>
                       </td>
 
-                      {/* Date */}
-                      <td style={{ padding: "13px 16px" }}>
-                        <span style={{ ...INTER, fontSize: 14, fontWeight: 400, color: "#555" }}>
+                      <td style={{ padding: "12px 14px" }}>
+                        <span style={{ ...INTER, fontSize: 13, fontWeight: 400, color: "#555" }}>
                           {order.date}
                         </span>
                       </td>
 
-                      {/* Quantity */}
-                      <td style={{ padding: "13px 16px", textAlign: "center" }}>
-                        <span style={{ ...INTER, fontSize: 14, fontWeight: 500, color: "#333" }}>
+                      <td style={{ padding: "12px 14px", textAlign: "center" }}>
+                        <span style={{ ...INTER, fontSize: 13, fontWeight: 500, color: "#333" }}>
                           {order.quantity}
                         </span>
                       </td>
 
-                      {/* Price at Purchase */}
-                      <td style={{ padding: "13px 16px" }}>
-                        <span style={{ ...INTER, fontSize: 14, fontWeight: 400, color: "#555" }}>
+                      <td style={{ padding: "12px 14px" }}>
+                        <span style={{ ...INTER, fontSize: 13, fontWeight: 400, color: "#555" }}>
                           Rs {order.priceAtPurchase.toLocaleString()}
                         </span>
                       </td>
 
-                      {/* Amount */}
-                      <td style={{ padding: "13px 16px" }}>
-                        <span style={{ ...INTER, fontSize: 14, fontWeight: 500, color: "#111" }}>
+                      <td style={{ padding: "12px 14px" }}>
+                        <span style={{ ...INTER, fontSize: 13, fontWeight: 500, color: "#111" }}>
                           Rs {order.amount.toLocaleString()}
                         </span>
                       </td>
 
-                      {/* Status */}
-                      <td style={{ padding: "13px 16px" }}>
+                      <td style={{ padding: "12px 14px" }}>
                         <StatusBadge status={order.status} />
                       </td>
                     </tr>
@@ -382,14 +365,14 @@ const OrdersTable = ({
 
       {/* ── GRID VIEW ── */}
       {viewMode === "grid" && (
-        <div className="p-5 flex-1">
+        <div className="p-3 sm:p-5 flex-1">
           {pageOrders.length === 0 ? (
             <p className="text-center text-gray-400 py-16" style={{ ...INTER, fontSize: 14 }}>
               No orders found.
             </p>
           ) : (
-            <div className="grid gap-4"
-              style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}
+            <div className="grid gap-3 sm:gap-4"
+              style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}
             >
               {pageOrders.map((order, idx) => (
                 <OrderCard
@@ -406,16 +389,16 @@ const OrdersTable = ({
 
       {/* ── Pagination ── */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-5 py-3.5 border-t border-[#f5f5f5] flex-wrap gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-5 py-3 sm:py-3.5 border-t border-[#f5f5f5] gap-3">
           <p style={{ ...INTER, fontSize: 12, color: "#aaa", fontWeight: 400 }}>
             Showing {startIdx + 1}–{Math.min(startIdx + ROWS_PER_PAGE, filtered.length)} of {filtered.length} orders
           </p>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 self-center sm:self-auto">
             <button
               onClick={() => handlePage(page - 1)}
               disabled={page === 1}
-              className="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all bg-white"
+              className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all bg-white"
             >
               <KeyboardArrowLeftIcon style={{ fontSize: 16 }} />
             </button>
@@ -424,7 +407,7 @@ const OrdersTable = ({
               <button
                 key={n}
                 onClick={() => handlePage(n)}
-                className={`flex items-center justify-center w-8 h-8 rounded-lg border text-[12px] font-semibold transition-all
+                className={`flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border text-[12px] font-semibold transition-all
                   ${page === n
                     ? "bg-[#1a73e8] border-[#1a73e8] text-white"
                     : "bg-white border-gray-200 text-gray-600 hover:border-gray-400"
@@ -438,7 +421,7 @@ const OrdersTable = ({
             <button
               onClick={() => handlePage(page + 1)}
               disabled={page === totalPages}
-              className="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all bg-white"
+              className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all bg-white"
             >
               <KeyboardArrowRightIcon style={{ fontSize: 16 }} />
             </button>

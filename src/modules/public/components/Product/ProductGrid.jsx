@@ -21,7 +21,7 @@ const ProductGrid = ({ products, onProductClick, onAddToCart }) => {
   };
 
   return (
-    <div className="product-grid grid gap-5">
+    <div className="product-grid grid gap-2.5 sm:gap-5">
       {products.map((product) => {
         const primaryImage = product.images?.find(img => img.is_primary) || product.images?.[0];
         const specs = product.attributes?.map(attr => attr.value) || [];
