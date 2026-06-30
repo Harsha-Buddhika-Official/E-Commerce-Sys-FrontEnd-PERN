@@ -39,7 +39,7 @@ const AttributeCreateOverlay = ({ categories, defaultCategoryId, onClose, onCrea
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-0 sm:px-4">
 
       {/* Backdrop — softly blurred page behind */}
       <div
@@ -48,20 +48,23 @@ const AttributeCreateOverlay = ({ categories, defaultCategoryId, onClose, onCrea
         onClick={onClose}
       />
 
-      <div className="bg-white rounded-2xl w-full overflow-hidden relative" style={{ maxWidth: 500, maxHeight: "90vh", boxShadow: "0 24px 64px rgba(0,0,0,0.22)", animation: "popIn 0.22s cubic-bezier(0.34,1.56,0.64,1)" }}>
+      <div
+        className="bg-white w-full overflow-hidden relative rounded-t-2xl sm:rounded-2xl"
+        style={{ maxWidth: 500, maxHeight: "90vh", boxShadow: "0 24px 64px rgba(0,0,0,0.22)", animation: "popIn 0.22s cubic-bezier(0.34,1.56,0.64,1)" }}
+      >
         <style>{`\n          @keyframes popIn {\n            from { transform: scale(0.92); opacity: 0; }\n            to   { transform: scale(1);    opacity: 1; }\n          }\n        `}</style>
 
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid #f0f0f0" }}>
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4" style={{ borderBottom: "1px solid #f0f0f0" }}>
           <div>
             <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Attributes / Create</p>
             <h2 style={{ ...SORA, fontSize: 16, fontWeight: 800, color: "#111" }}>New Attribute</h2>
           </div>
-          <button onClick={onClose} className="flex items-center justify-center w-8 h-8 rounded-xl border border-gray-200 bg-transparent cursor-pointer transition-all hover:bg-gray-50" style={{ color: "#888" }}>
+          <button onClick={onClose} className="flex items-center justify-center w-8 h-8 rounded-xl border border-gray-200 bg-transparent cursor-pointer transition-all hover:bg-gray-50 shrink-0" style={{ color: "#888" }}>
             <CloseIcon style={{ fontSize: 17 }} />
           </button>
         </div>
 
-        <div className="px-6 py-5 flex flex-col gap-4">
+        <div className="px-4 sm:px-6 py-5 flex flex-col gap-4 overflow-y-auto" style={{ maxHeight: "60vh" }}>
           <div>
             <p style={{ ...INTER, fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>
               Attribute Name <span style={{ color: "#e53935" }}>*</span>
@@ -124,7 +127,7 @@ const AttributeCreateOverlay = ({ categories, defaultCategoryId, onClose, onCrea
           )}
         </div>
 
-        <div className="flex gap-3 px-6 pb-5">
+        <div className="flex gap-3 px-4 sm:px-6 pb-5">
           <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer" style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#555", background: "#fff" }}>
             Cancel
           </button>

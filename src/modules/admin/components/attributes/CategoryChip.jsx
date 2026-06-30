@@ -4,7 +4,7 @@ export default function CategoryChip({ label, count, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-4 py-2 rounded-xl border shrink-0 cursor-pointer transition-all"
+      className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl border shrink-0 cursor-pointer transition-all whitespace-nowrap"
       style={{
         ...INTER,
         fontSize: 12,
