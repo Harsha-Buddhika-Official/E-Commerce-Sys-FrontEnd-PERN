@@ -25,7 +25,7 @@ const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 export function SectionCard({ children, className = "" }) {
   return (
     <div
-      className={`bg-white rounded-2xl p-6 ${className}`}
+      className={`bg-white rounded-2xl p-4 sm:p-6 ${className}`}
       style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
     >
       {children}
@@ -35,7 +35,7 @@ export function SectionCard({ children, className = "" }) {
 
 export function SectionTitle({ icon, children }) {
   return (
-    <div className="flex items-center gap-2.5 mb-5 pb-3" style={{ borderBottom: "1px solid #f0f0f0" }}>
+    <div className="flex items-center gap-2.5 mb-5 pb-3 flex-wrap" style={{ borderBottom: "1px solid #f0f0f0" }}>
       <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
         {icon}
       </div>
@@ -201,7 +201,7 @@ export function LoadingState() {
 
 export function NotFoundState({ error, onBack }) {
   return (
-    <div className="h-full bg-[#f5f5f5] flex items-center justify-center p-6">
+    <div className="h-full bg-[#f5f5f5] flex items-center justify-center p-4 sm:p-6">
       <SectionCard className="max-w-sm w-full">
         <p style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>Product not found</p>
         <p style={{ ...INTER, fontSize: 13, color: "#666", marginTop: 6 }}>{error}</p>
@@ -222,7 +222,7 @@ export function NotFoundState({ error, onBack }) {
 // ─────────────────────────────────────────────────────────────
 export function EditProductHeader({ productId, dirty, saved, saving, updateLoading, onBack, onSave }) {
   return (
-    <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div className="flex items-center justify-between mb-4 sm:mb-6 flex-wrap gap-3">
       <div className="flex items-center gap-3">
         <button
           onClick={onBack}
@@ -235,7 +235,7 @@ export function EditProductHeader({ productId, dirty, saved, saving, updateLoadi
           <h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>Edit Product</h1>
         </div>
       </div>
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2.5 flex-wrap">
         {dirty && !saved && (
           <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ ...INTER, fontSize: 11, fontWeight: 600, backgroundColor: "#fff7ed", color: "#f97316", border: "1px solid #fed7aa" }}>
             <InfoOutlinedIcon style={{ fontSize: 13 }} /> Unsaved changes
@@ -420,7 +420,7 @@ export function ProductImagesSection({
           return (
             <div
               key={img._key ?? idx}
-              className="flex items-center gap-3 p-3 rounded-xl transition-all"
+              className="flex items-center gap-3 p-3 rounded-xl transition-all flex-wrap sm:flex-nowrap"
               style={{
                 backgroundColor: isPendingRemove
                   ? "#fef2f2"
@@ -488,8 +488,8 @@ export function ProductImagesSection({
                 </p>
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-1.5 shrink-0">
+              {/* Actions — wraps below thumbnail/info on narrow phones instead of overflowing */}
+              <div className="flex items-center gap-1.5 shrink-0 flex-wrap w-full sm:w-auto justify-end ml-[68px] sm:ml-0">
                 {/* Move up/down only for saved images not pending removal */}
                 {!isPendingAdd && !isPendingRemove && (
                   <>
@@ -661,7 +661,7 @@ export function ProductAttributesSection({
 }) {
   return (
     <SectionCard>
-      <div className="flex items-center justify-between gap-3 mb-5 pb-3" style={{ borderBottom: "1px solid #f0f0f0" }}>
+      <div className="flex items-center justify-between gap-3 mb-5 pb-3 flex-wrap" style={{ borderBottom: "1px solid #f0f0f0" }}>
         <div className="flex items-center gap-2.5">
           <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
             <TagOutlinedIcon style={{ fontSize: 16 }} />
@@ -695,7 +695,7 @@ export function ProductAttributesSection({
         <div className="flex flex-col gap-3">
           {catalogAttributes.map((attribute) => (
             <div key={attribute.attribute_id} className="rounded-xl p-4" style={{ backgroundColor: "#f9f9f9", border: "1.5px solid #ebebeb" }}>
-              <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
                 <FieldLabel>{attribute.name}</FieldLabel>
                 <div className="flex items-center gap-2 shrink-0">
                   <span style={{ ...INTER, fontSize: 11, color: "#aaa" }}>#{attribute.attribute_id}</span>

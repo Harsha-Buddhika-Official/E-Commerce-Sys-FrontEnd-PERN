@@ -46,7 +46,7 @@ const isPdfUrl = (url) => typeof url === "string" && url.toLowerCase().endsWith(
 function SectionCard({ children, className = "" }) {
   return (
     <div
-      className={`bg-white rounded-2xl p-6 ${className}`}
+      className={`bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 ${className}`}
       style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
     >
       {children}
@@ -56,14 +56,14 @@ function SectionCard({ children, className = "" }) {
 
 function SectionTitle({ icon, children }) {
   return (
-    <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-[#f0f0f0]">
+    <div className="flex items-center gap-2.5 mb-4 sm:mb-5 pb-3 border-b border-[#f0f0f0]">
       <div
-        className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
+        className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg shrink-0"
         style={{ backgroundColor: "#f5f5f5", color: "#111" }}
       >
         {icon}
       </div>
-      <span style={{ ...SORA, fontSize: 14, fontWeight: 800, color: "#111", letterSpacing: "0.02em" }}>
+      <span style={{ ...SORA, fontSize: 13, fontWeight: 800, color: "#111", letterSpacing: "0.02em" }} className="sm:!text-[14px]">
         {children}
       </span>
     </div>
@@ -79,16 +79,16 @@ function InfoRow({ label, value, accent = false, copyable = false, mono = false 
   };
 
   return (
-    <div className="flex items-start justify-between gap-4 py-2.5 border-b border-[#f8f8f8] last:border-0">
-      <span style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#aaa", flexShrink: 0, minWidth: 140 }}>
+    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4 py-2.5 border-b border-[#f8f8f8] last:border-0">
+      <span style={{ ...INTER, fontSize: 11, fontWeight: 600, color: "#aaa", flexShrink: 0 }} className="sm:!text-[12px] sm:!min-w-[140px]">
         {label}
       </span>
       <div className="flex items-center gap-2 min-w-0">
         <span
-          className="text-right break-all"
+          className="text-left sm:text-right break-all"
           style={{
             ...INTER,
-            fontSize: mono ? 12 : 13,
+            fontSize: mono ? 11 : 12,
             fontWeight: 600,
             color: accent ? "#e53935" : "#111",
             fontFamily: mono ? "'Courier New', monospace" : INTER.fontFamily,
@@ -118,10 +118,10 @@ function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full"
+      className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full"
       style={{
         ...INTER,
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: 700,
         backgroundColor: cfg.bg,
         color: cfg.color,
@@ -142,33 +142,31 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
   return (
     <div className="relative">
 
-      {/* ── Section header with inline loading indicator ── */}
-      <div className="flex items-center justify-between gap-2 mb-5 pb-3 border-b border-[#f0f0f0]">
+      <div className="flex items-center justify-between gap-2 mb-4 sm:mb-5 pb-3 border-b border-[#f0f0f0]">
         <div className="flex items-center gap-2.5">
           <div
-            className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
+            className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg shrink-0"
             style={{ backgroundColor: "#f5f5f5", color: "#111" }}
           >
             <LocalShippingOutlinedIcon style={{ fontSize: 16 }} />
           </div>
-          <span style={{ ...SORA, fontSize: 14, fontWeight: 800, color: "#111", letterSpacing: "0.02em" }}>
+          <span style={{ ...SORA, fontSize: 13, fontWeight: 800, color: "#111", letterSpacing: "0.02em" }} className="sm:!text-[14px]">
             Order Status
           </span>
         </div>
         {disabled && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ backgroundColor: "#f5f5f5", border: "1px solid #ebebeb" }}>
+          <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full" style={{ backgroundColor: "#f5f5f5", border: "1px solid #ebebeb" }}>
             <div className="w-3 h-3 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
-            <span style={{ ...INTER, fontSize: 11, fontWeight: 600, color: "#888" }}>Updating…</span>
+            <span style={{ ...INTER, fontSize: 10, fontWeight: 600, color: "#888" }} className="sm:!text-[11px]">Updating…</span>
           </div>
         )}
       </div>
 
-      {/* ── Glass overlay — blocks all clicks while loading ── */}
       {disabled && (
         <div
           className="absolute rounded-xl"
           style={{
-            inset: "52px 0 0 0", // sits below the header row, covers only buttons area
+            inset: "52px 0 0 0",
             zIndex: 10,
             backgroundColor: "rgba(255,255,255,0.65)",
             backdropFilter: "blur(1px)",
@@ -177,9 +175,8 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
         />
       )}
 
-      {/* ── Current status pill (dropdown trigger) ── */}
       <div
-        className="flex items-center justify-between px-4 py-3 rounded-xl mb-4 border transition-all"
+        className="flex items-center justify-between px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl mb-3 sm:mb-4 border transition-all"
         style={{
           backgroundColor: cfg.bg,
           borderColor: cfg.border,
@@ -190,7 +187,7 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
       >
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: cfg.color }} />
-          <span style={{ ...SORA, fontSize: 14, fontWeight: 800, color: cfg.color }}>
+          <span style={{ ...SORA, fontSize: 13, fontWeight: 800, color: cfg.color }} className="sm:!text-[14px]">
             {cfg.label}
           </span>
         </div>
@@ -204,7 +201,6 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
         />
       </div>
 
-      {/* ── Dropdown options ── */}
       {open && !disabled && (
         <div
           className="absolute left-0 right-0 z-30 bg-white rounded-2xl overflow-hidden flex flex-col"
@@ -236,7 +232,6 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
         </div>
       )}
 
-      {/* ── Quick-action buttons ── */}
       <div className="flex flex-col gap-2 mt-3">
         {STATUS_OPTIONS.filter(s => s !== currentStatus).map((s) => {
           const c = STATUS_CONFIG[s];
@@ -245,7 +240,7 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
               key={s}
               onClick={() => { if (!disabled) onStatusChange(s); }}
               disabled={disabled}
-              className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl border transition-all"
+              className="w-full flex items-center gap-2.5 px-3.5 sm:px-4 py-2.5 rounded-xl border transition-all"
               style={{
                 ...INTER,
                 fontSize: 12,
@@ -268,67 +263,6 @@ function StatusChanger({ currentStatus, onStatusChange, disabled = false }) {
 }
 
 // ─── Payment receipt card ──────────────────────────────────────────────────────
-// function PaymentReceiptCard({ receipt, loading, error }) {
-//   return (
-    
-//     <SectionCard>
-//       <SectionTitle icon={<ReceiptLongOutlinedIcon style={{ fontSize: 16 }} />}>
-//         Payment Receipt
-//       </SectionTitle>
-
-//       {loading && (
-//         <p style={{ ...INTER, fontSize: 12, color: "#aaa", fontWeight: 500 }}>Loading receipt…</p>
-//       )}
-
-//       {!loading && error && (
-//         <p style={{ ...INTER, fontSize: 12, color: "#dc2626", fontWeight: 500 }}>Failed to load receipt.</p>
-//       )}
-
-//       {!loading && !error && !receipt?.media_url && (
-//         <div
-//           className="flex flex-col items-center justify-center gap-2 py-6 rounded-xl"
-//           style={{ backgroundColor: "#f9f9f9", border: "1px dashed #e5e5e5" }}
-//         >
-//           <InsertDriveFileOutlinedIcon style={{ fontSize: 28, color: "#ccc" }} />
-//           <p style={{ ...INTER, fontSize: 12, color: "#bbb", fontWeight: 600 }}>No receipt uploaded</p>
-//         </div>
-//       )}
-
-//       {!loading && !error && receipt?.media_url && (
-//         <div className="flex flex-col gap-3">
-//           <div
-//             className="flex items-center justify-center rounded-xl overflow-hidden"
-//             style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0", minHeight: 160 }}
-//           >
-//             {isPdfUrl(receipt.media_url) ? (
-//               <div className="flex flex-col items-center gap-2 py-8">
-//                 <InsertDriveFileOutlinedIcon style={{ fontSize: 36, color: "#e53935" }} />
-//                 <span style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#555" }}>PDF Document</span>
-//               </div>
-//             ) : (
-//               <img src={receipt.media_url} alt="Payment receipt" className="w-full max-h-64 object-contain" />
-//             )}
-//           </div>
-//           <a
-//             href={receipt.media_url}
-//             target="_blank"
-//             rel="noopener noreferrer"
-//             className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer hover:opacity-80 no-underline"
-//             style={{ ...INTER, fontSize: 12, fontWeight: 700, backgroundColor: "#111", color: "#fff", border: "none" }}
-//           >
-//             <OpenInNewOutlinedIcon style={{ fontSize: 15 }} /> Open Full Receipt
-//           </a>
-//           {receipt.created_at && (
-//             <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500, textAlign: "center" }}>
-//               Uploaded {formatDate(receipt.created_at)}
-//             </p>
-//           )}
-//         </div>
-//       )}
-//     </SectionCard>
-//   );
-// }
-
 function PaymentReceiptCard({ receipt, loading, error, orderId }) {
   const navigate = useNavigate();
 
@@ -358,15 +292,14 @@ function PaymentReceiptCard({ receipt, loading, error, orderId }) {
 
       {!loading && !error && receipt?.media_url && (
         <div className="flex flex-col gap-3">
-          {/* ── Thumbnail preview ── */}
           <div
             className="flex items-center justify-center rounded-xl overflow-hidden cursor-pointer transition-all hover:opacity-80"
-            style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0", minHeight: 160 }}
+            style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0", minHeight: 140 }}
             onClick={() => navigate(`/admin/orders/${orderId}/receipt`)}
           >
             {isPdfUrl(receipt.media_url) ? (
-              <div className="flex flex-col items-center gap-2 py-8">
-                <InsertDriveFileOutlinedIcon style={{ fontSize: 40, color: "#e53935" }} />
+              <div className="flex flex-col items-center gap-2 py-6 sm:py-8">
+                <InsertDriveFileOutlinedIcon style={{ fontSize: 36 }} className="sm:!text-[40px]" sx={{ color: "#e53935" }} />
                 <span style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#555" }}>PDF Document</span>
                 <span style={{ ...INTER, fontSize: 11, color: "#aaa" }}>Click to view</span>
               </div>
@@ -374,12 +307,11 @@ function PaymentReceiptCard({ receipt, loading, error, orderId }) {
               <img
                 src={receipt.media_url}
                 alt="Payment receipt"
-                className="w-full max-h-64 object-contain"
+                className="w-full max-h-56 sm:max-h-64 object-contain"
               />
             )}
           </div>
 
-          {/* ── Open button ── */}
           <button
             onClick={() => navigate(`/admin/orders/${orderId}/receipt`)}
             className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer hover:opacity-80"
@@ -402,36 +334,36 @@ function PaymentReceiptCard({ receipt, loading, error, orderId }) {
 // ─── Product item row ─────────────────────────────────────────────────────────
 function ProductItem({ item }) {
   return (
-    <div className="flex items-start gap-4 p-4 rounded-xl" style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0" }}>
+    <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl" style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0" }}>
       <div
         className="flex items-center justify-center rounded-xl overflow-hidden shrink-0"
-        style={{ width: 70, height: 70, backgroundColor: "#f0f0f0", border: "1px solid #ebebeb" }}
+        style={{ width: 56, height: 56, backgroundColor: "#f0f0f0", border: "1px solid #ebebeb" }}
       >
         {item.image
           ? <img src={item.image} alt={item.product_name} className="w-full h-full object-contain p-1" />
-          : <InventoryOutlinedIcon style={{ fontSize: 28, color: "#ccc" }} />
+          : <InventoryOutlinedIcon style={{ fontSize: 24, color: "#ccc" }} />
         }
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
           <div className="min-w-0">
-            <p className="leading-snug line-clamp-2 mb-1" style={{ ...SORA, fontSize: 13, fontWeight: 800, color: "#111" }}>
+            <p className="leading-snug line-clamp-2 mb-1" style={{ ...SORA, fontSize: 12, fontWeight: 800, color: "#111" }}>
               {item.product_name}
             </p>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2 py-0.5 rounded-md" style={{ ...INTER, fontSize: 10, fontWeight: 700, backgroundColor: "#f0f0f0", color: "#555" }}>
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <span className="px-2 py-0.5 rounded-md" style={{ ...INTER, fontSize: 9, fontWeight: 700, backgroundColor: "#f0f0f0", color: "#555" }}>
                 {item.brand_name}
               </span>
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-md" style={{ ...INTER, fontSize: 10, fontWeight: 700, backgroundColor: "#f0f0f0", color: "#555" }}>
-                <CategoryOutlinedIcon style={{ fontSize: 11 }} />{item.category_name}
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-md" style={{ ...INTER, fontSize: 9, fontWeight: 700, backgroundColor: "#f0f0f0", color: "#555" }}>
+                <CategoryOutlinedIcon style={{ fontSize: 10 }} />{item.category_name}
               </span>
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-md" style={{ ...INTER, fontSize: 10, fontWeight: 700, backgroundColor: "#dcfce7", color: "#16a34a" }}>
-                <VerifiedOutlinedIcon style={{ fontSize: 11 }} />{item.warranty_months}m Warranty
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-md" style={{ ...INTER, fontSize: 9, fontWeight: 700, backgroundColor: "#dcfce7", color: "#16a34a" }}>
+                <VerifiedOutlinedIcon style={{ fontSize: 10 }} />{item.warranty_months}m Warranty
               </span>
             </div>
           </div>
-          <div className="flex flex-col items-end gap-0.5 shrink-0">
-            <span style={{ ...SORA, fontSize: 15, fontWeight: 900, color: "#e53935" }}>{fmt(item.price_at_purchase)}</span>
+          <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 sm:gap-0.5 shrink-0">
+            <span style={{ ...SORA, fontSize: 14, fontWeight: 900, color: "#e53935" }}>{fmt(item.price_at_purchase)}</span>
             <span style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Qty: {item.quantity}</span>
             <span style={{ ...INTER, fontSize: 11, color: "#111", fontWeight: 600 }}>Subtotal: {fmt(Number(item.price_at_purchase) * item.quantity)}</span>
           </div>
@@ -470,13 +402,13 @@ const OrderDetailPage = ({
 
   if (!loading && !displayOrder?.order_id) {
     return (
-      <div className="h-full flex items-center justify-center p-8">
-        <div className="bg-white rounded-2xl p-6" style={{ border: "1px solid #eee" }}>
-          <p style={{ ...INTER, fontSize: 16, fontWeight: 700, color: "#111" }}>Order not found</p>
+      <div className="h-full flex items-center justify-center p-4 sm:p-8">
+        <div className="bg-white rounded-2xl p-5 sm:p-6 max-w-sm" style={{ border: "1px solid #eee" }}>
+          <p style={{ ...INTER, fontSize: 15, fontWeight: 700, color: "#111" }}>Order not found</p>
           <p style={{ ...INTER, fontSize: 13, color: "#666", marginTop: 8 }}>No order data was returned for ID {orderId}</p>
           <div className="mt-4 flex gap-2">
-            <button onClick={() => navigate(-1)} className="px-4 py-2 rounded-lg border">Go back</button>
-            <button onClick={() => refresh()} className="px-4 py-2 rounded-lg bg-[#1a73e8] text-white">Retry</button>
+            <button onClick={() => navigate(-1)} className="px-4 py-2 rounded-lg border text-sm">Go back</button>
+            <button onClick={() => refresh()} className="px-4 py-2 rounded-lg bg-[#1a73e8] text-white text-sm">Retry</button>
           </div>
         </div>
       </div>
@@ -498,7 +430,7 @@ const OrderDetailPage = ({
   const cfg = STATUS_CONFIG[orderStatus] || STATUS_CONFIG.pending;
 
   return (
-    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
+    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-3 sm:p-5 lg:p-6">
 
       {loading && (
         <div className="absolute inset-0 z-50 flex items-center justify-center">
@@ -512,32 +444,32 @@ const OrderDetailPage = ({
       )}
 
       {/* ── Top bar ── */}
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <div className="flex items-center gap-3">
+      <div className="flex items-start sm:items-center justify-between mb-5 sm:mb-6 flex-wrap gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <button
             onClick={() => { if (onBack) return onBack(); navigate(-1); }}
-            className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-all cursor-pointer"
+            className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-gray-200 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-all cursor-pointer shrink-0"
           >
-            <ArrowBackOutlinedIcon style={{ fontSize: 18 }} />
+            <ArrowBackOutlinedIcon style={{ fontSize: 17 }} />
           </button>
-          <div>
-            <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Orders / #{displayOrder.order_id}</p>
-            <div className="flex items-center gap-2.5 mt-0.5">
-              <h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>
+          <div className="min-w-0">
+            <p style={{ ...INTER, fontSize: 10, color: "#aaa", fontWeight: 500 }} className="sm:!text-[11px]">Orders / #{displayOrder.order_id}</p>
+            <div className="flex items-center gap-2 sm:gap-2.5 mt-0.5 flex-wrap">
+              <h1 style={{ ...SORA, fontSize: 17, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }} className="sm:!text-[20px]">
                 Order #{displayOrder.order_id}
               </h1>
               <StatusBadge status={orderStatus} />
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 rounded-xl border" style={{ backgroundColor: "#f9f9f9", borderColor: "#ebebeb" }}>
+        <div className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl border w-full sm:w-auto" style={{ backgroundColor: "#f9f9f9", borderColor: "#ebebeb" }}>
           <TagOutlinedIcon style={{ fontSize: 15, color: "#aaa" }} />
-          <span style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#555", letterSpacing: "0.04em" }}>
+          <span className="truncate" style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#555", letterSpacing: "0.04em" }}>
             {displayOrder.tracking_code}
           </span>
           <button
             onClick={() => navigator.clipboard.writeText(displayOrder.tracking_code)}
-            className="bg-transparent border-none cursor-pointer text-gray-300 hover:text-gray-600 transition-colors"
+            className="bg-transparent border-none cursor-pointer text-gray-300 hover:text-gray-600 transition-colors shrink-0 ml-auto"
           >
             <ContentCopyOutlinedIcon style={{ fontSize: 13 }} />
           </button>
@@ -545,14 +477,14 @@ const OrderDetailPage = ({
       </div>
 
       {/* ── Main grid ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5">
 
         {/* ══ Left + centre ══ */}
-        <div className="xl:col-span-2 flex flex-col gap-5">
+        <div className="xl:col-span-2 flex flex-col gap-4 sm:gap-5">
 
           {/* Summary banner */}
           <div
-            className="flex items-center justify-between flex-wrap gap-4 px-6 py-4 rounded-2xl"
+            className="grid grid-cols-2 sm:flex sm:items-center sm:justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4 rounded-xl sm:rounded-2xl"
             style={{ backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}
           >
             {[
@@ -561,11 +493,11 @@ const OrderDetailPage = ({
               { label: "Products",     value: `${items.length} SKU${items.length !== 1 ? "s" : ""}` },
               { label: "Order Date",   value: formatDate(displayOrder.created_at).split("  ")[0] },
             ].map(({ label, value, large }) => (
-              <div key={label} className="flex flex-col gap-0.5">
-                <span style={{ ...INTER, fontSize: 11, fontWeight: 600, color: cfg.color, opacity: 0.7, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+              <div key={label} className="flex flex-col gap-0.5 min-w-0">
+                <span style={{ ...INTER, fontSize: 10, fontWeight: 600, color: cfg.color, opacity: 0.7, textTransform: "uppercase", letterSpacing: "0.07em" }} className="sm:!text-[11px]">
                   {label}
                 </span>
-                <span style={{ ...SORA, fontSize: large ? 22 : 16, fontWeight: 900, color: cfg.color, letterSpacing: large ? "-0.5px" : 0 }}>
+                <span className="truncate" style={{ ...SORA, fontSize: large ? 17 : 14, fontWeight: 900, color: cfg.color, letterSpacing: large ? "-0.5px" : 0 }}>
                   {value}
                 </span>
               </div>
@@ -577,19 +509,19 @@ const OrderDetailPage = ({
             <SectionTitle icon={<InventoryOutlinedIcon style={{ fontSize: 16 }} />}>
               Ordered Products ({items.length})
             </SectionTitle>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5 sm:gap-3">
               {items.map((item) => <ProductItem key={item.product_id} item={item} />)}
             </div>
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#f0f0f0]">
-              <span style={{ ...SORA, fontSize: 13, fontWeight: 800, color: "#111" }}>Order Total</span>
-              <span style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#e53935", letterSpacing: "-0.5px" }}>
+              <span style={{ ...SORA, fontSize: 12, fontWeight: 800, color: "#111" }} className="sm:!text-[13px]">Order Total</span>
+              <span style={{ ...SORA, fontSize: 17, fontWeight: 900, color: "#e53935", letterSpacing: "-0.5px" }} className="sm:!text-[20px]">
                 {fmt(displayOrder.total_amount)}
               </span>
             </div>
           </SectionCard>
 
           {/* Customer + Shipping */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
             <SectionCard>
               <SectionTitle icon={<PersonOutlinedIcon style={{ fontSize: 16 }} />}>Customer Info</SectionTitle>
               <InfoRow label="Name"  value={displayOrder.full_name}      copyable />
@@ -616,7 +548,7 @@ const OrderDetailPage = ({
         </div>
 
         {/* ══ Right panel ══ */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4 sm:gap-5">
 
           {/* Status changer */}
           <SectionCard className="relative overflow-visible">
@@ -648,17 +580,17 @@ const OrderDetailPage = ({
                 <div key={label} className="flex gap-3">
                   <div className="flex flex-col items-center">
                     <div
-                      className="flex items-center justify-center w-7 h-7 rounded-full shrink-0 border-2 transition-all duration-300"
+                      className="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full shrink-0 border-2 transition-all duration-300"
                       style={{ backgroundColor: done ? "#111" : "#f5f5f5", borderColor: done ? "#111" : "#e5e5e5" }}
                     >
-                      {done && <CheckCircleOutlinedIcon style={{ fontSize: 14, color: "#fff" }} />}
+                      {done && <CheckCircleOutlinedIcon style={{ fontSize: 13 }} className="sm:!text-[14px]" sx={{ color: "#fff" }} />}
                     </div>
                     {i < arr.length - 1 && (
-                      <div className="w-0.5 flex-1 my-1 transition-all duration-300" style={{ backgroundColor: done ? "#111" : "#ebebeb", minHeight: 20 }} />
+                      <div className="w-0.5 flex-1 my-1 transition-all duration-300" style={{ backgroundColor: done ? "#111" : "#ebebeb", minHeight: 18 }} />
                     )}
                   </div>
                   <div className="pb-4 min-w-0 flex-1">
-                    <p style={{ ...INTER, fontSize: 13, fontWeight: done ? 700 : 500, color: done ? "#111" : "#bbb" }}>{label}</p>
+                    <p style={{ ...INTER, fontSize: 12, fontWeight: done ? 700 : 500, color: done ? "#111" : "#bbb" }} className="sm:!text-[13px]">{label}</p>
                     {date && <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 400, marginTop: 2 }}>{formatDate(date)}</p>}
                   </div>
                 </div>

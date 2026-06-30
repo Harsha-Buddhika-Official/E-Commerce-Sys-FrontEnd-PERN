@@ -164,7 +164,7 @@ export default function BrandCreateOverlay({
 
   return (
     // ── Full-screen fixed overlay ──────────────────────────────────────────
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4 py-6 sm:py-8">
 
       {/* Backdrop — page behind stays visible, softly blurred */}
       <div
@@ -193,17 +193,17 @@ export default function BrandCreateOverlay({
 
         {/* ── Modal header ── */}
         <div
-          className="flex items-center justify-between px-6 py-4 shrink-0"
+          className="flex items-center justify-between px-4 sm:px-6 py-4 shrink-0"
           style={{ borderBottom: "1px solid #f0f0f0" }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <div
               className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0"
               style={{ backgroundColor: "#111" }}
             >
               <StorefrontOutlinedIcon style={{ fontSize: 18, color: "#fff" }} />
             </div>
-            <div>
+            <div className="min-w-0">
               <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>
                 Brands / Create
               </p>
@@ -215,14 +215,14 @@ export default function BrandCreateOverlay({
 
           <button
             onClick={handleClose}
-            className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-transparent text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all cursor-pointer"
+            className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-transparent text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all cursor-pointer shrink-0"
           >
             <CloseIcon style={{ fontSize: 18 }} />
           </button>
         </div>
 
         {/* ── Scrollable body ── */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 flex flex-col gap-5">
 
           {/* Error banner */}
           {(Object.keys(errors).length > 0 || apiError) && (
@@ -270,7 +270,7 @@ export default function BrandCreateOverlay({
               <FieldLabel>Logo Image</FieldLabel>
               
               {/* Upload Input */}
-              <label className="relative flex items-center justify-center w-full border-2 border-dashed rounded-xl p-6 cursor-pointer transition-all"
+              <label className="relative flex items-center justify-center w-full border-2 border-dashed rounded-xl p-5 sm:p-6 cursor-pointer transition-all"
                 style={{
                   borderColor: logoErr ? "#e53935" : "#ddd",
                   backgroundColor: logoFile ? "#f0f7ff" : "#fafafa",
@@ -282,7 +282,7 @@ export default function BrandCreateOverlay({
                   onChange={handleLogoChange}
                   className="hidden"
                 />
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-2 text-center">
                   {logoPreview ? (
                     <>
                       <img 
@@ -318,7 +318,7 @@ export default function BrandCreateOverlay({
 
         {/* ── Sticky footer ── */}
         <div
-          className="shrink-0 px-6 py-4 flex items-center gap-3"
+          className="shrink-0 px-4 sm:px-6 py-4 flex items-center gap-3"
           style={{ borderTop: "1px solid #f0f0f0", backgroundColor: "#fff" }}
         >
           <button
@@ -342,18 +342,18 @@ export default function BrandCreateOverlay({
           >
             {loading ? (
               <>
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Saving…
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
+                <span className="truncate">Saving…</span>
               </>
             ) : saved ? (
               <>
-                <CheckCircleOutlinedIcon style={{ fontSize: 16 }} />
-                Brand Created!
+                <CheckCircleOutlinedIcon style={{ fontSize: 16, flexShrink: 0 }} />
+                <span className="truncate">Brand Created!</span>
               </>
             ) : (
               <>
-                <SaveOutlinedIcon style={{ fontSize: 16 }} />
-                Create Brand
+                <SaveOutlinedIcon style={{ fontSize: 16, flexShrink: 0 }} />
+                <span className="truncate">Create Brand</span>
               </>
             )}
           </button>

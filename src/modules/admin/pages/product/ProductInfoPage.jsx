@@ -45,7 +45,7 @@ const STOCK_CONFIG = {
 function SectionCard({ children, className = "" }) {
   return (
     <div
-      className={`bg-white rounded-2xl p-6 ${className}`}
+      className={`bg-white rounded-2xl p-4 sm:p-6 ${className}`}
       style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
     >
       {children}
@@ -70,8 +70,13 @@ function InfoRow({ label, value, accent = false, copyable = false, mono = false 
   const [copied, setCopied] = useState(false);
   const copy = () => { navigator.clipboard.writeText(String(value ?? "")); setCopied(true); setTimeout(() => setCopied(false), 1500); };
   return (
-    <div className="flex items-start justify-between gap-4 py-2.5 border-b border-[#f8f8f8] last:border-0">
-      <span style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#aaa", flexShrink: 0, minWidth: 140 }}>{label}</span>
+    <div className="flex items-start justify-between gap-2 sm:gap-4 py-2.5 border-b border-[#f8f8f8] last:border-0">
+      <span
+        className="min-w-[100px] sm:min-w-[140px]"
+        style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#aaa", flexShrink: 0 }}
+      >
+        {label}
+      </span>
       <div className="flex items-center gap-2 min-w-0">
         <span className="text-right break-all" style={{ ...INTER, fontSize: mono ? 12 : 13, fontWeight: 600, color: accent ? "#e53935" : "#111", fontFamily: mono ? "'Courier New', monospace" : INTER.fontFamily, letterSpacing: mono ? "0.03em" : 0 }}>
           {value ?? "—"}
@@ -154,7 +159,7 @@ const ProductInfoPage = () => {
 
   if (!routeProductId) {
     return (
-      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6 grid place-items-center">
+      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6 grid place-items-center">
         <div className="bg-white rounded-2xl p-6 border border-[#ebebeb] shadow-[0_2px_12px_rgba(0,0,0,0.05)] max-w-md w-full">
           <p style={{ ...SORA, fontSize: 16, fontWeight: 800, color: "#111" }}>Missing product ID</p>
           <p className="mt-2" style={{ ...INTER, fontSize: 13, color: "#666" }}>
@@ -174,7 +179,7 @@ const ProductInfoPage = () => {
 
   if (loading) {
     return (
-      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6 grid place-items-center">
+      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6 grid place-items-center">
         <p style={{ ...INTER, fontSize: 13, color: "#666" }}>Loading product details...</p>
       </div>
     );
@@ -182,7 +187,7 @@ const ProductInfoPage = () => {
 
   if (error || !resolvedProduct) {
     return (
-      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6 grid place-items-center">
+      <div className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6 grid place-items-center">
         <div className="bg-white rounded-2xl p-6 border border-[#ebebeb] shadow-[0_2px_12px_rgba(0,0,0,0.05)] max-w-md w-full">
           <p style={{ ...SORA, fontSize: 16, fontWeight: 800, color: "#111" }}>Product not found</p>
           <p className="mt-2" style={{ ...INTER, fontSize: 13, color: "#666" }}>{error || "The requested product could not be loaded."}</p>
@@ -212,10 +217,10 @@ const ProductInfoPage = () => {
   const currentImg = sortedImages[activeImg];
 
   return (
-    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
+    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6">
 
       {/* ── Top bar ── */}
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div className="flex items-center justify-between mb-4 sm:mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate("/admin/products")} className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-all cursor-pointer">
             <ArrowBackOutlinedIcon style={{ fontSize: 18 }} />
@@ -228,21 +233,21 @@ const ProductInfoPage = () => {
       </div>
 
       {/* ── 3-col grid ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5">
 
         {/* ══ LEFT + CENTRE (col-span-2) ══ */}
-        <div className="xl:col-span-2 flex flex-col gap-5">
+        <div className="xl:col-span-2 flex flex-col gap-4 sm:gap-5">
 
           {/* ── Product overview card ── */}
           <SectionCard>
-            <div className="flex flex-col md:flex-row gap-7">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-7">
 
               {/* Image gallery */}
               <div className="flex flex-col gap-3 shrink-0">
                 {/* Main image */}
                 <div
-                  className="flex items-center justify-center rounded-2xl overflow-hidden border border-[#f0f0f0] bg-[#f7f7f7]"
-                  style={{ width: "100%", maxWidth: 300, height: 260 }}
+                  className="flex items-center justify-center rounded-2xl overflow-hidden border border-[#f0f0f0] bg-[#f7f7f7] mx-auto md:mx-0"
+                  style={{ width: "100%", maxWidth: 300, height: 220 }}
                 >
                   {!imgErr && currentImg?.image_url ? (
                     <img
@@ -261,7 +266,7 @@ const ProductInfoPage = () => {
 
                 {/* Thumbnails */}
                 {sortedImages.length > 1 && (
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-2 flex-wrap justify-center md:justify-start">
                     {sortedImages.map((img, idx) => (
                       <ImageThumb
                         key={img.image_id}
@@ -275,7 +280,7 @@ const ProductInfoPage = () => {
                 )}
 
                 {/* Image count */}
-                <p style={{ ...INTER, fontSize: 11, color: "#bbb", fontWeight: 500 }}>
+                <p className="text-center md:text-left" style={{ ...INTER, fontSize: 11, color: "#bbb", fontWeight: 500 }}>
                   {sortedImages.length} image{sortedImages.length !== 1 ? "s" : ""}
                 </p>
               </div>
@@ -325,7 +330,7 @@ const ProductInfoPage = () => {
                   {/* Slug */}
                   <div className="flex items-center gap-1.5 mt-1.5">
                     <LinkOutlinedIcon style={{ fontSize: 13, color: "#ccc" }} />
-                    <span style={{ ...INTER, fontSize: 11, color: "#bbb", fontFamily: "'Courier New', monospace" }}>
+                    <span className="break-all" style={{ ...INTER, fontSize: 11, color: "#bbb", fontFamily: "'Courier New', monospace" }}>
                       /{productData.slug}
                     </span>
                   </div>
@@ -373,7 +378,7 @@ const ProductInfoPage = () => {
                 </div>
 
                 {/* Dates */}
-                <div className="flex items-center gap-6 flex-wrap">
+                <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
                   {[
                     { label: "Created",      value: formatDateWithTime(productData.created_at).split("  ")[0] },
                     { label: "Last Updated", value: formatDateWithTime(productData.updated_at).split("  ")[0] },
@@ -418,7 +423,7 @@ const ProductInfoPage = () => {
                 {sortedImages.map((img, idx) => (
                   <div
                     key={img.image_id}
-                    className="flex items-center gap-4 p-3 rounded-xl cursor-pointer transition-all"
+                    className="flex items-center gap-3 sm:gap-4 p-3 rounded-xl cursor-pointer transition-all"
                     style={{ backgroundColor: activeImg === idx ? "#f0f6ff" : "#f9f9f9", border: `1px solid ${activeImg === idx ? "#93c5fd" : "#f0f0f0"}` }}
                     onClick={() => { setActiveImg(idx); setImgErr(false); }}
                   >
@@ -446,7 +451,7 @@ const ProductInfoPage = () => {
         </div>
 
         {/* ══ RIGHT PANEL ══ */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4 sm:gap-5">
 
           {/* Pricing card */}
           <SectionCard>

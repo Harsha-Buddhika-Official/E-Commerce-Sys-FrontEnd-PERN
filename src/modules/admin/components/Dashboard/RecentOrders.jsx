@@ -2,7 +2,6 @@ import { useState } from "react";
 import OpenInNewOutlinedIcon  from "@mui/icons-material/OpenInNewOutlined";
 import KeyboardArrowLeftIcon  from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-// import FilterListOutlinedIcon from "@mui/icons-material/FilterListOutlined";
 import { useRecentOrders } from "../../features/orders/hooks/useRecentOrders";
 
 // ─── Font constants — leaf elements only ──────────────────────────────────────
@@ -10,14 +9,13 @@ import { SORA, INTER } from "../../../../styles/fonts";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 const STATUS_STYLE = {
-  Pending:    { bg: "#fef9c3", color: "#ca8a04" }, // yellow — keep
-  Paid:       { bg: "#dcfce7", color: "#16a34a" }, // green — keep
-  Processing: { bg: "#dbeafe", color: "#1d4ed8" }, // blue — keep
-  Shipped:    { bg: "#f5f3ff", color: "#7c3aed" }, // ← purple (was amber, too close to Pending)
-  Delivered:  { bg: "#ecfeff", color: "#0e7490" }, // ← cyan (was teal green, too close to Paid)
-  Cancelled:  { bg: "#fee2e2", color: "#dc2626" }, // red — keep
+  Pending:    { bg: "#fef9c3", color: "#ca8a04" },
+  Paid:       { bg: "#dcfce7", color: "#16a34a" },
+  Processing: { bg: "#dbeafe", color: "#1d4ed8" },
+  Shipped:    { bg: "#f5f3ff", color: "#7c3aed" },
+  Delivered:  { bg: "#ecfeff", color: "#0e7490" },
+  Cancelled:  { bg: "#fee2e2", color: "#dc2626" },
 };
-
 
 function normalizeStatus(status) {
   return status?.charAt(0).toUpperCase() + status?.slice(1).toLowerCase();
@@ -29,10 +27,10 @@ function StatusBadge({ status }) {
 
   return (
     <span
-      className="inline-flex items-center px-4 py-1 rounded-full whitespace-nowrap"
+      className="inline-flex items-center px-2.5 sm:px-4 py-1 rounded-full whitespace-nowrap"
       style={{
         ...INTER,
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: 600,
         backgroundColor: s.bg,
         color: s.color,
@@ -43,8 +41,7 @@ function StatusBadge({ status }) {
   );
 }
 
-const ROWS_PER_PAGE  = 10;
-// const STATUS_FILTERS = ["All", "Paid", "Pending", "Processing", "Cancelled"];
+const ROWS_PER_PAGE = 10;
 
 const COLUMNS = [
   { key: "id",       label: "Order ID",     w: "18%" },
@@ -68,8 +65,7 @@ const RecentOrders = ({
   const startIdx   = (page - 1) * ROWS_PER_PAGE;
   const pageOrders = filtered.slice(startIdx, startIdx + ROWS_PER_PAGE);
 
-  // const handleFilter = (s) => { setStatusFilter(s); setPage(1); };
-  const handlePage   = (p) => { if (p >= 1 && p <= totalPages) setPage(p); };
+  const handlePage = (p) => { if (p >= 1 && p <= totalPages) setPage(p); };
 
   const pageNums = () => {
     const max   = 5;
@@ -83,10 +79,10 @@ const RecentOrders = ({
   if (loading) {
     return (
       <div
-        className="w-full bg-white rounded-2xl overflow-hidden flex items-center justify-center"
-        style={{ border: "1px solid #f0f0f0", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", minHeight: 400 }}
+        className="w-full bg-white rounded-xl sm:rounded-2xl overflow-hidden flex items-center justify-center"
+        style={{ border: "1px solid #f0f0f0", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", minHeight: 300 }}
       >
-        <p style={{ ...INTER, fontSize: 15, color: "#999" }}>Loading orders...</p>
+        <p style={{ ...INTER, fontSize: 14, color: "#999" }}>Loading orders...</p>
       </div>
     );
   }
@@ -95,47 +91,28 @@ const RecentOrders = ({
   if (error) {
     return (
       <div
-        className="w-full bg-white rounded-2xl overflow-hidden flex items-center justify-center"
-        style={{ border: "1px solid #f0f0f0", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", minHeight: 400 }}
+        className="w-full bg-white rounded-xl sm:rounded-2xl overflow-hidden flex items-center justify-center"
+        style={{ border: "1px solid #f0f0f0", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", minHeight: 300 }}
       >
-        <p style={{ ...INTER, fontSize: 15, color: "#dc2626" }}>Error: {error}</p>
+        <p style={{ ...INTER, fontSize: 14, color: "#dc2626" }}>Error: {error}</p>
       </div>
     );
   }
 
   return (
     <div
-      className="w-full bg-white rounded-2xl overflow-hidden"
+      className="w-full bg-white rounded-xl sm:rounded-2xl overflow-hidden"
       style={{ border: "1px solid #f0f0f0", boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}
     >
 
       {/* ── Header ── */}
-      <div className="flex items-center justify-between px-6 pt-6 pb-5 gap-4 flex-wrap">
+      <div className="flex items-center justify-between px-4 sm:px-6 pt-4 sm:pt-6 pb-4 sm:pb-5 gap-4 flex-wrap">
         <h2
           className="text-[#111] tracking-wide"
-          style={{ ...SORA, fontSize: 16, fontWeight: 800, letterSpacing: "0.08em" }}
+          style={{ ...SORA, fontSize: 14, fontWeight: 800, letterSpacing: "0.08em" }}
         >
           {title}
         </h2>
-
-        {/* Filter pills */}
-        {/* <div className="flex items-center gap-2 flex-wrap">
-          <FilterListOutlinedIcon style={{ fontSize: 18, color: "#bbb" }} />
-          {STATUS_FILTERS.map((s) => (
-            <button
-              key={s}
-              onClick={() => handleFilter(s)}
-              className={`px-4 py-1.5 rounded-full border text-[12px] font-semibold transition-all duration-150 whitespace-nowrap
-                ${statusFilter === s
-                  ? "bg-[#111] border-[#111] text-white"
-                  : "bg-white border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700"
-                }`}
-              style={INTER}
-            >
-              {s}
-            </button>
-          ))}
-        </div> */}
       </div>
 
       {/* ── Table — horizontally scrollable on small screens ── */}
@@ -144,7 +121,6 @@ const RecentOrders = ({
           className="w-full border-collapse"
           style={{ tableLayout: "fixed", minWidth: 480 }}
         >
-          {/* ── Explicit column widths via <colgroup> for reliable gaps ── */}
           <colgroup>
             {COLUMNS.map((col) => (
               <col key={col.key} style={{ width: col.w }} />
@@ -160,14 +136,13 @@ const RecentOrders = ({
                   className="text-left"
                   style={{
                     ...INTER,
-                    fontSize: 15,
+                    fontSize: 13,
                     fontWeight: 700,
                     color: "#111",
-                    // Consistent horizontal padding on every cell = the column "gap"
-                    paddingTop:    14,
-                    paddingBottom: 14,
-                    paddingLeft:   col.key === "id" ? 24 : 20,
-                    paddingRight:  col.key === "status" ? 24 : 20,
+                    paddingTop:    12,
+                    paddingBottom: 12,
+                    paddingLeft:   col.key === "id" ? 16 : 14,
+                    paddingRight:  col.key === "status" ? 16 : 14,
                   }}
                 >
                   {col.label}
@@ -183,7 +158,7 @@ const RecentOrders = ({
                 <td
                   colSpan={5}
                   className="text-center text-gray-400"
-                  style={{ ...INTER, fontSize: 15, padding: "64px 24px" }}
+                  style={{ ...INTER, fontSize: 14, padding: "48px 20px" }}
                 >
                   No orders found.
                 </td>
@@ -195,42 +170,40 @@ const RecentOrders = ({
                   className="border-b border-[#f5f5f5] hover:bg-[#fafafa] transition-colors duration-100"
                 >
                   {/* Order ID */}
-                  <td style={{ paddingTop: 14, paddingBottom: 14, paddingLeft: 24, paddingRight: 20 }}>
+                  <td style={{ paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 14 }}>
                     <button
                       onClick={() => onViewOrder(order.id)}
                       className="flex items-center gap-1 bg-transparent border-none cursor-pointer p-0 hover:underline"
-                      style={{ ...INTER, fontSize: 15, fontWeight: 600, color: "#1a73e8" }}
+                      style={{ ...INTER, fontSize: 13, fontWeight: 600, color: "#1a73e8" }}
                     >
                       {order.id}
-                      <OpenInNewOutlinedIcon style={{ fontSize: 14, opacity: 0.6 }} />
+                      <OpenInNewOutlinedIcon style={{ fontSize: 13, opacity: 0.6 }} />
                     </button>
                   </td>
 
                   {/* Product */}
-                  <td style={{ paddingTop: 14, paddingBottom: 14, paddingLeft: 20, paddingRight: 20, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 0 }}>
-                    <span
-                      style={{ ...INTER, fontSize: 15, fontWeight: 400, color: "#333" }}
-                    >
+                  <td style={{ paddingTop: 12, paddingBottom: 12, paddingLeft: 14, paddingRight: 14, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 0 }}>
+                    <span style={{ ...INTER, fontSize: 13, fontWeight: 400, color: "#333" }}>
                       {order.product}
                     </span>
                   </td>
 
                   {/* Quantity */}
-                  <td style={{ paddingTop: 14, paddingBottom: 14, paddingLeft: 20, paddingRight: 20, textAlign: "center" }}>
-                    <span style={{ ...INTER, fontSize: 15, fontWeight: 500, color: "#111" }}>
+                  <td style={{ paddingTop: 12, paddingBottom: 12, paddingLeft: 14, paddingRight: 14, textAlign: "center" }}>
+                    <span style={{ ...INTER, fontSize: 13, fontWeight: 500, color: "#111" }}>
                       {order.quantity}
                     </span>
                   </td>
 
                   {/* Amount */}
-                  <td style={{ paddingTop: 14, paddingBottom: 14, paddingLeft: 20, paddingRight: 20 }}>
-                    <span style={{ ...INTER, fontSize: 15, fontWeight: 500, color: "#111" }}>
+                  <td style={{ paddingTop: 12, paddingBottom: 12, paddingLeft: 14, paddingRight: 14 }}>
+                    <span style={{ ...INTER, fontSize: 13, fontWeight: 500, color: "#111" }}>
                       Rs {order.totalAmount.toLocaleString()}
                     </span>
                   </td>
 
                   {/* Status */}
-                  <td style={{ paddingTop: 14, paddingBottom: 14, paddingLeft: 20, paddingRight: 24 }}>
+                  <td style={{ paddingTop: 12, paddingBottom: 12, paddingLeft: 14, paddingRight: 16 }}>
                     <StatusBadge status={order.status} />
                   </td>
                 </tr>
@@ -242,16 +215,16 @@ const RecentOrders = ({
 
       {/* ── Pagination ── */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[#f5f5f5] flex-wrap gap-3">
-          <p style={{ ...INTER, fontSize: 13, color: "#aaa", fontWeight: 400 }}>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-t border-[#f5f5f5] gap-3">
+          <p style={{ ...INTER, fontSize: 12, color: "#aaa", fontWeight: 400 }}>
             Showing {startIdx + 1}–{Math.min(startIdx + ROWS_PER_PAGE, filtered.length)} of {filtered.length} orders
           </p>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 self-center sm:self-auto">
             <button
               onClick={() => handlePage(page - 1)}
               disabled={page === 1}
-              className="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all bg-white"
+              className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all bg-white"
             >
               <KeyboardArrowLeftIcon style={{ fontSize: 16 }} />
             </button>
@@ -260,7 +233,7 @@ const RecentOrders = ({
               <button
                 key={n}
                 onClick={() => handlePage(n)}
-                className={`flex items-center justify-center w-8 h-8 rounded-lg border text-[13px] font-semibold transition-all
+                className={`flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border text-[12px] sm:text-[13px] font-semibold transition-all
                   ${page === n
                     ? "bg-[#111] border-[#111] text-white"
                     : "bg-white border-gray-200 text-gray-600 hover:border-gray-400"
@@ -274,7 +247,7 @@ const RecentOrders = ({
             <button
               onClick={() => handlePage(page + 1)}
               disabled={page === totalPages}
-              className="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all bg-white"
+              className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all bg-white"
             >
               <KeyboardArrowRightIcon style={{ fontSize: 16 }} />
             </button>

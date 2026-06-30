@@ -48,7 +48,7 @@ export default function DeleteConfirmModal({ item, onConfirm, onCancel, onDelete
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8"
+      className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4 py-6 sm:py-8"
       style={{ backgroundColor: "rgba(0,0,0,0.45)", backdropFilter: "blur(3px)" }}
       onClick={(e) => { if (e.target === e.currentTarget && !isLocked) onCancel(); }}
     >
@@ -69,10 +69,10 @@ export default function DeleteConfirmModal({ item, onConfirm, onCancel, onDelete
 
         {/* ── Header ── */}
         <div
-          className="flex items-center justify-between px-6 py-4 shrink-0"
+          className="flex items-center justify-between px-4 sm:px-6 py-4 shrink-0"
           style={{ borderBottom: "1px solid #f0f0f0" }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <div
               className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0"
               style={{
@@ -85,7 +85,7 @@ export default function DeleteConfirmModal({ item, onConfirm, onCancel, onDelete
                 : <WarningAmberOutlinedIcon style={{ fontSize: 18, color: "#e53935" }} />
               }
             </div>
-            <div>
+            <div className="min-w-0">
               <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>
                 {item.context} / Delete
               </p>
@@ -100,14 +100,14 @@ export default function DeleteConfirmModal({ item, onConfirm, onCancel, onDelete
             disabled={isLocked}
             className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-transparent
                        text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-all cursor-pointer
-                       disabled:opacity-40 disabled:cursor-not-allowed"
+                       disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           >
             <CloseIcon style={{ fontSize: 18 }} />
           </button>
         </div>
 
         {/* ── Body ── */}
-        <div className="px-6 py-5 flex flex-col gap-4">
+        <div className="px-4 sm:px-6 py-5 flex flex-col gap-4">
 
           {/* Optional image preview */}
           {item.image_url && (
@@ -157,7 +157,7 @@ export default function DeleteConfirmModal({ item, onConfirm, onCancel, onDelete
 
         {/* ── Footer ── */}
         <div
-          className="shrink-0 px-6 py-4 flex items-center gap-3"
+          className="shrink-0 px-4 sm:px-6 py-4 flex items-center gap-3"
           style={{ borderTop: "1px solid #f0f0f0", backgroundColor: "#fff" }}
         >
           <button
@@ -187,18 +187,18 @@ export default function DeleteConfirmModal({ item, onConfirm, onCancel, onDelete
           >
             {status === "loading" ? (
               <>
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Deleting…
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
+                <span className="truncate">Deleting…</span>
               </>
             ) : isSuccess ? (
               <>
-                <CheckCircleOutlinedIcon style={{ fontSize: 16 }} />
-                Deleted!
+                <CheckCircleOutlinedIcon style={{ fontSize: 16, flexShrink: 0 }} />
+                <span className="truncate">Deleted!</span>
               </>
             ) : (
               <>
-                <DeleteOutlineOutlinedIcon style={{ fontSize: 16 }} />
-                Delete {item.type}
+                <DeleteOutlineOutlinedIcon style={{ fontSize: 16, flexShrink: 0 }} />
+                <span className="truncate">Delete {item.type}</span>
               </>
             )}
           </button>

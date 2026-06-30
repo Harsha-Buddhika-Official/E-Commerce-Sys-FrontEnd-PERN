@@ -288,6 +288,37 @@ function CategoryChip({ label, active, onClick }) {
   );
 }
 
+// MOBILE RESPONSIVE — loading skeleton for table/list view (loading was previously unused here)
+function ListLoadingSkeleton() {
+  return (
+    <tbody>
+      {Array.from({ length: 6 }).map((_, i) => (
+        <tr key={i} style={{ borderBottom: "1px solid #f5f5f5" }}>
+          <td style={{ padding: "12px 16px" }}>
+            <div className="rounded-xl bg-gray-200 animate-pulse" style={{ width: 44, height: 44 }} />
+          </td>
+          <td style={{ padding: "12px 16px" }}>
+            <div className="h-3.5 bg-gray-200 rounded animate-pulse mb-2" style={{ width: "70%" }} />
+            <div className="h-2.5 bg-gray-100 rounded animate-pulse" style={{ width: "40%" }} />
+          </td>
+          <td style={{ padding: "12px 16px" }}>
+            <div className="h-5 bg-gray-100 rounded-lg animate-pulse" style={{ width: 70 }} />
+          </td>
+          <td style={{ padding: "12px 16px" }}>
+            <div className="h-3.5 bg-gray-100 rounded animate-pulse" style={{ width: 30 }} />
+          </td>
+          <td style={{ padding: "12px 16px" }}>
+            <div className="h-3.5 bg-gray-100 rounded animate-pulse" style={{ width: 60 }} />
+          </td>
+          <td style={{ padding: "12px 16px" }}>
+            <div className="h-7 bg-gray-100 rounded-lg animate-pulse" style={{ width: "80%" }} />
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  );
+}
+
 const ProductsPage = () => {
   const { can } = useRole();
   const canCreate = can(["admin", "super_admin"]);
@@ -368,7 +399,7 @@ const ProductsPage = () => {
   };
 
   return (
-    <main className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
+    <main className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6">
       <DeleteModal
         product={deleteTarget}
         onConfirm={handleDeleteConfirm}
@@ -414,7 +445,7 @@ const ProductsPage = () => {
 		<button
 		onClick={() => canCreate && handleAddProduct()}
 		disabled={!canCreate}
-		className="flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all"
+		className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl transition-all"
 		style={{
 			...SORA,
 			fontSize: 13,
@@ -437,9 +468,9 @@ const ProductsPage = () => {
           boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
         }}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div
-            className="relative flex items-center flex-1"
+            className="relative flex items-center flex-1 w-full sm:w-auto"
             style={{ maxWidth: 320 }}
           >
             <SearchOutlinedIcon
@@ -485,7 +516,7 @@ const ProductsPage = () => {
               </button>
             )}
           </div>
-          <div className="flex-1" />
+          <div className="flex-1 hidden sm:block" />
           <div
             className="flex items-center rounded-xl overflow-hidden shrink-0"
             style={{ border: "1.5px solid #ebebeb" }}
@@ -542,7 +573,7 @@ const ProductsPage = () => {
         </div>
       </div>
       {!loading && (
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <p style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#aaa" }}>
             <span style={{ color: "#111", fontWeight: 800 }}>
               {filtered.length}
@@ -626,47 +657,52 @@ const ProductsPage = () => {
                   )}
                 </tr>
               </thead>
-              <tbody>
-                {paginated.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      style={{ textAlign: "center", padding: "64px 16px" }}
-                    >
-                      <div className="flex flex-col items-center gap-3">
-                        <div
-                          className="flex items-center justify-center w-14 h-14 rounded-2xl"
-                          style={{ backgroundColor: "#f5f5f5" }}
-                        >
-                          <InventoryOutlinedIcon
-                            style={{ fontSize: 28, color: "#ccc" }}
-                          />
+              {/* MOBILE/LOADING FIX — list view previously ignored `loading` entirely */}
+              {loading ? (
+                <ListLoadingSkeleton />
+              ) : (
+                <tbody>
+                  {paginated.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        style={{ textAlign: "center", padding: "64px 16px" }}
+                      >
+                        <div className="flex flex-col items-center gap-3">
+                          <div
+                            className="flex items-center justify-center w-14 h-14 rounded-2xl"
+                            style={{ backgroundColor: "#f5f5f5" }}
+                          >
+                            <InventoryOutlinedIcon
+                              style={{ fontSize: 28, color: "#ccc" }}
+                            />
+                          </div>
+                          <p
+                            style={{
+                              ...INTER,
+                              fontSize: 14,
+                              color: "#bbb",
+                              fontWeight: 600,
+                            }}
+                          >
+                            No products found
+                          </p>
                         </div>
-                        <p
-                          style={{
-                            ...INTER,
-                            fontSize: 14,
-                            color: "#bbb",
-                            fontWeight: 600,
-                          }}
-                        >
-                          No products found
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  paginated.map((p) => (
-                    <ProductListRow
-                      key={p.id}
-                      product={p}
-                      onView={handleView}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                    />
-                  ))
-                )}
-              </tbody>
+                      </td>
+                    </tr>
+                  ) : (
+                    paginated.map((p) => (
+                      <ProductListRow
+                        key={p.id}
+                        product={p}
+                        onView={handleView}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    ))
+                  )}
+                </tbody>
+              )}
             </table>
           </div>
         </div>
@@ -683,7 +719,7 @@ const ProductsPage = () => {
               {filtered.length}
             </span>
           </p>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <button
               onClick={() => handlePage(page - 1)}
               disabled={page === 1}
