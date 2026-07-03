@@ -7,20 +7,15 @@ import VisibilityOutlinedIcon   from "@mui/icons-material/VisibilityOutlined";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// ─── Font constants ───────────────────────────────────────────────────────────
-// Applied ONLY on leaf elements via style prop — never on wrapper divs,
-// which would cascade into Navbar / Footer / other global components.
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
-// ─── Tag icon map ─────────────────────────────────────────────────────────────
 const TAG_ICON = {
   "Flash Deal":  <BoltOutlinedIcon style={{ fontSize: 11 }} />,
   "Bundle Deal": <Inventory2OutlinedIcon style={{ fontSize: 11 }} />,
   "Clearance":   <LocalOfferOutlinedIcon style={{ fontSize: 11 }} />,
 };
 
-// ─── Countdown helper ─────────────────────────────────────────────────────────
 function calcTime(targetDate) {
   const diff = new Date(targetDate) - new Date();
   if (diff <= 0) return { d: 0, h: 0, m: 0, s: 0 };
@@ -32,42 +27,31 @@ function calcTime(targetDate) {
   };
 }
 
-// ─── TimeUnit sub-component ───────────────────────────────────────────────────
+// ─── TimeUnit — scales down on narrow cards ───────────────────────────────────
 function TimeUnit({ value, label }) {
   return (
     <div className="flex flex-col items-center gap-0.5">
-      <span className="text-[15px] font-black text-[#111] leading-none" style={SORA}>
+      <span className="text-[12px] sm:text-[15px] font-black text-[#111] leading-none" style={SORA}>
         {String(value).padStart(2, "0")}
       </span>
-      <span className="text-[9px] font-medium text-gray-400 uppercase tracking-wider" style={INTER}>
+      <span className="text-[8px] sm:text-[9px] font-medium text-gray-400 uppercase tracking-wider" style={INTER}>
         {label}
       </span>
     </div>
   );
 }
 
-// ─── OfferCard ────────────────────────────────────────────────────────────────
-// Props:
-//   offer: {
-//     id, tag, tagColor, title, category,
-//     originalPrice, discountedPrice, discountPercent,
-//     badge, image, specs, validUntil, inStock
-//   }
-//   onAddToCart: (offer) => void   — optional callback
-
 const OfferCard = ({ offer, onAddToCart = () => {} }) => {
   const navigate = useNavigate();
   const countdownTarget = offer.countdownTarget || offer.validUntil;
-  const countdownLabel = offer.countdownLabel || (offer.offerState === "upcoming" ? "Starts In" : "Ends In");
+  const countdownLabel  = offer.countdownLabel  || (offer.offerState === "upcoming" ? "Starts In" : "Ends In");
   const isUpcoming = offer.offerState === "upcoming";
   const [timeLeft, setTimeLeft] = useState(() => calcTime(countdownTarget));
-  
+
   useEffect(() => {
-    // Update countdown every second
     const interval = setInterval(() => {
       setTimeLeft(calcTime(countdownTarget));
     }, 1000);
-
     return () => clearInterval(interval);
   }, [countdownTarget]);
 
@@ -79,18 +63,18 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
 
       {/* ── Tag ribbon (top-left) ── */}
       <div
-        className={`absolute top-3 left-0 z-10 flex items-center gap-1 pl-2.5 pr-3 py-0.75 rounded-r-md text-white uppercase
+        className={`absolute top-2.5 left-0 z-10 flex items-center gap-1 pl-2 pr-2.5 py-0.5 rounded-r-md text-white uppercase
           ${isRed ? "bg-red-500" : "bg-[#111]"}`}
-        style={{ ...SORA, fontSize: 10, fontWeight: 700, letterSpacing: "0.05em" }}
+        style={{ ...SORA, fontSize: 9, fontWeight: 700, letterSpacing: "0.05em" }}
       >
         {TAG_ICON[offer.tag]}
-        {offer.tag}
+        <span className="hidden xs:inline sm:inline">{offer.tag}</span>
       </div>
 
       {/* ── Discount badge (top-right) ── */}
       <div
-        className="absolute top-3 right-3 z-10 bg-red-500 text-white px-2 py-0.5 rounded-lg leading-none"
-        style={{ ...SORA, fontSize: 12, fontWeight: 900 }}
+        className="absolute top-2.5 right-2.5 z-10 bg-red-500 text-white px-1.5 sm:px-2 py-0.5 rounded-lg leading-none"
+        style={{ ...SORA, fontSize: 11, fontWeight: 900 }}
       >
         −{offer.discountPercent}%
       </div>
@@ -100,35 +84,38 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
         <img
           src={offer.displayImage}
           alt={offer.title}
-          className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-300 hover:scale-105"
+          className="absolute inset-0 w-full h-full object-contain p-3 sm:p-4 transition-transform duration-300 hover:scale-105"
         />
 
         {/* Stock pill */}
         <div
-          className={`absolute bottom-2.5 right-2.5 flex items-center gap-1.5 bg-white border border-[#ccc] rounded-full px-3 py-0.75
+          className={`absolute bottom-2 right-2 sm:bottom-2.5 sm:right-2.5 flex items-center gap-1 sm:gap-1.5 bg-white border border-[#ccc] rounded-full px-2 sm:px-3 py-0.5
             ${isUpcoming ? "text-blue-700" : offer.inStock ? "text-green-700" : "text-red-500"}`}
-          style={{ ...INTER, fontSize: 10, fontWeight: 600 }}
+          style={{ ...INTER, fontSize: 9, fontWeight: 600 }}
         >
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isUpcoming ? "bg-blue-600" : offer.inStock ? "bg-green-600" : "bg-red-500"}`} />
-          {isUpcoming ? "Coming Soon" : offer.inStock ? "In Stock" : "Out of Stock"}
+          <span className="hidden xs:inline">
+            {isUpcoming ? "Coming Soon" : offer.inStock ? "In Stock" : "Out of Stock"}
+          </span>
+          {/* Dot-only fallback on very tiny screens */}
         </div>
       </div>
 
       {/* ── Card body ── */}
-      <div className="flex flex-col flex-1 px-4 pt-3 pb-4 gap-2.5">
+      <div className="flex flex-col flex-1 px-2.5 sm:px-4 pt-2.5 sm:pt-3 pb-3 sm:pb-4 gap-2 sm:gap-2.5">
 
         {/* Category + optional badge */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span
-            className="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+            className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest"
             style={INTER}
           >
             {offer.category}
           </span>
           {offer.badge && (
             <span
-              className="px-2 py-0.5 rounded-full border border-[#111] text-[#111] uppercase tracking-wider"
-              style={{ ...INTER, fontSize: 9, fontWeight: 700 }}
+              className="px-1.5 sm:px-2 py-0.5 rounded-full border border-[#111] text-[#111] uppercase tracking-wider"
+              style={{ ...INTER, fontSize: 8, fontWeight: 700 }}
             >
               {offer.badge}
             </span>
@@ -138,17 +125,27 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
         {/* Title */}
         <h3
           className="font-bold text-[#111] uppercase leading-snug line-clamp-2"
-          style={{ ...INTER, fontSize: 13, letterSpacing: "0.01em" }}
+          style={{ ...INTER, fontSize: 12, letterSpacing: "0.01em" }}
         >
           {offer.title}
         </h3>
 
-        {/* Specs */}
-        <ul className="flex flex-col gap-1 flex-1">
+        {/* Specs — show fewer on mobile */}
+        <ul className="flex flex-col gap-0.5 sm:gap-1 flex-1">
+          {offer.specs.slice(0, 3).map((s, i) => (
+            <li
+              key={i}
+              className="flex items-center gap-1.5 text-gray-500 sm:hidden"
+              style={{ ...INTER, fontSize: 10, fontWeight: 500 }}
+            >
+              <span className="w-1 h-1 rounded-full shrink-0 bg-gray-300" />
+              {s}
+            </li>
+          ))}
           {offer.specs.map((s, i) => (
             <li
               key={i}
-              className="flex items-center gap-1.5 text-gray-500"
+              className="hidden sm:flex items-center gap-1.5 text-gray-500"
               style={{ ...INTER, fontSize: 11, fontWeight: 500 }}
             >
               <span className="w-1 h-1 rounded-full shrink-0 bg-gray-300" />
@@ -158,74 +155,71 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
         </ul>
 
         {/* Pricing */}
-        <div className="flex items-end justify-between pt-2.5 border-t border-[#f0f0f0]">
-          <div className="flex flex-col gap-0.5">
+        <div className="flex items-end justify-between pt-2 sm:pt-2.5 border-t border-[#f0f0f0]">
+          <div className="flex flex-col gap-0.5 min-w-0">
             <span
-              className="text-gray-400 line-through"
-              style={{ ...INTER, fontSize: 11, fontWeight: 500 }}
+              className="text-gray-400 line-through text-[10px] sm:text-[11px]"
+              style={{ ...INTER, fontWeight: 500 }}
             >
               Rs {offer.originalPrice.toLocaleString()}
             </span>
             <span
-              className="text-[#111] leading-none"
-              style={{ ...SORA, fontSize: 18, fontWeight: 900, letterSpacing: "-0.5px" }}
+              className="text-[#111] leading-none text-[15px] sm:text-[18px]"
+              style={{ ...SORA, fontWeight: 900, letterSpacing: "-0.5px" }}
             >
               Rs {offer.discountedPrice.toLocaleString()}
             </span>
           </div>
           <div
-            className="text-red-500 bg-red-50 px-2 py-1 rounded-lg whitespace-nowrap"
-            style={{ ...INTER, fontSize: 10, fontWeight: 700 }}
+            className="text-red-500 bg-red-50 px-1.5 sm:px-2 py-1 rounded-lg whitespace-nowrap shrink-0 ml-2"
+            style={{ ...INTER, fontSize: 9, fontWeight: 700 }}
           >
             Save Rs {savings.toLocaleString()}
           </div>
         </div>
 
-        {/* Countdown */}
-          <div className="flex items-center gap-2.5 bg-[#f9f9f9] border border-[#ebebeb] rounded-xl px-3 py-2">
-          <AccessTimeOutlinedIcon style={{ fontSize: 14, color: "#bbb" }} />
+        {/* Countdown — compact on mobile */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 bg-[#f9f9f9] border border-[#ebebeb] rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 overflow-hidden">
+          <AccessTimeOutlinedIcon style={{ fontSize: 13, color: "#bbb", flexShrink: 0 }} />
           <span
-            className="text-gray-400 uppercase tracking-wider shrink-0"
+            className="text-gray-400 uppercase tracking-wider shrink-0 hidden sm:inline"
             style={{ ...INTER, fontSize: 10, fontWeight: 700 }}
           >
             {countdownLabel}
           </span>
-          <div className="flex items-center gap-1.5">
-            <TimeUnit value={timeLeft.d} label="Days" />
-            <span className="font-black text-gray-300 mb-3" style={{ ...SORA, fontSize: 13 }}>:</span>
-            <TimeUnit value={timeLeft.h} label="Hrs" />
-            <span className="font-black text-gray-300 mb-3" style={{ ...SORA, fontSize: 13 }}>:</span>
-            <TimeUnit value={timeLeft.m} label="Min" />
-            <span className="font-black text-gray-300 mb-3" style={{ ...SORA, fontSize: 13 }}>:</span>
-            <TimeUnit value={timeLeft.s} label="Sec" />
+          <div className="flex items-center gap-1 sm:gap-1.5 flex-1 justify-center sm:justify-start">
+            <TimeUnit value={timeLeft.d} label="D" />
+            <span className="font-black text-gray-300 mb-2.5 text-[11px] sm:text-[13px]" style={SORA}>:</span>
+            <TimeUnit value={timeLeft.h} label="H" />
+            <span className="font-black text-gray-300 mb-2.5 text-[11px] sm:text-[13px]" style={SORA}>:</span>
+            <TimeUnit value={timeLeft.m} label="M" />
+            <span className="font-black text-gray-300 mb-2.5 text-[11px] sm:text-[13px]" style={SORA}>:</span>
+            <TimeUnit value={timeLeft.s} label="S" />
           </div>
         </div>
 
-        {/* CTA — wired to cart API via addProductToServer */}
-        <div className="flex flex-col gap-2">
+        {/* CTA */}
+        <div className="flex flex-col gap-1.5 sm:gap-2">
           <button
-            disabled={!offer.inStock}
-            onClick={() => {
-
-              onAddToCart(offer);
-            }}
-            className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-150
+            disabled={!offer.inStock || isUpcoming}
+            onClick={() => onAddToCart(offer)}
+            className={`w-full flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 rounded-xl transition-all duration-150
               ${offer.inStock && !isUpcoming
                 ? "bg-[#111] text-white hover:bg-[#333] cursor-pointer active:translate-y-0.5"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
               }`}
-            style={{ ...SORA, fontSize: 13, fontWeight: 700, letterSpacing: "0.02em" }}
+            style={{ ...SORA, fontSize: 12, fontWeight: 700, letterSpacing: "0.02em" }}
           >
-            <ShoppingCartOutlinedIcon style={{ fontSize: 17 }} />
+            <ShoppingCartOutlinedIcon style={{ fontSize: 15 }} />
             {isUpcoming ? "Coming Soon" : offer.inStock ? "Add to Cart" : "Out of Stock"}
           </button>
 
           <button
             onClick={() => navigate(`/offers/${offer.id}`)}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[#e5e5e5] bg-white text-[#111] hover:border-[#111] hover:bg-[#f9f9f9] cursor-pointer transition-all duration-150"
-            style={{ ...SORA, fontSize: 13, fontWeight: 700, letterSpacing: "0.02em" }}
+            className="w-full flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 rounded-xl border border-[#e5e5e5] bg-white text-[#111] hover:border-[#111] hover:bg-[#f9f9f9] cursor-pointer transition-all duration-150"
+            style={{ ...SORA, fontSize: 12, fontWeight: 700, letterSpacing: "0.02em" }}
           >
-            <VisibilityOutlinedIcon style={{ fontSize: 17 }} /> View More
+            <VisibilityOutlinedIcon style={{ fontSize: 15 }} /> View More
           </button>
         </div>
 
