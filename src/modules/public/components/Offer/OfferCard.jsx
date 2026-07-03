@@ -27,20 +27,6 @@ function calcTime(targetDate) {
   };
 }
 
-// ─── TimeUnit — scales down on narrow cards ───────────────────────────────────
-function TimeUnit({ value, label }) {
-  return (
-    <div className="flex flex-col items-center gap-0.5">
-      <span className="text-[12px] sm:text-[15px] font-black text-[#111] leading-none" style={SORA}>
-        {String(value).padStart(2, "0")}
-      </span>
-      <span className="text-[8px] sm:text-[9px] font-medium text-gray-400 uppercase tracking-wider" style={INTER}>
-        {label}
-      </span>
-    </div>
-  );
-}
-
 const OfferCard = ({ offer, onAddToCart = () => {} }) => {
   const navigate = useNavigate();
   const countdownTarget = offer.countdownTarget || offer.validUntil;
@@ -68,7 +54,7 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
         style={{ ...SORA, fontSize: 9, fontWeight: 700, letterSpacing: "0.05em" }}
       >
         {TAG_ICON[offer.tag]}
-        <span className="hidden xs:inline sm:inline">{offer.tag}</span>
+        {offer.tag}
       </div>
 
       {/* ── Discount badge (top-right) ── */}
@@ -94,10 +80,7 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
           style={{ ...INTER, fontSize: 9, fontWeight: 600 }}
         >
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isUpcoming ? "bg-blue-600" : offer.inStock ? "bg-green-600" : "bg-red-500"}`} />
-          <span className="hidden xs:inline">
-            {isUpcoming ? "Coming Soon" : offer.inStock ? "In Stock" : "Out of Stock"}
-          </span>
-          {/* Dot-only fallback on very tiny screens */}
+          {isUpcoming ? "Coming Soon" : offer.inStock ? "In Stock" : "Out of Stock"}
         </div>
       </div>
 
@@ -124,17 +107,17 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
 
         {/* Title */}
         <h3
-          className="font-bold text-[#111] uppercase leading-snug line-clamp-2"
-          style={{ ...INTER, fontSize: 12, letterSpacing: "0.01em" }}
+          className="font-bold text-[#111] uppercase leading-snug line-clamp-2 text-[11px] sm:text-[13px]"
+          style={{ ...INTER, letterSpacing: "0.01em" }}
         >
           {offer.title}
         </h3>
 
-        {/* Specs — show fewer on mobile */}
+        {/* Specs — 3 on mobile, all on desktop */}
         <ul className="flex flex-col gap-0.5 sm:gap-1 flex-1">
           {offer.specs.slice(0, 3).map((s, i) => (
             <li
-              key={i}
+              key={`m-${i}`}
               className="flex items-center gap-1.5 text-gray-500 sm:hidden"
               style={{ ...INTER, fontSize: 10, fontWeight: 500 }}
             >
@@ -144,7 +127,7 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
           ))}
           {offer.specs.map((s, i) => (
             <li
-              key={i}
+              key={`d-${i}`}
               className="hidden sm:flex items-center gap-1.5 text-gray-500"
               style={{ ...INTER, fontSize: 11, fontWeight: 500 }}
             >
@@ -164,41 +147,72 @@ const OfferCard = ({ offer, onAddToCart = () => {} }) => {
               Rs {offer.originalPrice.toLocaleString()}
             </span>
             <span
-              className="text-[#111] leading-none text-[15px] sm:text-[18px]"
+              className="text-[#111] leading-none text-[14px] sm:text-[18px]"
               style={{ ...SORA, fontWeight: 900, letterSpacing: "-0.5px" }}
             >
               Rs {offer.discountedPrice.toLocaleString()}
             </span>
           </div>
           <div
-            className="text-red-500 bg-red-50 px-1.5 sm:px-2 py-1 rounded-lg whitespace-nowrap shrink-0 ml-2"
-            style={{ ...INTER, fontSize: 9, fontWeight: 700 }}
+            className="text-red-500 bg-red-50 px-1.5 sm:px-2 py-1 rounded-lg whitespace-nowrap shrink-0 ml-2 text-[9px] sm:text-[10px]"
+            style={{ ...INTER, fontWeight: 700 }}
           >
             Save Rs {savings.toLocaleString()}
           </div>
         </div>
 
-        {/* Countdown — compact on mobile */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 bg-[#f9f9f9] border border-[#ebebeb] rounded-xl px-2 sm:px-3 py-1.5 sm:py-2 overflow-hidden">
-          <AccessTimeOutlinedIcon style={{ fontSize: 13, color: "#bbb", flexShrink: 0 }} />
-          <span
-            className="text-gray-400 uppercase tracking-wider shrink-0 hidden sm:inline"
-            style={{ ...INTER, fontSize: 10, fontWeight: 700 }}
-          >
-            {countdownLabel}
-          </span>
-          <div className="flex items-center gap-1 sm:gap-1.5 flex-1 justify-center sm:justify-start">
-            <TimeUnit value={timeLeft.d} label="D" />
-            <span className="font-black text-gray-300 mb-2.5 text-[11px] sm:text-[13px]" style={SORA}>:</span>
-            <TimeUnit value={timeLeft.h} label="H" />
-            <span className="font-black text-gray-300 mb-2.5 text-[11px] sm:text-[13px]" style={SORA}>:</span>
-            <TimeUnit value={timeLeft.m} label="M" />
-            <span className="font-black text-gray-300 mb-2.5 text-[11px] sm:text-[13px]" style={SORA}>:</span>
-            <TimeUnit value={timeLeft.s} label="S" />
+        {/* ── Countdown — grid layout, never overflows ── */}
+        <div className="flex flex-col gap-1 bg-[#f9f9f9] border border-[#ebebeb] rounded-xl px-2.5 py-2">
+          {/* Label row */}
+          <div className="flex items-center gap-1.5">
+            <AccessTimeOutlinedIcon style={{ fontSize: 12, color: "#bbb", flexShrink: 0 }} />
+            <span
+              className="text-gray-400 uppercase tracking-wider"
+              style={{ ...INTER, fontSize: 9, fontWeight: 700 }}
+            >
+              {countdownLabel}
+            </span>
+          </div>
+
+          {/* Timer row — 4-column grid, always fits */}
+          <div className="grid grid-cols-4 w-full gap-1">
+            {[
+              { value: timeLeft.d, label: "Days" },
+              { value: timeLeft.h, label: "Hrs"  },
+              { value: timeLeft.m, label: "Min"  },
+              { value: timeLeft.s, label: "Sec"  },
+            ].map(({ value, label }, i, arr) => (
+              <div
+                key={label}
+                className="relative flex flex-col items-center justify-center py-1.5 bg-white border border-[#ebebeb] rounded-lg"
+              >
+                <span
+                  className="text-[12px] sm:text-[13px] font-black text-[#111] leading-none tabular-nums"
+                  style={SORA}
+                >
+                  {String(value).padStart(2, "0")}
+                </span>
+                <span
+                  className="text-[8px] font-medium text-gray-400 uppercase tracking-wider mt-0.5"
+                  style={INTER}
+                >
+                  {label}
+                </span>
+                {/* Colon separator between cells */}
+                {i < arr.length - 1 && (
+                  <span
+                    className="absolute -right-2 top-1/2 -translate-y-[60%] font-black text-gray-300 text-[10px] z-10"
+                    style={SORA}
+                  >
+                    :
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* CTA */}
+        {/* CTA buttons */}
         <div className="flex flex-col gap-1.5 sm:gap-2">
           <button
             disabled={!offer.inStock || isUpcoming}

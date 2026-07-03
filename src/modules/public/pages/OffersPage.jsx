@@ -7,7 +7,6 @@ import { addProductToServer } from "../features/cart/service/cart.service.js";
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
-// ─── Skeleton card shown while loading ───────────────────────────────────────
 const OfferSkeleton = () => (
   <div className="bg-white border border-[#e6e6e6] rounded-2xl overflow-hidden flex flex-col animate-pulse">
     <div className="w-full bg-gray-200" style={{ paddingTop: "62%" }} />
@@ -168,7 +167,7 @@ const OffersPage = () => {
         {/* ── Footer disclaimer ── */}
         {!loading && !error && offers.length > 0 && (
           <div className="flex items-start sm:items-center gap-2 mt-8 sm:mt-10 px-3 sm:px-5 py-3 sm:py-3.5 bg-white border border-[#e6e6e6] rounded-xl text-gray-400">
-            <InfoOutlinedIcon style={{ fontSize: 16, color: "#ccc", flexShrink: 0, marginTop: 1 }} className="sm:!mt-0" />
+            <InfoOutlinedIcon style={{ fontSize: 16, color: "#ccc", flexShrink: 0, marginTop: 1 }} />
             <span style={{ ...INTER, fontSize: 12, fontWeight: 500, lineHeight: 1.6 }}>
               Prices are subject to change without prior notice. All offers are valid while stocks last.
             </span>
