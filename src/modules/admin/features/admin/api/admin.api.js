@@ -20,12 +20,13 @@ export const updateAdminRole = async (adminId, newRole) => {
 
 // to update admin password (settings page) 
 export const updatePassword = async (adminId, passwordData) => {
+    console.log("Updating password for adminId:", adminId, "with data:", passwordData);
     const res = await API.put(`/admin/settings/updatePassword/${adminId}`, { passwordData });
     return res.data;
 };
 
-// to delete an admin by email (admin management page) 
-export const deleteAdminByEmail = async (email) => {
-    const res = await API.delete("/admin/delete", { data: { email } });
+// to delete an admin by ID (admin management page) 
+export const deleteAdminById = async (id) => {
+    const res = await API.delete(`/admin/delete/${id}`);
     return res.data;
 };

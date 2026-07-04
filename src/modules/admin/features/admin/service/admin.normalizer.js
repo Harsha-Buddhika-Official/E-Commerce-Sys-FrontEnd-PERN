@@ -53,5 +53,5 @@ export const normalizeAdminRole = (role) =>
 
 // ==================== EMAIL ====================
 
-export const normalizeAdminEmail = (email) =>
-  safeText(email);
+export const normalizeAdminId = (id) =>
+  safeNumber(id);

@@ -1,26 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ArrowBackOutlinedIcon        from "@mui/icons-material/ArrowBackOutlined";
-import SaveOutlinedIcon             from "@mui/icons-material/SaveOutlined";
-import PersonOutlinedIcon           from "@mui/icons-material/PersonOutlined";
-import EmailOutlinedIcon            from "@mui/icons-material/EmailOutlined";
-import LockOutlinedIcon             from "@mui/icons-material/LockOutlined";
-import ShieldOutlinedIcon           from "@mui/icons-material/ShieldOutlined";
-import VisibilityOutlinedIcon       from "@mui/icons-material/VisibilityOutlined";
-import VisibilityOffOutlinedIcon    from "@mui/icons-material/VisibilityOffOutlined";
-import CheckCircleOutlinedIcon      from "@mui/icons-material/CheckCircleOutlined";
-import WarningAmberOutlinedIcon     from "@mui/icons-material/WarningAmberOutlined";
+import ArrowBackOutlinedIcon          from "@mui/icons-material/ArrowBackOutlined";
+import SaveOutlinedIcon               from "@mui/icons-material/SaveOutlined";
+import PersonOutlinedIcon             from "@mui/icons-material/PersonOutlined";
+import EmailOutlinedIcon              from "@mui/icons-material/EmailOutlined";
+import LockOutlinedIcon               from "@mui/icons-material/LockOutlined";
+import ShieldOutlinedIcon             from "@mui/icons-material/ShieldOutlined";
+import VisibilityOutlinedIcon         from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlinedIcon      from "@mui/icons-material/VisibilityOffOutlined";
+import CheckCircleOutlinedIcon        from "@mui/icons-material/CheckCircleOutlined";
+import WarningAmberOutlinedIcon       from "@mui/icons-material/WarningAmberOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import SupervisorAccountOutlinedIcon  from "@mui/icons-material/SupervisorAccountOutlined";
 import ManageAccountsOutlinedIcon     from "@mui/icons-material/ManageAccountsOutlined";
-import InfoOutlinedIcon               from "@mui/icons-material/InfoOutlined";
-import { useCreateAdmin } from "../../features/admin/hooks/useCreateAdmin";
+import { useCreateAdmin }             from "../../features/admin/hooks/useCreateAdmin";
 
-// ─── Font constants ───────────────────────────────────────────────────────────
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
-// ─── Role options ─────────────────────────────────────────────────────────────
 const ROLES = [
   {
     value: "super_admin",
@@ -28,6 +25,14 @@ const ROLES = [
     description: "Full system access including admin management",
     icon: <AdminPanelSettingsOutlinedIcon style={{ fontSize: 20 }} />,
     bg: "#fef9c3", color: "#a16207", border: "#fde047", activeBg: "#fefce8",
+    permissions: [
+      "List, create & delete admin accounts",
+      "Update admin roles",
+      "Full catalog: brands, categories, products, attributes",
+      "Banner create & delete",
+      "Offer CRUD & product linking",
+      "Order management & fulfillment",
+    ],
   },
   {
     value: "admin",
@@ -35,6 +40,14 @@ const ROLES = [
     description: "Manage products, orders, and customers",
     icon: <SupervisorAccountOutlinedIcon style={{ fontSize: 20 }} />,
     bg: "#dbeafe", color: "#1d4ed8", border: "#93c5fd", activeBg: "#eff6ff",
+    permissions: [
+      "Manage brands & categories",
+      "Product create, update & delete",
+      "Manage product images & attributes",
+      "Banner create & delete",
+      "Offer CRUD & product linking",
+      "Order management & fulfillment",
+    ],
   },
   {
     value: "manager",
@@ -42,10 +55,17 @@ const ROLES = [
     description: "Manage selected areas with limited elevated privileges",
     icon: <ManageAccountsOutlinedIcon style={{ fontSize: 20 }} />,
     bg: "#f3e8ff", color: "#7e22ce", border: "#d8b4fe", activeBg: "#faf5ff",
+    permissions: [
+      "View product catalog (read only)",
+      "View banners (read only)",
+      "Offer CRUD & product linking",
+      "Order dashboard & status updates",
+      "No brand, category, or attribute writes",
+      "No admin account access",
+    ],
   },
 ];
 
-// ─── Password strength ────────────────────────────────────────────────────────
 const getStrength = (pw) => {
   if (!pw) return { level: 0, label: "", color: "#e0e0e0" };
   let score = 0;
@@ -54,20 +74,21 @@ const getStrength = (pw) => {
   if (/[0-9]/.test(pw))        score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
   const map = [
-    { level: 0, label: "",         color: "#e0e0e0" },
-    { level: 1, label: "Weak",     color: "#e53935" },
-    { level: 2, label: "Fair",     color: "#f97316" },
-    { level: 3, label: "Good",     color: "#eab308" },
-    { level: 4, label: "Strong",   color: "#16a34a" },
+    { level: 0, label: "",       color: "#e0e0e0" },
+    { level: 1, label: "Weak",   color: "#e53935" },
+    { level: 2, label: "Fair",   color: "#f97316" },
+    { level: 3, label: "Good",   color: "#eab308" },
+    { level: 4, label: "Strong", color: "#16a34a" },
   ];
   return map[score];
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
+
 function SectionCard({ children, className = "" }) {
   return (
     <div
-      className={`bg-white rounded-2xl p-6 ${className}`}
+      className={`bg-white rounded-2xl p-4 sm:p-6 ${className}`}
       style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
     >
       {children}
@@ -77,8 +98,11 @@ function SectionCard({ children, className = "" }) {
 
 function SectionTitle({ icon, children }) {
   return (
-    <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-[#f0f0f0]">
-      <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0" style={{ backgroundColor: "#f5f5f5", color: "#111" }}>
+    <div className="flex items-center gap-2.5 mb-4 sm:mb-5 pb-3 border-b border-[#f0f0f0]">
+      <div
+        className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
+        style={{ backgroundColor: "#f5f5f5", color: "#111" }}
+      >
         {icon}
       </div>
       <span style={{ ...SORA, fontSize: 14, fontWeight: 800, color: "#111", letterSpacing: "0.02em" }}>
@@ -103,7 +127,10 @@ function TextInput({ label, value, onChange, placeholder, required, type = "text
       <FieldLabel required={required}>{label}</FieldLabel>
       <div className="relative flex items-center">
         {icon && (
-          <div className="absolute left-3 flex items-center justify-center pointer-events-none" style={{ color: focused ? "#111" : "#bbb" }}>
+          <div
+            className="absolute left-3 flex items-center justify-center pointer-events-none"
+            style={{ color: focused ? "#111" : "#bbb" }}
+          >
             {icon}
           </div>
         )}
@@ -127,16 +154,17 @@ function TextInput({ label, value, onChange, placeholder, required, type = "text
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
-        {suffix && (
-          <div className="absolute right-3">{suffix}</div>
-        )}
+        {suffix && <div className="absolute right-3">{suffix}</div>}
       </div>
-      {error && <p style={{ ...INTER, fontSize: 11, color: "#e53935", marginTop: 4 }}>{error}</p>}
+      {error && (
+        <p className="flex items-center gap-1 mt-1.5" style={{ ...INTER, fontSize: 11, color: "#e53935" }}>
+          <WarningAmberOutlinedIcon style={{ fontSize: 12 }} /> {error}
+        </p>
+      )}
     </div>
   );
 }
 
-// ─── Avatar preview ───────────────────────────────────────────────────────────
 const AVATAR_COLORS = ["#111","#1d4ed8","#15803d","#7e22ce","#c2410c","#0f766e"];
 const getAvatarColor = (name = "") => {
   let h = 0;
@@ -146,25 +174,20 @@ const getAvatarColor = (name = "") => {
 const getInitials = (name = "") =>
   name.trim().split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase()).join("") || "?";
 
-
+// ══════════════════════════════════════════════════════════════════════════════
 export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
-  const navigate = useNavigate();
+  const navigate   = useNavigate();
   const { createAdmin, loading: apiLoading, error: apiError } = useCreateAdmin();
-  const [form, setForm] = useState({
-    name: "", email: "", password: "", confirm_password: "", role: "admin", is_active: true,
-  });
-  const [showPw,     setShowPw]     = useState(false);
-  const [showCPw,    setShowCPw]    = useState(false);
-  const [errors,     setErrors]     = useState({});
-  const [saved,      setSaved]      = useState(false);
 
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      navigate("/admin/admin");
-    }
-  };
+  const [form, setForm] = useState({
+    name: "", email: "", password: "", confirm_password: "", role: "admin",
+  });
+  const [showPw,  setShowPw]  = useState(false);
+  const [showCPw, setShowCPw] = useState(false);
+  const [errors,  setErrors]  = useState({});
+  const [saved,   setSaved]   = useState(false);
+
+  const handleBack = () => { if (onBack) { onBack(); } else { navigate("/admin/admin"); } };
 
   const setField = (key, val) => {
     setForm((p) => ({ ...p, [key]: val }));
@@ -176,12 +199,12 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
 
   const validate = () => {
     const e = {};
-    if (!form.name.trim())                       e.name             = "Full name is required";
-    if (!form.email.trim())                      e.email            = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(form.email))  e.email            = "Enter a valid email";
-    if (!form.password)                          e.password         = "Password is required";
-    else if (form.password.length < 8)           e.password         = "Minimum 8 characters";
-    if (!form.confirm_password)                  e.confirm_password = "Please confirm your password";
+    if (!form.name.trim())                            e.name             = "Full name is required";
+    if (!form.email.trim())                           e.email            = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(form.email))       e.email            = "Enter a valid email";
+    if (!form.password)                               e.password         = "Password is required";
+    else if (form.password.length < 8)                e.password         = "Minimum 8 characters";
+    if (!form.confirm_password)                       e.confirm_password = "Please confirm your password";
     else if (form.password !== form.confirm_password) e.confirm_password = "Passwords do not match";
     return e;
   };
@@ -189,54 +212,82 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
   const handleSave = async () => {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
-    
     try {
-      const payload = {
-        fullName: form.name,
-        email: form.email,
-        password: form.password,
-        role: form.role,
-      };
-      await createAdmin(payload);
+      await createAdmin({ fullName: form.name, email: form.email, password: form.password, role: form.role });
       setSaved(true);
-      if (onSuccess) {
-        onSuccess({ ...form, fullName: form.name });
-        handleBack();
-      }
+      if (onSuccess) { onSuccess({ ...form, fullName: form.name }); handleBack(); }
     } catch (err) {
       setErrors({ api: err.message || "Failed to create admin" });
     }
   };
 
-  const avatarBg = getAvatarColor(form.name);
-  const initials  = getInitials(form.name);
+  const avatarBg      = getAvatarColor(form.name);
+  const initials      = getInitials(form.name);
+  const activeRole    = ROLES.find((r) => r.value === form.role);
 
   return (
-    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-5 lg:p-6">
+    <div className="h-full overflow-y-auto bg-[#f5f5f5] p-4 sm:p-5 lg:p-6">
 
       {/* ── Top bar ── */}
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div className="flex items-center justify-between mb-4 sm:mb-5 flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <button
             onClick={handleBack}
-            className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-all cursor-pointer"
+            className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-all cursor-pointer shrink-0"
           >
             <ArrowBackOutlinedIcon style={{ fontSize: 18 }} />
           </button>
           <div>
             <p style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Admins / Create</p>
-            <h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>Create Admin</h1>
+            <h1 style={{ ...SORA, fontSize: 20, fontWeight: 900, color: "#111", letterSpacing: "-0.3px" }}>
+              Create Admin
+            </h1>
           </div>
         </div>
 
+        {/* Action buttons in header */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            onClick={handleBack}
+            className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 transition-all cursor-pointer"
+            style={{ ...INTER, fontSize: 13, fontWeight: 600 }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={apiLoading}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white transition-all cursor-pointer disabled:opacity-60"
+            style={{
+              ...SORA, fontSize: 13, fontWeight: 700,
+              backgroundColor: saved ? "#16a34a" : "#111",
+              border: "none",
+            }}
+            onMouseEnter={(e) => { if (!apiLoading && !saved) e.currentTarget.style.backgroundColor = "#222"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = saved ? "#16a34a" : "#111"; }}
+          >
+            {apiLoading ? (
+              <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating…</>
+            ) : saved ? (
+              <><CheckCircleOutlinedIcon style={{ fontSize: 16 }} /> Created!</>
+            ) : (
+              <><SaveOutlinedIcon style={{ fontSize: 16 }} /> Create Admin</>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Validation errors */}
+      {/* ── Error banner ── */}
       {(Object.keys(errors).length > 0 || apiError) && (
-        <div className="flex items-start gap-3 px-4 py-3 rounded-xl mb-5" style={{ backgroundColor: "#fef2f2", border: "1px solid #fecaca" }}>
+        <div
+          className="flex items-start gap-3 px-4 py-3 rounded-xl mb-4 sm:mb-5"
+          style={{ backgroundColor: "#fef2f2", border: "1px solid #fecaca" }}
+        >
           <WarningAmberOutlinedIcon style={{ fontSize: 16, color: "#e53935", flexShrink: 0, marginTop: 1 }} />
           <div>
-            <p style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#e53935", marginBottom: 4 }}>Please fix the following errors:</p>
+            <p style={{ ...INTER, fontSize: 12, fontWeight: 700, color: "#e53935", marginBottom: 4 }}>
+              Please fix the following errors:
+            </p>
             {apiError && <p style={{ ...INTER, fontSize: 12, color: "#e53935" }}>• {apiError}</p>}
             {Object.values(errors).map((err, i) => (
               <p key={i} style={{ ...INTER, fontSize: 12, color: "#e53935" }}>• {err}</p>
@@ -245,13 +296,83 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
         </div>
       )}
 
-      {/* ── 3-col grid ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+      {/* ── Full-width Preview Banner ── */}
+      <div
+        className="bg-white rounded-2xl p-4 sm:p-5 mb-4 sm:mb-5 flex items-center gap-4 sm:gap-6 flex-wrap"
+        style={{ border: "1px solid #ebebeb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
+      >
+        {/* Avatar */}
+        <div
+          className="flex items-center justify-center rounded-2xl shrink-0"
+          style={{ width: 64, height: 64, backgroundColor: avatarBg }}
+        >
+          <span style={{ ...SORA, fontSize: 22, fontWeight: 900, color: "#fff" }}>{initials}</span>
+        </div>
 
-        {/* ══ LEFT + CENTRE (col-span-2) ══ */}
-        <div className="xl:col-span-2 flex flex-col gap-5">
+        {/* Name + email + badges */}
+        <div className="flex-1 min-w-0 flex flex-col gap-2">
+          <div>
+            <p style={{ ...SORA, fontSize: 17, fontWeight: 900, color: form.name ? "#111" : "#bbb", letterSpacing: "-0.2px" }}>
+              {form.name || "Full Name"}
+            </p>
+            <p style={{ ...INTER, fontSize: 12, color: form.email ? "#777" : "#bbb", marginTop: 2 }}>
+              {form.email || "email@example.com"}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {activeRole && (
+              <span
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
+                style={{
+                  ...INTER, fontSize: 10, fontWeight: 700,
+                  backgroundColor: activeRole.bg,
+                  color: activeRole.color,
+                  border: `1px solid ${activeRole.border}`,
+                }}
+              >
+                {activeRole.icon && <span style={{ display: "flex", fontSize: 12 }}>{activeRole.icon}</span>}
+                {activeRole.label}
+              </span>
+            )}
+            <span
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
+              style={{ ...INTER, fontSize: 10, fontWeight: 700, backgroundColor: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0" }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+              Active
+            </span>
+          </div>
+        </div>
 
-          {/* Personal info */}
+        {/* Right side stat block */}
+        <div
+          className="hidden sm:flex items-center gap-6 px-5 py-3 rounded-xl shrink-0"
+          style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0" }}
+        >
+          {[
+            { label: "Name",  value: form.name  ? "✓ Set" : "Not set", ok: !!form.name  },
+            { label: "Email", value: form.email ? "✓ Set" : "Not set", ok: !!form.email },
+            { label: "Password", value: form.password ? pwStrength.label || "Set" : "Not set", ok: !!form.password },
+          ].map(({ label, value, ok }) => (
+            <div key={label} className="text-center">
+              <p style={{ ...INTER, fontSize: 10, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                {label}
+              </p>
+              <p style={{ ...INTER, fontSize: 12, fontWeight: 700, color: ok ? "#16a34a" : "#ccc", marginTop: 3 }}>
+                {value}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Equal 2-col grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+
+        {/* ══ LEFT: Personal Info + Role Assignment ══ */}
+        <div className="flex flex-col gap-4 sm:gap-5">
+
+          {/* Personal Information */}
           <SectionCard>
             <SectionTitle icon={<PersonOutlinedIcon style={{ fontSize: 16 }} />}>
               Personal Information
@@ -277,140 +398,8 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
             </div>
           </SectionCard>
 
-          {/* Password */}
-          <SectionCard>
-            <SectionTitle icon={<LockOutlinedIcon style={{ fontSize: 16 }} />}>
-              Set Password
-            </SectionTitle>
-            <div className="flex flex-col gap-4">
-              <TextInput
-                label="Password" required
-                type={showPw ? "text" : "password"}
-                value={form.password}
-                onChange={(v) => setField("password", v)}
-                placeholder="Min. 8 characters"
-                icon={<LockOutlinedIcon style={{ fontSize: 16 }} />}
-                error={errors.password}
-                suffix={
-                  <button
-                    onClick={() => setShowPw((p) => !p)}
-                    className="cursor-pointer border-none bg-transparent flex items-center"
-                    style={{ color: "#bbb" }}
-                  >
-                    {showPw
-                      ? <VisibilityOffOutlinedIcon style={{ fontSize: 17 }} />
-                      : <VisibilityOutlinedIcon style={{ fontSize: 17 }} />
-                    }
-                  </button>
-                }
-              />
-
-              {/* Strength bar */}
-              {form.password && (
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 500 }}>Password strength</span>
-                    <span style={{ ...INTER, fontSize: 11, fontWeight: 700, color: pwStrength.color }}>{pwStrength.label}</span>
-                  </div>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className="flex-1 rounded-full transition-all duration-300"
-                        style={{ height: 5, backgroundColor: i <= pwStrength.level ? pwStrength.color : "#f0f0f0" }}
-                      />
-                    ))}
-                  </div>
-                  <div className="mt-2 flex flex-col gap-1">
-                    {[
-                      { rule: form.password.length >= 8,          label: "At least 8 characters" },
-                      { rule: /[A-Z]/.test(form.password),        label: "One uppercase letter" },
-                      { rule: /[0-9]/.test(form.password),        label: "One number" },
-                      { rule: /[^A-Za-z0-9]/.test(form.password), label: "One special character" },
-                    ].map(({ rule, label }) => (
-                      <div key={label} className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: rule ? "#16a34a" : "#e0e0e0" }} />
-                        <span style={{ ...INTER, fontSize: 11, color: rule ? "#16a34a" : "#bbb", fontWeight: 500 }}>{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <TextInput
-                label="Confirm Password" required
-                type={showCPw ? "text" : "password"}
-                value={form.confirm_password}
-                onChange={(v) => setField("confirm_password", v)}
-                placeholder="Re-enter password"
-                icon={<LockOutlinedIcon style={{ fontSize: 16 }} />}
-                error={errors.confirm_password}
-                suffix={
-                  <button
-                    onClick={() => setShowCPw((p) => !p)}
-                    className="cursor-pointer border-none bg-transparent flex items-center"
-                    style={{ color: "#bbb" }}
-                  >
-                    {showCPw
-                      ? <VisibilityOffOutlinedIcon style={{ fontSize: 17 }} />
-                      : <VisibilityOutlinedIcon style={{ fontSize: 17 }} />
-                    }
-                  </button>
-                }
-              />
-            </div>
-          </SectionCard>
-
-        </div>
-
-        {/* ══ RIGHT PANEL ══ */}
-        <div className="flex flex-col gap-5">
-
-          {/* Preview card */}
-          <SectionCard>
-            <SectionTitle icon={<PersonOutlinedIcon style={{ fontSize: 16 }} />}>
-              Preview
-            </SectionTitle>
-            <div className="flex flex-col items-center gap-3 py-4">
-              {/* Avatar */}
-              <div
-                className="flex items-center justify-center rounded-2xl"
-                style={{ width: 72, height: 72, backgroundColor: avatarBg }}
-              >
-                <span style={{ ...SORA, fontSize: 24, fontWeight: 900, color: "#fff" }}>{initials}</span>
-              </div>
-              <div className="text-center">
-                <p style={{ ...SORA, fontSize: 15, fontWeight: 800, color: "#111" }}>
-                  {form.name || "Full Name"}
-                </p>
-                <p style={{ ...INTER, fontSize: 11, color: "#bbb", marginTop: 3 }}>
-                  {form.email || "email@example.com"}
-                </p>
-              </div>
-              {/* Role badge */}
-              {(() => {
-                const r = ROLES.find((x) => x.value === form.role);
-                return r ? (
-                  <span
-                    className="flex items-center gap-1 px-3 py-1 rounded-full"
-                    style={{ ...INTER, fontSize: 11, fontWeight: 700, backgroundColor: r.bg, color: r.color, border: `1px solid ${r.border}` }}
-                  >
-                    {r.icon} {r.label}
-                  </span>
-                ) : null;
-              })()}
-              {/* Status */}
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: form.is_active ? "#16a34a" : "#e53935" }} />
-                <span style={{ ...INTER, fontSize: 11, fontWeight: 700, color: form.is_active ? "#15803d" : "#dc2626" }}>
-                  {form.is_active ? "Active" : "Inactive"}
-                </span>
-              </div>
-            </div>
-          </SectionCard>
-
-          {/* Role picker */}
-          <SectionCard>
+          {/* Role Assignment */}
+          <SectionCard className="flex-1">
             <SectionTitle icon={<ShieldOutlinedIcon style={{ fontSize: 16 }} />}>
               Assign Role
             </SectionTitle>
@@ -433,70 +422,187 @@ export default function AdminCreatePage({ onBack, onSuccess = () => {} }) {
                     >
                       {role.icon}
                     </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span style={{ ...SORA, fontSize: 12, fontWeight: 800, color: active ? role.color : "#111" }}>
+                    <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                      <span style={{ ...SORA, fontSize: 13, fontWeight: 800, color: active ? role.color : "#111" }}>
                         {role.label}
                       </span>
                       <span style={{ ...INTER, fontSize: 11, color: "#888", lineHeight: 1.5 }}>
                         {role.description}
                       </span>
                     </div>
+                    {/* Active indicator */}
+                    <div
+                      className="w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all"
+                      style={{
+                        borderColor: active ? role.color : "#ddd",
+                        backgroundColor: active ? role.color : "transparent",
+                      }}
+                    >
+                      {active && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
                   </button>
                 );
               })}
             </div>
           </SectionCard>
+        </div>
 
-          {/* Active status */}
+        {/* ══ RIGHT: Password + Role Permissions ══ */}
+        <div className="flex flex-col gap-4 sm:gap-5">
+
+          {/* Password */}
           <SectionCard>
-            <SectionTitle icon={<InfoOutlinedIcon style={{ fontSize: 16 }} />}>
-              Account Status
+            <SectionTitle icon={<LockOutlinedIcon style={{ fontSize: 16 }} />}>
+              Set Password
             </SectionTitle>
-            <div
-              className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl"
-              style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0" }}
-            >
-              <div>
-                <p style={{ ...INTER, fontSize: 13, fontWeight: 700, color: "#111" }}>Active Account</p>
-                <p style={{ ...INTER, fontSize: 11, color: "#aaa", marginTop: 2 }}>Admin can log in immediately</p>
-              </div>
-              <button
-                onClick={() => setField("is_active", !form.is_active)}
-                className="relative shrink-0 transition-all cursor-pointer"
-                style={{
-                  width: 44, height: 24, borderRadius: 999,
-                  backgroundColor: form.is_active ? "#111" : "#e0e0e0",
-                  border: "none", padding: 0,
-                }}
-              >
+            <div className="flex flex-col gap-4">
+              <TextInput
+                label="Password" required
+                type={showPw ? "text" : "password"}
+                value={form.password}
+                onChange={(v) => setField("password", v)}
+                placeholder="Min. 8 characters"
+                icon={<LockOutlinedIcon style={{ fontSize: 16 }} />}
+                error={errors.password}
+                suffix={
+                  <button
+                    onClick={() => setShowPw((p) => !p)}
+                    className="cursor-pointer border-none bg-transparent flex items-center"
+                    style={{ color: "#bbb" }}
+                  >
+                    {showPw
+                      ? <VisibilityOffOutlinedIcon style={{ fontSize: 17 }} />
+                      : <VisibilityOutlinedIcon   style={{ fontSize: 17 }} />
+                    }
+                  </button>
+                }
+              />
+
+              {/* Strength bar */}
+              {form.password && (
                 <div
-                  className="absolute top-1 transition-all duration-200"
-                  style={{
-                    width: 16, height: 16, borderRadius: "50%",
-                    backgroundColor: "#fff",
-                    left: form.is_active ? 24 : 4,
-                    boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
-                  }}
-                />
-              </button>
+                  className="rounded-xl px-4 py-3.5"
+                  style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0" }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span style={{ ...INTER, fontSize: 11, color: "#aaa", fontWeight: 600 }}>Password strength</span>
+                    <span style={{ ...INTER, fontSize: 11, fontWeight: 700, color: pwStrength.color }}>
+                      {pwStrength.label}
+                    </span>
+                  </div>
+                  <div className="flex gap-1 mb-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="flex-1 rounded-full transition-all duration-300"
+                        style={{ height: 5, backgroundColor: i <= pwStrength.level ? pwStrength.color : "#e5e5e5" }}
+                      />
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[
+                      { rule: form.password.length >= 8,          label: "8+ characters"     },
+                      { rule: /[A-Z]/.test(form.password),        label: "Uppercase letter"  },
+                      { rule: /[0-9]/.test(form.password),        label: "One number"        },
+                      { rule: /[^A-Za-z0-9]/.test(form.password), label: "Special character" },
+                    ].map(({ rule, label }) => (
+                      <div key={label} className="flex items-center gap-1.5">
+                        <div
+                          className="w-1.5 h-1.5 rounded-full shrink-0"
+                          style={{ backgroundColor: rule ? "#16a34a" : "#e0e0e0" }}
+                        />
+                        <span style={{ ...INTER, fontSize: 11, color: rule ? "#16a34a" : "#bbb", fontWeight: 500 }}>
+                          {label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <TextInput
+                label="Confirm Password" required
+                type={showCPw ? "text" : "password"}
+                value={form.confirm_password}
+                onChange={(v) => setField("confirm_password", v)}
+                placeholder="Re-enter password"
+                icon={<LockOutlinedIcon style={{ fontSize: 16 }} />}
+                error={errors.confirm_password}
+                suffix={
+                  <button
+                    onClick={() => setShowCPw((p) => !p)}
+                    className="cursor-pointer border-none bg-transparent flex items-center"
+                    style={{ color: "#bbb" }}
+                  >
+                    {showCPw
+                      ? <VisibilityOffOutlinedIcon style={{ fontSize: 17 }} />
+                      : <VisibilityOutlinedIcon   style={{ fontSize: 17 }} />
+                    }
+                  </button>
+                }
+              />
             </div>
           </SectionCard>
 
-          <button
-            onClick={handleSave}
-            disabled={apiLoading}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-white transition-all cursor-pointer disabled:opacity-60"
-            style={{ ...SORA, fontSize: 14, fontWeight: 800, backgroundColor: saved ? "#16a34a" : "#111", border: "none" }}
-          >
-            {apiLoading ? (
-              <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating Admin…</>
-            ) : saved ? (
-              <><CheckCircleOutlinedIcon style={{ fontSize: 18 }} /> Admin Created!</>
-            ) : (
-              <><SaveOutlinedIcon style={{ fontSize: 18 }} /> Create Admin</>
-            )}
-          </button>
+          {/* Role Permissions — fills vertical gap to balance columns */}
+          <SectionCard className="flex-1">
+            <SectionTitle icon={<ShieldOutlinedIcon style={{ fontSize: 16 }} />}>
+              Role Permissions
+            </SectionTitle>
 
+            {activeRole ? (
+              <div className="flex flex-col gap-3">
+                {/* Role header */}
+                <div
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                  style={{ backgroundColor: activeRole.activeBg, border: `1.5px solid ${activeRole.border}` }}
+                >
+                  <div
+                    className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
+                    style={{ backgroundColor: activeRole.bg, color: activeRole.color }}
+                  >
+                    {activeRole.icon}
+                  </div>
+                  <div>
+                    <p style={{ ...SORA, fontSize: 13, fontWeight: 800, color: activeRole.color }}>
+                      {activeRole.label}
+                    </p>
+                    <p style={{ ...INTER, fontSize: 11, color: "#888" }}>
+                      {activeRole.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Permissions list */}
+                <div className="flex flex-col gap-2 mt-1">
+                  {activeRole.permissions.map((perm) => (
+                    <div key={perm} className="flex items-center gap-2.5">
+                      <div
+                        className="flex items-center justify-center w-5 h-5 rounded-md shrink-0"
+                        style={{ backgroundColor: activeRole.bg }}
+                      >
+                        <CheckCircleOutlinedIcon style={{ fontSize: 13, color: activeRole.color }} />
+                      </div>
+                      <span style={{ ...INTER, fontSize: 12, fontWeight: 600, color: "#444" }}>{perm}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Tip */}
+                <div
+                  className="flex items-start gap-2 mt-2 px-3 py-2.5 rounded-xl"
+                  style={{ backgroundColor: "#f9f9f9", border: "1px solid #f0f0f0" }}
+                >
+                  <WarningAmberOutlinedIcon style={{ fontSize: 13, color: "#bbb", flexShrink: 0, marginTop: 1 }} />
+                  <p style={{ ...INTER, fontSize: 11, color: "#aaa", lineHeight: 1.6 }}>
+                    Role can be changed at any time from the admin management panel.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p style={{ ...INTER, fontSize: 13, color: "#bbb" }}>Select a role to see its permissions.</p>
+            )}
+          </SectionCard>
         </div>
       </div>
     </div>

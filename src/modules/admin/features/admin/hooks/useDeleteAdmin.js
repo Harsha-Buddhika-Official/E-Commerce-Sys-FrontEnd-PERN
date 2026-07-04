@@ -6,11 +6,11 @@ export const useDeleteAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const deleteAdmin = useCallback(async (email) => {
-    if (!email?.trim()) {
+  const deleteAdmin = useCallback(async (id) => {
+    if (!id) {
       const hookError = handleHookError(
-        new Error("Email is required"),
-        "Email is required"
+        new Error("ID is required"),
+        "ID is required"
       );
       setError(hookError);
       throw hookError;
@@ -20,7 +20,7 @@ export const useDeleteAdmin = () => {
     setError(null);
 
     try {
-      return await deleteAdminService(email);
+      return await deleteAdminService(id);
 
     } catch (err) {
       const hookError = handleHookError(err, "Failed to delete admin");

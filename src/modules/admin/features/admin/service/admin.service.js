@@ -1,7 +1,7 @@
-import { createAdmin as createAdminAPI, deleteAdminByEmail, getAllAdmins, updatePassword, updateAdminRole as updateAdminRoleAPI, } from "../api/admin.api";
+import { createAdmin as createAdminAPI, deleteAdminById, getAllAdmins, updatePassword, updateAdminRole as updateAdminRoleAPI, } from "../api/admin.api";
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 import { extractArrayPayload, extractObjectPayload, } from "../../../../../utils/payloadExtractors.js";
-import { normalizeCreateAdmin, normalizeAdminList, normalizePasswordPayload, normalizeAdminRole, normalizeAdminEmail, } from "./admin.normalizer.js";
+import { normalizeCreateAdmin, normalizeAdminList, normalizePasswordPayload, normalizeAdminRole, normalizeAdminId, } from "./admin.normalizer.js";
 
 
 // ==================== CREATE ADMIN ====================
@@ -71,15 +71,15 @@ export const updateAdminPassword = async (adminId, passwordData) => {
 
 // ==================== DELETE ADMIN ====================
 
-export const deleteAdmin = async (email) => {
+export const deleteAdmin = async (id) => {
   try {
-    const normalizedEmail = normalizeAdminEmail(email);
+    const normalizedId = normalizeAdminId(id);
 
-    if (!normalizedEmail) {
-      throw new Error("Email is required to delete an admin");
+    if (!normalizedId) {
+      throw new Error("ID is required to delete an admin");
     }
 
-    const response = await deleteAdminByEmail(normalizedEmail);
+    const response = await deleteAdminById(normalizedId);
     return extractObjectPayload(response);
   } catch (error) {
     throw handleServiceError(error, "Failed to delete admin", {
