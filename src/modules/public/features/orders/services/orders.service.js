@@ -15,6 +15,7 @@ export const trackOrderService = async ({ email, trackingCode }) => {
 export const createOrder = async (payload) => {
   try {
     const response = await createOrderApi(payload);
+    // console.log("Create Order API Response:", response); // Debug log
 
     return extractObjectPayload(response.data);
   } catch (error) {

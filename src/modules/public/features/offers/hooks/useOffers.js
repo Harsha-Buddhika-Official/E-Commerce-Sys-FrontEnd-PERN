@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchOffers } from "../service/offers.service.js";
+import { fetchOffersService } from "../service/offers.service.js";
 
 const INITIAL_STATE = {
   offers: [],
@@ -14,7 +14,7 @@ export const useOffers = (mode = "all") => {
     setState((p) => ({ ...p, loading: true, error: null }));
 
     try {
-      const offers = await fetchOffers(mode);
+      const offers = await fetchOffersService(mode);
 
       setState({offers,loading: false,error: null,});
       

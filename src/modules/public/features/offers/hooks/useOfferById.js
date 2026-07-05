@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { fetchOfferById } from "../service/offers.service.js";
+import { fetchOfferByIdService } from "../service/offers.service.js";
 
 const normalizeOffer = (raw) => {
   if (!raw) return null;
@@ -39,7 +39,7 @@ export const useOfferById = (id) => {
       setLoading(true);
       setError("");
 
-      const data = await fetchOfferById(id);
+      const data = await fetchOfferByIdService(id);
 
       setOffer(normalizeOffer(data));
     } catch (err) {
