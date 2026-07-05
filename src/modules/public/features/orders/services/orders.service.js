@@ -3,7 +3,6 @@ import { extractObjectPayload } from "../../../../../utils/payloadExtractors.js"
 import { handleServiceError } from "../../../../../utils/serviceError.js";
 
 export const trackOrderService = async ({ email, trackingCode }) => {
-    // console.log("Tracking order with:", { email, trackingCode });
     const response = await trackOrderAPI({ email, trackingCode });
 
     if (!response?.success) {
