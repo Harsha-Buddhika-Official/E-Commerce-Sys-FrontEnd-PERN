@@ -17,15 +17,15 @@ API.interceptors.request.use((config) => {
 API.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
+        const isLoginRequest = error?.config?.url?.includes("/admin/login");
 
-            // Clear auth data on 401
+        if (error.response?.status === 401 && !isLoginRequest) {
+
             localStorage.removeItem("admin_token");
             localStorage.removeItem("user");
-
-            // redirect login
             window.location.href = "/admin";
         }
+
         return Promise.reject(error);
     }
 );

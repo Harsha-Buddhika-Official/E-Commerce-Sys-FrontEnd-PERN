@@ -271,7 +271,7 @@ export default function DirectCheckout() {
                 </div>
                 <div>
                   <FieldLabel required>Phone Number</FieldLabel>
-                  <TextInput value={form.phone} onChange={setField("phone")} placeholder="+94 77 123 4567" type="tel" icon={<LocalPhoneOutlinedIcon style={{ fontSize: 16 }} />} error={errors.phone} />
+                  <TextInput value={form.phone} onChange={setField("phone")} placeholder="077 123 4567" type="tel" icon={<LocalPhoneOutlinedIcon style={{ fontSize: 16 }} />} error={errors.phone} />
                   <FieldError message={errors.phone} />
                 </div>
               </div>

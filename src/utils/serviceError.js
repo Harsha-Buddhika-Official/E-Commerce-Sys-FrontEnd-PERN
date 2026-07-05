@@ -4,15 +4,15 @@ export const handleServiceError = (
   context = {}
 ) => {
   const response = error?.response;
+  const data = response?.data;
 
-  let message =
-    response?.data?.message ||
-    error?.message ||
-    fallbackMessage;
+  // Backend validation errors (Joi)
+  const validationErrors = Array.isArray(data?.errors) ? data.errors : [];
 
-  const validationErrors = response?.data?.error;
+  // Determine the most useful error message
+  let message = fallbackMessage;
 
-  if (Array.isArray(validationErrors)) {
+  if (validationErrors.length > 0) {
     message = validationErrors
       .map((err) =>
         typeof err === "string"
@@ -20,18 +20,30 @@ export const handleServiceError = (
           : err?.message || "Unknown validation error"
       )
       .join(", ");
-  } else if (typeof validationErrors === "string") {
-    message = validationErrors;
+  } else if (typeof data?.message === "string" && data.message.trim()) {
+    message = data.message;
+  } else if (error?.message) {
+    message = error.message;
   }
 
   const serviceError = new Error(message);
 
   serviceError.name = "ServiceError";
+
+  // HTTP information
   serviceError.status = response?.status ?? error?.status ?? null;
-  serviceError.body = response?.data ?? error?.body ?? null;
-  serviceError.code = response?.data?.code ?? error?.code ?? null;
+  serviceError.code = data?.code ?? error?.code ?? null;
+
+  // Preserve backend payload
+  serviceError.body = data ?? error?.body ?? null;
+
+  // Preserve validation errors for forms
+  serviceError.errors = validationErrors;
+
+  // Original axios error
   serviceError.cause = error;
 
+  // Optional context
   serviceError.context = {
     service: context.service ?? null,
     operation: context.operation ?? null,
@@ -39,12 +51,16 @@ export const handleServiceError = (
   };
 
   if (context.log !== false && import.meta.env.DEV) {
-    console.error(`[${serviceError.context.service || "service"}] ${message}`, {
-      status: serviceError.status,
-      code: serviceError.code,
-      operation: serviceError.context.operation,
-      body: serviceError.body,
-    });
+    console.error(
+      `[${serviceError.context.service || "service"}] ${message}`,
+      {
+        status: serviceError.status,
+        code: serviceError.code,
+        operation: serviceError.context.operation,
+        body: serviceError.body,
+        validationErrors: serviceError.errors,
+      }
+    );
   }
 
   return serviceError;
