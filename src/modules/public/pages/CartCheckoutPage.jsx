@@ -168,7 +168,7 @@ export default function CartCheckoutPage() {
     setApiError("");
     try {
       const order = await createOrder({
-        type:             "cart",
+        order_type:       "cart",
         full_name:        form.name,
         customer_email:   form.email,
         phone_number:     form.phone,

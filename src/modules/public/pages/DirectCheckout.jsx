@@ -182,7 +182,7 @@ export default function DirectCheckout() {
     setApiError("");
     try {
       const order = await createOrder({
-        type:             "direct",
+        order_type:       "direct",
         product_id:       state.product_id,
         quantity:         quantity,
         full_name:        form.name,
