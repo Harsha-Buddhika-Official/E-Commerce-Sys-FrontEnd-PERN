@@ -1,5 +1,7 @@
 import { loginAdmin } from "../api/auth.api";
 import { isTokenExpired } from "../utils/token.utils";
+import { normalizeApiError } from "../../../../../utils/normalizeApiError.js";
+
 
 const TOKEN_KEY = "admin_token";
 
@@ -7,18 +9,29 @@ const saveToken = (token) => {
     localStorage.setItem(TOKEN_KEY, token);
 };
 
-export const loginAdminService = async (credentials) => {
-    const { token, admin } = await loginAdmin(credentials);
-    if (!token) {
-        throw new Error("Invalid response from server. Please try again.");
-    }
+// export const loginAdminService = async (credentials) => {
+//     const { token, admin } = await loginAdmin(credentials);
+//     if (!token) {
+//         throw new Error("Invalid response from server. Please try again.");
+//     }
 
-    saveToken(token);
+//     saveToken(token);
     
-    return {
-        token,
-        admin,
-    };
+//     return {
+//         token,
+//         admin,
+//     };
+// };
+
+export const loginAdminService = async (credentials) => {
+    try {
+        const { token, admin } = await loginAdmin(credentials);
+        if (!token) throw { message: "Invalid response from server. Please try again." };
+        saveToken(token);
+        return { token, admin };
+    } catch (error) {
+        throw normalizeApiError(error);
+    }
 };
 
 export const logoutAdmin = () => localStorage.removeItem(TOKEN_KEY);
