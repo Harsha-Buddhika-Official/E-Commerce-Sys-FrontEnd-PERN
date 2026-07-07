@@ -96,6 +96,20 @@ const AdminLogin = () => {
 
   const { loading, login } = useAdminLogin();
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+
+  //   if (!email.trim() || !password) return;
+
+  //   setLocalErr("");
+
+  //   try {
+  //     await login({ email: email.trim(), password });
+  //   } catch {
+  //     setLocalErr(CREDENTIAL_ERROR);
+  //   }
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -106,8 +120,16 @@ const AdminLogin = () => {
 
     try {
       await login({ email: email.trim(), password });
-    } catch {
-      setLocalErr(CREDENTIAL_ERROR);
+    } catch (error) {
+      // console.log("Login error:", error);
+      const status = error?.response?.status;
+      const serverMessage = error?.response?.data?.message;
+
+      if (status === 429 && serverMessage) {
+        setLocalErr(serverMessage);
+      } else {
+        setLocalErr(CREDENTIAL_ERROR);
+      }
     }
   };
 

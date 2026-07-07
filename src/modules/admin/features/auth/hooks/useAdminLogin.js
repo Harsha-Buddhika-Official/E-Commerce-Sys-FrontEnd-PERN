@@ -28,6 +28,7 @@ export const useAdminLogin = () => {
         },
       });
     } catch (error) {
+      console.log("Login error in hook:", error);
       setState({
         adminData: null,
         loading: false,
