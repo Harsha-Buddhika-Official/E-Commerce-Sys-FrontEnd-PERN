@@ -91,19 +91,32 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [showPw,   setShowPw]   = useState(false);
 
-  const { loading, login, error } = useAdminLogin();
+  const { loading, login, error, lockoutSeconds  } = useAdminLogin();
+  const isLocked = lockoutSeconds > 0;
 
+  const formatCountdown = (secs) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+};
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+
+  //   if (!email.trim() || !password) return;
+
+  //   try {
+  //     await login({ email: email.trim(), password });
+  //   } catch {
+  //     console.log("Login error:", error);
+  //   }
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    if (!email.trim() || !password) return;
-
-    try {
-      await login({ email: email.trim(), password });
-    } catch {
-      console.log("Login error:", error);
-    }
+    if (!email.trim() || !password || isLocked) return;
+    await login({ email: email.trim(), password });
   };
 
   return (
@@ -166,14 +179,15 @@ const AdminLogin = () => {
               </button>
             </div>
 
-            {/* Error — rendered straight from backend via the hook, nothing invented here */}
-            {error?.message && (
+            {(error?.message || isLocked) && (
               <div
                 className="flex items-center gap-2 px-3 py-2.5 rounded-lg -mt-2"
                 style={{ backgroundColor: "rgba(229,57,53,0.12)", border: "1px solid rgba(229,57,53,0.3)" }}
               >
                 <span style={{ ...INTER, fontSize: 12, fontWeight: 500, color: "#ff6b6b", lineHeight: 1.5 }}>
-                  {error.message}
+                  {isLocked
+                    ? `Too many login attempts. Try again in ${formatCountdown(lockoutSeconds)}`
+                    : error.message}
                 </span>
               </div>
             )}
