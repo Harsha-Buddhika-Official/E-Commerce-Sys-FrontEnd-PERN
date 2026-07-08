@@ -8,8 +8,6 @@ import { useAdminLogin } from "../../features/auth/hooks/useAdminLogin";
 const SORA  = { fontFamily: "'Sora', 'Segoe UI', sans-serif" };
 const INTER = { fontFamily: "'Inter', 'Segoe UI', sans-serif" };
 
-const CREDENTIAL_ERROR = "Invalid email or password. Please try again.";
-
 // ─── Animated SVG Network Background ─────────────────────────────────────────
 const NetworkBg = () => {
   const WIDTH = 1600;
@@ -92,23 +90,33 @@ const AdminLogin = () => {
   const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
   const [showPw,   setShowPw]   = useState(false);
-  const [localErr, setLocalErr] = useState("");
 
-  const { loading, login } = useAdminLogin();
+  const { loading, login, error, lockoutSeconds  } = useAdminLogin();
+  const isLocked = lockoutSeconds > 0;
 
+  const formatCountdown = (secs) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+};
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+
+  //   if (!email.trim() || !password) return;
+
+  //   try {
+  //     await login({ email: email.trim(), password });
+  //   } catch {
+  //     console.log("Login error:", error);
+  //   }
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    if (!email.trim() || !password) return;
-
-    setLocalErr("");
-
-    try {
-      await login({ email: email.trim(), password });
-    } catch {
-      setLocalErr(CREDENTIAL_ERROR);
-    }
+    if (!email.trim() || !password || isLocked) return;
+    await login({ email: email.trim(), password });
   };
 
   return (
@@ -137,7 +145,7 @@ const AdminLogin = () => {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => { setEmail(e.target.value); setLocalErr(""); }}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
                 required
                 autoComplete="email"
@@ -152,7 +160,7 @@ const AdminLogin = () => {
               <input
                 type={showPw ? "text" : "password"}
                 value={password}
-                onChange={(e) => { setPassword(e.target.value); setLocalErr(""); }}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 required
                 autoComplete="current-password"
@@ -171,14 +179,15 @@ const AdminLogin = () => {
               </button>
             </div>
 
-            {/* Error */}
-            {localErr && (
+            {(error?.message || isLocked) && (
               <div
                 className="flex items-center gap-2 px-3 py-2.5 rounded-lg -mt-2"
                 style={{ backgroundColor: "rgba(229,57,53,0.12)", border: "1px solid rgba(229,57,53,0.3)" }}
               >
                 <span style={{ ...INTER, fontSize: 12, fontWeight: 500, color: "#ff6b6b", lineHeight: 1.5 }}>
-                  {localErr}
+                  {isLocked
+                    ? `Too many login attempts. Try again in ${formatCountdown(lockoutSeconds)}`
+                    : error.message}
                 </span>
               </div>
             )}
