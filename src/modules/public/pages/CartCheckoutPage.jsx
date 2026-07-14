@@ -28,8 +28,8 @@ function formatLKR(amount) {
 
 const SHIPPING_THRESHOLD = 50000;
 const SHIPPING_FEE       = 500;
-const ALLOWED_TYPES      = ["image/jpeg", "application/pdf"];
-const ALLOWED_LABEL      = "JPG / JPEG or PDF";
+const ALLOWED_TYPES      = ["image/jpeg", "image/png", "application/pdf"];
+const ALLOWED_LABEL      = "JPG / JPEG / PNG or PDF";
 
 function SectionCard({ title, subtitle, icon, children }) {
   return (
