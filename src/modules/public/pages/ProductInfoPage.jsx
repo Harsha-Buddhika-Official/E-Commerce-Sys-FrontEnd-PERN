@@ -6,11 +6,13 @@ import {
   LocalShipping,
   ChevronLeft,
   ChevronRight,
+  CompareArrows,
 } from "@mui/icons-material";
 import { useProductDetail } from "../features/products/hooks/useProductDetail";
 import { formatAttributeName } from "../../../utils/formatAttributeName";
 import { removeFromCart, addProductToServer } from "../features/cart/service/cart.service.js";
 import { useCart } from "../features/cart/hooks/useCart.js";
+import { useComparison } from "../features/comparison/hooks/useComparison.js";
 
 const FALLBACK_IMAGE = "https://placehold.co/480x380/efefef/333333?text=No+Image";
 
@@ -29,6 +31,8 @@ export default function ProductInfoPage() {
   const [activeImg, setActiveImg] = useState(0);
   const { items: cartItems } = useCart();
   const [shareTooltip, setShareTooltip] = useState("Share");
+  const { count: compareCount, isInList, add: addToCompare, remove: removeFromCompare } = useComparison();
+  const [compareTooltip, setCompareTooltip] = useState(null);
 
   const productImages = useMemo(() => {
     if (!product?.images?.length) return [FALLBACK_IMAGE];
@@ -55,13 +59,12 @@ export default function ProductInfoPage() {
   const tags = [product?.category_name, product?.brand_name, formatAttributeName(product?.product_tag)]
     .filter(Boolean);
 
-  // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const inCart = !!product?.product_id && cartItems.some((item) => item.product_id === product.product_id);
-
+  const inCompare = !!product?.product_id && isInList(product.product_id);
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}${window.location.pathname}?product=${product?.slug || product?.product_id || ""}`;
@@ -72,7 +75,20 @@ export default function ProductInfoPage() {
     }
   };
 
-  // useCart handles cart state; addProductToServer posts to API and mirrors response.
+  const handleToggleCompare = () => {
+    if (!product?.product_id) return;
+
+    if (inCompare) {
+      removeFromCompare(product.product_id);
+      return;
+    }
+
+    const result = addToCompare(product.product_id);
+    if (!result.success) {
+      setCompareTooltip(result.message);
+      setTimeout(() => setCompareTooltip(null), 2500);
+    }
+  };
 
   const prevImg = () => setActiveImg((p) => (p === 0 ? productImages.length - 1 : p - 1));
   const nextImg = () => setActiveImg((p) => (p === productImages.length - 1 ? 0 : p + 1));
@@ -192,7 +208,6 @@ export default function ProductInfoPage() {
               type="button"
               onClick={async () => {
                 if (!product) return;
-                // await addProductToServer(product.product_id ?? product.id);
                 navigate("/checkout-direct", {
                   state: {
                       product_id: product.product_id,
@@ -229,6 +244,26 @@ export default function ProductInfoPage() {
             >
               <ShoppingCart />
             </button>
+
+            <div className="relative">
+              <button
+                type="button"
+                title={inCompare ? "Remove from comparison" : "Add to comparison"}
+                onClick={handleToggleCompare}
+                className={`rounded-md border-2 p-2 transition-colors ${
+                  inCompare
+                    ? "border-zinc-800 bg-zinc-800 text-white"
+                    : "border-zinc-300 text-zinc-500 hover:border-zinc-800 hover:text-zinc-800"
+                }`}
+              >
+                <CompareArrows />
+              </button>
+              {compareTooltip && (
+                <span className="absolute -top-9 left-1/2 w-max max-w-50 -translate-x-1/2 whitespace-normal rounded bg-zinc-800 px-2 py-1 text-center text-[10px] text-white">
+                  {compareTooltip}
+                </span>
+              )}
+            </div>
 
             <div className="relative">
               <button
@@ -278,6 +313,27 @@ export default function ProductInfoPage() {
           ))}
         </div>
       </div>
+
+      {compareCount > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-20 flex justify-center px-4 pb-4">
+          <div className="flex w-full max-w-300 items-center justify-between gap-3 rounded-xl bg-zinc-800 px-5 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.2)]">
+            <div className="flex items-center gap-2 text-white">
+              <CompareArrows fontSize="small" />
+              <span className="text-xs font-semibold">
+                {compareCount} product{compareCount > 1 ? "s" : ""} selected for comparison
+              </span>
+            </div>
+            <button
+              type="button"
+              disabled={compareCount < 2}
+              onClick={() => navigate("/compare")}
+              className="rounded-md bg-red-600 px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Compare Now
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

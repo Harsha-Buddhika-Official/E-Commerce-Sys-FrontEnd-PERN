@@ -13,13 +13,13 @@ import ContactPage from "../../modules/public/pages/ContactPage.jsx";
 import DirectCheckout from "../../modules/public/pages/DirectCheckout.jsx";
 import CartCheckoutPage from "../../modules/public/pages/CartCheckoutPage.jsx";
 import TrackOrderPage from "../../modules/public/pages/TrackOrderPage.jsx";
+import ComparePage from "../../modules/public/pages/ComparePage.jsx";
+import ChatPage from "../../modules/public/pages/ChatPage.jsx";
 
 export default function PublicRoutes() {
-  // const [selectedCategory, setSelectedCategory] = useState(null);
   return (
     <>
-      <Navbar
-      />
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<ProductsPage/>} />
@@ -33,6 +33,8 @@ export default function PublicRoutes() {
         <Route path="/checkout-direct" element={<DirectCheckout />} />
         <Route path="/checkout-cart" element={<CartCheckoutPage />} />
         <Route path="/track-order" element={<TrackOrderPage />} />
+        <Route path="/compare" element={<ComparePage />} />
+        <Route path="/chat" element={<ChatPage />} />
       </Routes>
       <Footer />
     </>
