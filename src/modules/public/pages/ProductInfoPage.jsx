@@ -1,3 +1,4 @@
+// src/modules/public/pages/ProductInfoPage.jsx
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -59,6 +60,7 @@ export default function ProductInfoPage() {
   const tags = [product?.category_name, product?.brand_name, formatAttributeName(product?.product_tag)]
     .filter(Boolean);
 
+  // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -83,12 +85,20 @@ export default function ProductInfoPage() {
       return;
     }
 
-    const result = addToCompare(product.product_id);
+    const result = addToCompare({
+      productId: product.product_id,
+      name: product.name,
+      image: productImages[0],
+      price: formatCurrency(currentPrice),
+    });
+
     if (!result.success) {
       setCompareTooltip(result.message);
       setTimeout(() => setCompareTooltip(null), 2500);
     }
   };
+
+  // useCart handles cart state; addProductToServer posts to API and mirrors response.
 
   const prevImg = () => setActiveImg((p) => (p === 0 ? productImages.length - 1 : p - 1));
   const nextImg = () => setActiveImg((p) => (p === productImages.length - 1 ? 0 : p + 1));
@@ -313,27 +323,6 @@ export default function ProductInfoPage() {
           ))}
         </div>
       </div>
-
-      {compareCount > 0 && (
-        <div className="fixed inset-x-0 bottom-0 z-20 flex justify-center px-4 pb-4">
-          <div className="flex w-full max-w-300 items-center justify-between gap-3 rounded-xl bg-zinc-800 px-5 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.2)]">
-            <div className="flex items-center gap-2 text-white">
-              <CompareArrows fontSize="small" />
-              <span className="text-xs font-semibold">
-                {compareCount} product{compareCount > 1 ? "s" : ""} selected for comparison
-              </span>
-            </div>
-            <button
-              type="button"
-              disabled={compareCount < 2}
-              onClick={() => navigate("/compare")}
-              className="rounded-md bg-red-600 px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Compare Now
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

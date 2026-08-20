@@ -15,6 +15,8 @@ import CartCheckoutPage from "../../modules/public/pages/CartCheckoutPage.jsx";
 import TrackOrderPage from "../../modules/public/pages/TrackOrderPage.jsx";
 import ComparePage from "../../modules/public/pages/ComparePage.jsx";
 import ChatPage from "../../modules/public/pages/ChatPage.jsx";
+import CompareBar from "../../modules/public/components/CompareBar.jsx";
+
 
 export default function PublicRoutes() {
   return (
@@ -37,6 +39,7 @@ export default function PublicRoutes() {
         <Route path="/chat" element={<ChatPage />} />
       </Routes>
       <Footer />
+      <CompareBar />
     </>
   );
 }

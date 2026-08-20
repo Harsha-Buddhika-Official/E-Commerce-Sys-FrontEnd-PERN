@@ -33,21 +33,28 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const getCompareList = () => readList();
 
-export const addToCompareList = (productId) => {
+/**
+ * Adds a product summary to the compare list.
+ * @param {{ productId: number, name: string, image?: string, price?: string }} product
+ */
+export const addToCompareList = (product) => {
+  if (!product?.productId) throw new Error("Invalid product.");
+
   const list = readList();
-  if (list.includes(productId)) return list;
+
+  if (list.some((item) => item.productId === product.productId)) return list;
 
   if (list.length >= MAX_COMPARE_ITEMS) {
     throw new Error(`You can compare up to ${MAX_COMPARE_ITEMS} products at a time.`);
   }
 
-  const next = [...list, productId];
+  const next = [...list, product];
   writeList(next);
   return next;
 };
 
 export const removeFromCompareList = (productId) => {
-  const next = readList().filter((id) => id !== productId);
+  const next = readList().filter((item) => item.productId !== productId);
   writeList(next);
   return next;
 };

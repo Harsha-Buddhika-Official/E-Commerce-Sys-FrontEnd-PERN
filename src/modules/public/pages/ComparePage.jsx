@@ -23,11 +23,11 @@ export default function ComparePage() {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    if (hasFetchedRef.current) return; // guard against StrictMode double-fire in dev
+    if (hasFetchedRef.current) return;
     hasFetchedRef.current = true;
 
     if (list.length >= 2) {
-      compare(list);
+      compare(list.map((item) => item.productId)); // convert to IDs before calling
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -240,15 +240,15 @@ export default function ComparePage() {
                 Selected Products
               </h3>
               <div className="flex flex-wrap gap-2">
-                {list.map((id) => (
+                {list.map((item) => (
                   <span
-                    key={id}
+                    key={item.productId}
                     className="flex items-center gap-1.5 rounded-full bg-zinc-100 py-1.5 pl-3 pr-1.5 text-xs font-medium text-zinc-700"
                   >
-                    Product #{id}
+                    {item.name}
                     <button
                       type="button"
-                      onClick={() => remove(id)}
+                      onClick={() => remove(item.productId)}
                       className="flex h-4 w-4 items-center justify-center rounded-full text-zinc-400 hover:bg-zinc-200 hover:text-zinc-700"
                     >
                       <Close style={{ fontSize: 12 }} />

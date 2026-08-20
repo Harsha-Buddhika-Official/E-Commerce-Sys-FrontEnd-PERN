@@ -25,9 +25,9 @@ export const useComparison = () => {
     return () => window.removeEventListener("compare:updated", handleUpdate);
   }, []);
 
-  const add = useCallback((productId) => {
+  const add = useCallback((product) => {
     try {
-      addToCompareList(productId);
+      addToCompareList(product);
       return { success: true };
     } catch (err) {
       return { success: false, message: err.message };
@@ -43,14 +43,13 @@ export const useComparison = () => {
     setResultState(INITIAL_RESULT_STATE);
   }, []);
 
-  const isInList = useCallback((productId) => list.includes(productId), [list]);
+  const isInList = useCallback(
+    (productId) => list.some((item) => item.productId === productId),
+    [list]
+  );
 
-  /**
-   * Runs the AI comparison for the current list (or a passed-in list of IDs).
-   * Manages loading/error/polling state internally so the UI layer stays simple.
-   */
   const compare = useCallback(async (productIds) => {
-    const idsToCompare = productIds || getCompareList();
+    const idsToCompare = productIds || getCompareList().map((item) => item.productId);
 
     if (idsToCompare.length < 2) {
       setResultState((prev) => ({ ...prev, error: "Select at least 2 products to compare." }));
@@ -77,14 +76,12 @@ export const useComparison = () => {
   const resetResult = useCallback(() => setResultState(INITIAL_RESULT_STATE), []);
 
   return {
-    // compare list management
     list,
     count: list.length,
     add,
     remove,
     clear,
     isInList,
-    // AI comparison execution
     result: resultState.result,
     loading: resultState.loading,
     error: resultState.error,
