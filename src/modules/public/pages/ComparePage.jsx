@@ -1,45 +1,44 @@
 // src/modules/public/pages/ComparePage.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { CompareArrows, SmartToy, Close, Refresh } from "@mui/icons-material";
 import { useComparison } from "../features/comparison/hooks/useComparison.js";
-import { runComparison } from "../features/comparison/services/comparison.service.js";
 
 export default function ComparePage() {
   const navigate = useNavigate();
-  const { list, remove, clear, count } = useComparison();
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const {
+    list,
+    count,
+    remove,
+    clear,
+    result,
+    loading,
+    error,
+    pollAttempt,
+    compare,
+  } = useComparison();
 
-  const fetchComparison = async () => {
-    if (list.length < 2) return;
-
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await runComparison(list);
-      setResult(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to compare products");
-      setResult(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    if (hasFetchedRef.current) return; // guard against StrictMode double-fire in dev
+    hasFetchedRef.current = true;
+
     if (list.length >= 2) {
-      fetchComparison();
+      compare(list);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleRetry = () => compare(list);
 
   const handleAskAI = () => {
     navigate("/chat", { state: { comparisonResult: result } });
   };
 
+  // --- Empty state: no products selected ---
   if (count === 0) {
     return (
       <div
@@ -66,6 +65,7 @@ export default function ComparePage() {
     );
   }
 
+  // --- Only 1 product selected ---
   if (count === 1) {
     return (
       <div
@@ -102,26 +102,25 @@ export default function ComparePage() {
               Comparing {count} product{count > 1 ? "s" : ""}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                clear();
-                setResult(null);
-                navigate("/products");
-              }}
-              className="rounded-md border-2 border-zinc-200 px-4 py-2 text-xs font-semibold text-zinc-600 transition-colors hover:border-red-600 hover:text-red-600"
-            >
-              Clear All
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              clear();
+              navigate("/products");
+            }}
+            className="rounded-md border-2 border-zinc-200 px-4 py-2 text-xs font-semibold text-zinc-600 transition-colors hover:border-red-600 hover:text-red-600"
+          >
+            Clear All
+          </button>
         </div>
 
         {/* Loading */}
         {loading && (
           <div className="flex flex-col items-center gap-3 rounded-xl bg-white p-12 shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-200 border-t-red-600" />
-            <p className="text-[13px] text-zinc-500">Comparing products with AI...</p>
+            <p className="text-[13px] text-zinc-500">
+              Comparing products with AI{pollAttempt > 0 ? ` (still working, ${pollAttempt * 2}s)` : "..."}
+            </p>
           </div>
         )}
 
@@ -131,7 +130,7 @@ export default function ComparePage() {
             <p className="text-sm text-red-700">{error}</p>
             <button
               type="button"
-              onClick={fetchComparison}
+              onClick={handleRetry}
               className="flex items-center gap-2 rounded-md bg-zinc-800 px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
             >
               <Refresh fontSize="small" />
@@ -179,10 +178,7 @@ export default function ComparePage() {
                   </thead>
                   <tbody>
                     {result.products?.[0]?.specs?.map((spec, i) => (
-                      <tr
-                        key={spec.label}
-                        className={i % 2 === 0 ? "bg-white" : "bg-zinc-50"}
-                      >
+                      <tr key={spec.label} className={i % 2 === 0 ? "bg-white" : "bg-zinc-50"}>
                         <td className="border-t border-zinc-200 px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
                           {spec.label}
                         </td>

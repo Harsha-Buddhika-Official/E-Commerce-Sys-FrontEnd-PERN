@@ -1,8 +1,10 @@
-// src/features/comparison/service/comparison.service.js
-import { compareProducts as compareProductsRequest } from "../api/comparison.api.js";
+// src/features/comparison/services/comparison.service.js
+import { startComparisonJob, getComparisonJobStatus } from "../api/comparison.api.js";
 
 const STORAGE_KEY = "compare_list";
 const MAX_COMPARE_ITEMS = 4;
+const POLL_INTERVAL_MS = 2000;
+const MAX_POLL_ATTEMPTS = 30;
 
 const readList = () => {
   try {
@@ -27,11 +29,12 @@ const unwrapResponse = (response) => {
   return payload?.data ?? payload;
 };
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const getCompareList = () => readList();
 
 export const addToCompareList = (productId) => {
   const list = readList();
-
   if (list.includes(productId)) return list;
 
   if (list.length >= MAX_COMPARE_ITEMS) {
@@ -53,7 +56,21 @@ export const clearCompareList = () => {
   writeList([]);
 };
 
-export const runComparison = async (productIds) => {
-  const response = await compareProductsRequest(productIds);
-  return unwrapResponse(response);
+export const runComparison = async (productIds, onProgress) => {
+  const startResponse = await startComparisonJob(productIds);
+  const { jobId } = unwrapResponse(startResponse);
+
+  for (let attempt = 1; attempt <= MAX_POLL_ATTEMPTS; attempt++) {
+    await sleep(POLL_INTERVAL_MS);
+
+    const pollResponse = await getComparisonJobStatus(jobId);
+    const data = unwrapResponse(pollResponse);
+
+    if (data.status === "done") return data.result;
+    if (data.status === "error") throw new Error(data.message || "Comparison failed");
+
+    onProgress?.(attempt);
+  }
+
+  throw new Error("Comparison is taking longer than expected. Please try again.");
 };
