@@ -1,3 +1,4 @@
+// src/modules/public/pages/ProductInfoPage.jsx
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -6,11 +7,13 @@ import {
   LocalShipping,
   ChevronLeft,
   ChevronRight,
+  CompareArrows,
 } from "@mui/icons-material";
 import { useProductDetail } from "../features/products/hooks/useProductDetail";
 import { formatAttributeName } from "../../../utils/formatAttributeName";
 import { removeFromCart, addProductToServer } from "../features/cart/service/cart.service.js";
 import { useCart } from "../features/cart/hooks/useCart.js";
+import { useComparison } from "../features/comparison/hooks/useComparison.js";
 
 const FALLBACK_IMAGE = "https://placehold.co/480x380/efefef/333333?text=No+Image";
 
@@ -29,6 +32,8 @@ export default function ProductInfoPage() {
   const [activeImg, setActiveImg] = useState(0);
   const { items: cartItems } = useCart();
   const [shareTooltip, setShareTooltip] = useState("Share");
+  const { count: compareCount, isInList, add: addToCompare, remove: removeFromCompare } = useComparison();
+  const [compareTooltip, setCompareTooltip] = useState(null);
 
   const productImages = useMemo(() => {
     if (!product?.images?.length) return [FALLBACK_IMAGE];
@@ -61,7 +66,7 @@ export default function ProductInfoPage() {
   }, []);
 
   const inCart = !!product?.product_id && cartItems.some((item) => item.product_id === product.product_id);
-
+  const inCompare = !!product?.product_id && isInList(product.product_id);
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}${window.location.pathname}?product=${product?.slug || product?.product_id || ""}`;
@@ -69,6 +74,27 @@ export default function ProductInfoPage() {
       navigator.clipboard.writeText(shareUrl);
       setShareTooltip("Copied!");
       setTimeout(() => setShareTooltip("Share"), 2000);
+    }
+  };
+
+  const handleToggleCompare = () => {
+    if (!product?.product_id) return;
+
+    if (inCompare) {
+      removeFromCompare(product.product_id);
+      return;
+    }
+
+    const result = addToCompare({
+      productId: product.product_id,
+      name: product.name,
+      image: productImages[0],
+      price: formatCurrency(currentPrice),
+    });
+
+    if (!result.success) {
+      setCompareTooltip(result.message);
+      setTimeout(() => setCompareTooltip(null), 2500);
     }
   };
 
@@ -192,7 +218,6 @@ export default function ProductInfoPage() {
               type="button"
               onClick={async () => {
                 if (!product) return;
-                // await addProductToServer(product.product_id ?? product.id);
                 navigate("/checkout-direct", {
                   state: {
                       product_id: product.product_id,
@@ -229,6 +254,26 @@ export default function ProductInfoPage() {
             >
               <ShoppingCart />
             </button>
+
+            <div className="relative">
+              <button
+                type="button"
+                title={inCompare ? "Remove from comparison" : "Add to comparison"}
+                onClick={handleToggleCompare}
+                className={`rounded-md border-2 p-2 transition-colors ${
+                  inCompare
+                    ? "border-zinc-800 bg-zinc-800 text-white"
+                    : "border-zinc-300 text-zinc-500 hover:border-zinc-800 hover:text-zinc-800"
+                }`}
+              >
+                <CompareArrows />
+              </button>
+              {compareTooltip && (
+                <span className="absolute -top-9 left-1/2 w-max max-w-50 -translate-x-1/2 whitespace-normal rounded bg-zinc-800 px-2 py-1 text-center text-[10px] text-white">
+                  {compareTooltip}
+                </span>
+              )}
+            </div>
 
             <div className="relative">
               <button

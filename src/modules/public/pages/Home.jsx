@@ -2,6 +2,7 @@ import ImageSlider from "../sections/ImageSlider.jsx";
 import VideoSection from "../sections/VideoSection.jsx";
 import HomepageProductGrid from "../components/Product/HomepageProductGrid.jsx";
 import TrackOrderButton from "../components/TrackOrderButton.jsx";
+import AIAssistantButton from "../components/AIAssistantButton.jsx";
 
 import { useHomepage } from "../features/products/hooks/useHomepage.js";
 
@@ -28,6 +29,7 @@ const Home = () => {
         error={error}
       />
 
+      <AIAssistantButton />
       <TrackOrderButton />
     </div>
   );
