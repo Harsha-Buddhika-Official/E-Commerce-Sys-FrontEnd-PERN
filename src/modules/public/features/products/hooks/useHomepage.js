@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchHomepageData } from "../services/homePage.service.js"; 
+import { fetchHomepageData } from "../services/homePage.service.js";
+import { getCache, setCache } from "../../../../../utils/cache.js";
+
+const CACHE_KEY = "homepage_data";
 
 const INITIAL_STATE = {
     bestSellers: [],
@@ -15,6 +18,21 @@ export const useHomepage = () => {
         let cancelled = false;
 
         const load = async () => {
+            // 1. Try cache first
+            const cached = getCache(CACHE_KEY);
+            if (cached) {
+                if (!cancelled) {
+                    setState({
+                        bestSellers: cached.bestSellers,
+                        latestProducts: cached.latest,
+                        loading: false,
+                        error: null,
+                    });
+                }
+                return; // skip the API call entirely
+            }
+
+            // 2. No valid cache — fetch from backend
             setState((prev) => ({ ...prev, loading: true, error: null }));
 
             try {
@@ -27,6 +45,7 @@ export const useHomepage = () => {
                         loading: false,
                         error: null,
                     });
+                    setCache(CACHE_KEY, { bestSellers, latest });
                 }
             } catch (err) {
                 if (!cancelled) {
