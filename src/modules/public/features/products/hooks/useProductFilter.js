@@ -5,12 +5,17 @@ import {
   fetchFilterOptions,
   fetchProductsWithFilters,
 } from '../services/products.service';
+import { getCache, setCache } from "../../../../../utils/cache.js";
+import { getMemoryCache, setMemoryCache } from "../../../../../utils/memoryCache.js";
 
 const INITIAL_FILTERS = {
   attributeFilters: [],
   priceMin: '',
   priceMax: '',
 };
+
+const CATEGORIES_CACHE_KEY = 'public_categories_all';
+const FILTERED_PRODUCTS_TTL = 1000 * 60 * 5; // 5 minutes
 
 export function useProductFilter() {
   const [searchParams]    = useSearchParams();
@@ -28,22 +33,36 @@ export function useProductFilter() {
   const categoryNameRef = useRef(categoryName);
   useEffect(() => { categoryNameRef.current = categoryName; }, [categoryName]);
 
-  // 1 — load categories once
+  // 1 — load categories once (cached, 24h)
   useEffect(() => {
     let cancelled = false;
 
-    fetchAllCategories()
-      .then(({ products: prodCats, accessories }) => {
+    const load = async () => {
+      const cached = getCache(CATEGORIES_CACHE_KEY);
+      if (cached) {
         if (cancelled) return;
+        setAllCategories(cached);
+        const matched = cached.find(c => c.name === categoryNameRef.current);
+        setSelectedCat(matched || cached[0] || null);
+        return;
+      }
+
+      try {
+        const { products: prodCats, accessories } = await fetchAllCategories();
+        if (cancelled) return;
+
         const flat = [...prodCats, ...accessories];
         setAllCategories(flat);
+        setCache(CATEGORIES_CACHE_KEY, flat);
+
         const matched = flat.find(c => c.name === categoryNameRef.current);
         setSelectedCat(matched || flat[0] || null);
-      })
-      .catch(err => {
+      } catch (err) {
         if (!cancelled) setError(err.message);
-      });
+      }
+    };
 
+    load();
     return () => { cancelled = true; };
   }, []);
 
@@ -57,41 +76,69 @@ export function useProductFilter() {
     }
   }, [categoryName, allCategories, selectedCat]);
 
-  // 3 — fetch filter options when category changes
+  // 3 — fetch filter options when category changes (cached, 24h, per category)
   useEffect(() => {
     if (!selectedCat) return;
     let cancelled = false;
 
-    setFilterOptions([]);
-    setProductList([]);
-    setLoadingOptions(true);
-    setError(null);
+    const cacheKey = `public_filter_options_${selectedCat.category_id}`;
 
-    fetchFilterOptions(selectedCat.category_id)
-      .then(opts => {
-        if (!cancelled) setFilterOptions(Array.isArray(opts) ? opts : []);
-      })
-      .catch(() => {
+    setProductList([]);
+    setError(null);
+    setFilterOptions([]);
+
+    const load = async () => {
+      const cached = getCache(cacheKey);
+      if (cached) {
+        if (!cancelled) setFilterOptions(cached);
+        return;
+      }
+
+      setLoadingOptions(true);
+      try {
+        const opts = await fetchFilterOptions(selectedCat.category_id);
+        if (!cancelled) {
+          const safeOpts = Array.isArray(opts) ? opts : [];
+          setFilterOptions(safeOpts);
+          setCache(cacheKey, safeOpts);
+        }
+      } catch {
         if (!cancelled) setFilterOptions([]);
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoadingOptions(false);
-      });
+      }
+    };
+
+    load();
 
     return () => { cancelled = true; };
   }, [selectedCat]);
 
-  // 4 — fetch products when category or filters change
+  // 4 — fetch products when category or filters change (short-lived memory cache, 5 min)
   useEffect(() => {
     if (!selectedCat) return;
     let cancelled = false;
+
+    const cacheKey = `public_products_${selectedCat.category_id}_${JSON.stringify(filters)}`;
+
+    const cached = getMemoryCache(cacheKey, FILTERED_PRODUCTS_TTL);
+    if (cached) {
+      setProductList(cached);
+      setError(null);
+      setLoadingProducts(false);
+      return;
+    }
 
     setLoadingProducts(true);
     setError(null);
 
     fetchProductsWithFilters(selectedCat.category_id, filters)
       .then(data => {
-        if (!cancelled) setProductList(Array.isArray(data) ? data : []);
+        if (!cancelled) {
+          const safeData = Array.isArray(data) ? data : [];
+          setProductList(safeData);
+          setMemoryCache(cacheKey, safeData);
+        }
       })
       .catch(err => {
         if (cancelled) return;

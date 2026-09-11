@@ -1,5 +1,3 @@
-// utils/cache.js
-
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 export const getCache = (key, maxAge = DAY_IN_MS) => {
@@ -17,7 +15,6 @@ export const getCache = (key, maxAge = DAY_IN_MS) => {
 
         return data;
     } catch {
-        // corrupted cache entry — don't let it break the app
         localStorage.removeItem(key);
         return null;
     }
@@ -30,6 +27,7 @@ export const setCache = (key, data) => {
             JSON.stringify({ data, timestamp: Date.now() })
         );
     } catch {
+        console.log("Failed to set cache — localStorage might be full or blocked (private mode)");
         // localStorage might be full or blocked (private mode) — fail silently
     }
 };

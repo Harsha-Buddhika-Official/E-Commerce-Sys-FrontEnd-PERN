@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { fetchProducts } from "../services/products.service";
+import { getCache, setCache } from "../../../../../utils/cache.js";
+
+const cacheKey = "public_products_all";
 
 const PRODUCTS_INITIAL_STATE = {
     products: [],
@@ -14,16 +17,38 @@ export const useProducts = () => {
         let cancelled = false;
 
         const load = async () => {
+            const cached = getCache(cacheKey);
+            if (cached) {
+                if (!cancelled) {
+                    setState({ 
+                        products: cached, 
+                        loading: false, 
+                        error: null 
+                    });
+                }
+                return;
+            }
+
             setState((prev) => ({ ...prev, loading: true, error: null }));
 
             try {
                 const products = await fetchProducts();
+
                 if (!cancelled) {
-                    setState({ products, loading: false, error: null });
+                    setState({ 
+                        products, 
+                        loading: false, 
+                        error: null 
+                    });
+                    setCache(cacheKey, products);
                 }
             } catch (err) {
                 if (!cancelled) {
-                    setState({ ...PRODUCTS_INITIAL_STATE, loading: false, error: err.message });
+                    setState({ 
+                        ...PRODUCTS_INITIAL_STATE, 
+                        loading: false, 
+                        error: err.message 
+                    });
                 }
             }
         };
