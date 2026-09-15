@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchAllCategories } from "../services/categories.service.js";
+import { getCache, setCache } from "../../../../../utils/cache.js";
 
 /** * Custom hook to fetch product and accessory categories
  * Handles loading, error states, and automatic refetch on mount
@@ -12,18 +13,31 @@ const INITIAL_STATE = {
     error: null,
 };
 
+const cacheKey = "categories_data";
+
 export const useCategories = () => {
     const [state, setState] = useState(INITIAL_STATE);
 
     useEffect(() => {
         let cancelled = false;
- 
+        const cached = getCache(cacheKey);
         const load = async () => {
+
+            if (cached) {
+                setState({
+                    ...INITIAL_STATE,
+                    ...cached
+                });
+                return;
+            }
+
             setState((prev) => ({ ...prev, loading: true, error: null }));
+            
             try {
                 const { products, accessories } = await fetchAllCategories();
                 if (!cancelled) {
                     setState({ products, accessories, loading: false, error: null });
+                    setCache(cacheKey, { products, accessories });
                 }
             } catch (err) {
                 if (!cancelled) {
@@ -36,6 +50,6 @@ export const useCategories = () => {
             cancelled = true;
         };
     }, []);
- 
+
     return state;
 };

@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchHomepageData } from "../services/homePage.service.js"; 
+import { fetchHomepageData } from "../services/homePage.service.js";
+import { getCache, setCache } from "../../../../../utils/cache.js";
+
+const cacheKey = "homepage_data";
 
 const INITIAL_STATE = {
     bestSellers: [],
@@ -15,6 +18,19 @@ export const useHomepage = () => {
         let cancelled = false;
 
         const load = async () => {
+            const cached = getCache(cacheKey);
+            if (cached) {
+                if (!cancelled) {
+                    setState({
+                        bestSellers: cached.bestSellers,
+                        latestProducts: cached.latest,
+                        loading: false,
+                        error: null,
+                    });
+                }
+                return; 
+            }
+
             setState((prev) => ({ ...prev, loading: true, error: null }));
 
             try {
@@ -27,6 +43,7 @@ export const useHomepage = () => {
                         loading: false,
                         error: null,
                     });
+                    setCache(cacheKey, { bestSellers, latest });
                 }
             } catch (err) {
                 if (!cancelled) {
