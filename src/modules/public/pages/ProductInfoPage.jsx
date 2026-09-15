@@ -1,4 +1,3 @@
-// src/modules/public/pages/ProductInfoPage.jsx
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -14,6 +13,7 @@ import { formatAttributeName } from "../../../utils/formatAttributeName";
 import { removeFromCart, addProductToServer } from "../features/cart/service/cart.service.js";
 import { useCart } from "../features/cart/hooks/useCart.js";
 import { useComparison } from "../features/comparison/hooks/useComparison.js";
+import ProductInfoSkeleton from "./components/ProductInfoSkeleton";
 
 const FALLBACK_IMAGE = "https://placehold.co/480x380/efefef/333333?text=No+Image";
 
@@ -104,11 +104,7 @@ export default function ProductInfoPage() {
   const nextImg = () => setActiveImg((p) => (p === productImages.length - 1 ? 0 : p + 1));
 
   if (loading) {
-    return (
-      <div className="min-h-screen grid place-items-center p-4 bg-zinc-100">
-        <p className="text-sm text-zinc-600">Loading product details...</p>
-      </div>
-    );
+    return <ProductInfoSkeleton />;
   }
 
   if (error || !product) {
