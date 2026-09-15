@@ -8,6 +8,7 @@ import TuneIcon from "@mui/icons-material/Tune";
 import CloseIcon from "@mui/icons-material/Close";
 import { useProductFilter } from "../features/products/hooks/useProductFilter.js";
 import { addProductToServer } from "../features/cart/service/cart.service.js";
+import ProductCardSkeleton from "./components/ProductCardSkeleton";
 
 const PRODUCTS_PER_PAGE = 16;
 
@@ -209,11 +210,7 @@ export default function ProductsPage() {
         {loading ? (
           <div className="product-grid grid gap-2.5 sm:gap-5">
             {Array.from({ length: PRODUCTS_PER_PAGE }).map((_, i) => (
-              <div
-                key={i}
-                className="rounded-[10px] bg-white border border-[#E6E6E6] animate-pulse"
-                style={{ height: "320px" }}
-              />
+              <ProductCardSkeleton key={i} />
             ))}
           </div>
         ) : error ? (
